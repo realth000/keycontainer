@@ -1,0 +1,519 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainUi</class>
+ <widget class="QWidget" name="MainUi">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1000</width>
+    <height>720</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainUi</string>
+  </property>
+  <widget class="TitleBar" name="titleBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1000</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+  </widget>
+  <widget class="QTabWidget" name="mainTabWidget">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>30</y>
+     <width>1000</width>
+     <height>551</height>
+    </rect>
+   </property>
+   <property name="currentIndex">
+    <number>0</number>
+   </property>
+   <widget class="QWidget" name="tab">
+    <attribute name="title">
+     <string>Tab 1</string>
+    </attribute>
+    <widget class="QTableWidget" name="keyTW">
+     <property name="geometry">
+      <rect>
+       <x>170</x>
+       <y>44</y>
+       <width>685</width>
+       <height>501</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>170</y>
+       <width>141</width>
+       <height>110</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string> 勾选模式</string>
+     </property>
+     <widget class="QRadioButton" name="key_checkRB">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>89</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>勾选选择</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">checkKeyModeBG</string>
+      </attribute>
+     </widget>
+     <widget class="QRadioButton" name="key_clickRB">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>50</y>
+        <width>89</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>单击单元格</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">checkKeyModeBG</string>
+      </attribute>
+     </widget>
+     <widget class="QRadioButton" name="key_doubleClickRB">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>89</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>双击单元格</string>
+      </property>
+      <attribute name="buttonGroup">
+       <string notr="true">checkKeyModeBG</string>
+      </attribute>
+     </widget>
+    </widget>
+    <widget class="QPushButton" name="selectInverseKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>110</y>
+       <width>81</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>反选</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="selectAllKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>70</y>
+       <width>81</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>全选</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="addKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>0</y>
+       <width>115</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>添加密码</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="delSelectKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>740</x>
+       <y>0</y>
+       <width>115</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>删除选中</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="exportKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>570</x>
+       <y>0</y>
+       <width>115</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>导出密码</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="showKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>115</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string> 显示密码</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="saveKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>0</y>
+       <width>115</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>保存密码</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="backupKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>400</x>
+       <y>0</y>
+       <width>115</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>备份密码</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_2">
+    <attribute name="title">
+     <string>Tab 2</string>
+    </attribute>
+    <widget class="QPushButton" name="saveConfigBtn">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>0</y>
+       <width>115</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string> 保存设置</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="restartProgBtn">
+     <property name="geometry">
+      <rect>
+       <x>140</x>
+       <y>0</y>
+       <width>115</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>重启程序</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="securityGB">
+     <property name="geometry">
+      <rect>
+       <x>460</x>
+       <y>210</y>
+       <width>181</width>
+       <height>171</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>安全</string>
+     </property>
+     <widget class="QPushButton" name="changeInitKeyBtn">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>20</y>
+        <width>141</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>修改启动密码</string>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="changeAESKeyBtn">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>70</y>
+        <width>141</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>更新加密密钥</string>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="autoChangeAESKeyChB">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>110</y>
+        <width>141</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>每次保存（备份除外）
+自动更新加密密钥</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>631</width>
+       <height>131</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>保存与备份位置</string>
+     </property>
+     <widget class="QLineEdit" name="savePathLE">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>30</y>
+        <width>441</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="selectSavePathBtn">
+      <property name="geometry">
+       <rect>
+        <x>530</x>
+        <y>30</y>
+        <width>75</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>选择目录</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>30</y>
+        <width>54</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>保存位置</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_2">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>80</y>
+        <width>54</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>备份位置</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+     <widget class="QLineEdit" name="backupPathLE">
+      <property name="geometry">
+       <rect>
+        <x>80</x>
+        <y>80</y>
+        <width>441</width>
+        <height>31</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="selectBackupPathBtn">
+      <property name="geometry">
+       <rect>
+        <x>530</x>
+        <y>80</y>
+        <width>75</width>
+        <height>31</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>选择目录</string>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>191</width>
+       <height>201</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>启动与默认</string>
+     </property>
+     <widget class="QGroupBox" name="groupBox_4">
+      <property name="geometry">
+       <rect>
+        <x>20</x>
+        <y>40</y>
+        <width>120</width>
+        <height>121</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>勾选模式</string>
+      </property>
+      <widget class="QRadioButton" name="key_check_defaultRB">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>30</y>
+         <width>89</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>勾选选择</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">checkKeyMode_defaultBG</string>
+       </attribute>
+      </widget>
+      <widget class="QRadioButton" name="key_click_defaultRB">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>60</y>
+         <width>89</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>单击单元格</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">checkKeyMode_defaultBG</string>
+       </attribute>
+      </widget>
+      <widget class="QRadioButton" name="key_doubleClick_defaultRB">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>90</y>
+         <width>89</width>
+         <height>16</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>双击单元格</string>
+       </property>
+       <attribute name="buttonGroup">
+        <string notr="true">checkKeyMode_defaultBG</string>
+       </attribute>
+      </widget>
+     </widget>
+    </widget>
+   </widget>
+  </widget>
+  <widget class="QTextEdit" name="logTE">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>580</y>
+     <width>590</width>
+     <height>140</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="clearLogBtn">
+   <property name="geometry">
+    <rect>
+     <x>539</x>
+     <y>581</y>
+     <width>50</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>清屏</string>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="hintTE">
+   <property name="geometry">
+    <rect>
+     <x>590</x>
+     <y>580</y>
+     <width>410</width>
+     <height>140</height>
+    </rect>
+   </property>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>TitleBar</class>
+   <extends>QGroupBox</extends>
+   <header location="global">ui/titlebar.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="checkKeyMode_defaultBG"/>
+  <buttongroup name="checkKeyModeBG"/>
+ </buttongroups>
+</ui>

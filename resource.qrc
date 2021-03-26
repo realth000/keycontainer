@@ -1,0 +1,28 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qss/stylesheet.qss</file>
+        <file>src/close.png</file>
+        <file>src/config.png</file>
+        <file>src/addKey.png</file>
+        <file>src/exportKey.png</file>
+        <file>src/refresh.png</file>
+        <file>src/config_reverse.png</file>
+        <file>src/manage.png</file>
+        <file>src/manage_reverse.png</file>
+        <file>src/showKey.png</file>
+        <file>src/backupKey.png</file>
+        <file>src/saveKey.png</file>
+        <file>src/selectInverseKey.png</file>
+        <file>src/selectAll.png</file>
+        <file>src/delKey.png</file>
+        <file>src/restart.png</file>
+        <file>src/saveConfig.png</file>
+        <file>src/changeInitKey.png</file>
+        <file>src/changeAESKey.png</file>
+        <file>qss/stylesheet_inputkeyui.qss</file>
+        <file>src/title.png</file>
+        <file>src/initUiBackground.png</file>
+        <file>qss/stylesheet_login.qss</file>
+        <file>qss/stylesheet_inputinitkeyui.qss</file>
+    </qresource>
+</RCC>
