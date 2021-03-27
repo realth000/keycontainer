@@ -35,9 +35,9 @@ private:
     bool checkPwd();
 
     bool pwdTruth = false;
-    const QString salt1 = "15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破";
-    const QString salt2 = "離れない君といた夏のおわりゼロゼロさてんるいこおかえり";
-    QString workPath = "";
+    const Estring salt1 = Estring("15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破");
+    const Estring salt2 = Estring("離れない君といた夏のおわりゼロゼロさてんるいこおかえり");
+    QString pwPath = "";
     Estring truePwdHash = Estring();
     Ui::LogIn *ui;
 };

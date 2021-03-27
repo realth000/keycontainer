@@ -3,6 +3,7 @@
 #include "qssinstaller.h"
 #include "ui/titlebar.h"
 #include <QDebug>
+#include "debugshowoptions.h"
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")

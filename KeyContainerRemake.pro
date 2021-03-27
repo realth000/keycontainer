@@ -21,6 +21,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     commoninclude.cpp \
+    debugshowoptions.cpp \
     encryption/encrypted.cpp \
     encryption/qaesencryption.cpp \
     globalshortcut/globalshortcut.cpp \
@@ -37,6 +38,7 @@ SOURCES += \
 
 HEADERS += \
     commoninclude.h \
+    debugshowoptions.h \
     encryption/encrypted.h \
     encryption/qaesencryption.h \
     globalshortcut/globalshortcut.h \

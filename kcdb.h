@@ -37,7 +37,7 @@ private:
     QByteArray in;
     QByteArray inCBC128;
     QByteArray outCBC128;
-    QString key ;
+    QString aesKey ;
     QByteArray hashKey;
 
 };
@@ -47,10 +47,10 @@ public:
     Kcdb_io();
 
 protected:
-    void output(QDataStream &outStream, QString data, AesClass *code);
+    void output(QDataStream &outStream, Estring data, AesClass *code);
     void output(QDataStream &outStream, quint8 argc, AesClass *code);
     void outKcdbHead(QDataStream &outStream,quint8 inType, AesClass *code);
-    void outKcdb(QDataStream &outStream,QString keyNameOrLevel, QString iKey, QString iCheckKey, quint8 EOF_, AesClass *code);
+    void outKcdb(QDataStream &outStream, Estring disc, Estring keyNameOrLevel, Estring iKey, Estring iCheckKey, quint8 EOF_, AesClass *code);
     void input(QDataStream &inStream, QString &data, AesClass *code);
     void input(QDataStream &inStream, quint8 &argc, AesClass *code);
     quint8 readKcdbHead(QDataStream &inStream, AesClass *code);
@@ -67,10 +67,15 @@ private:
 
 class GroupKey{
 public:
-    explicit GroupKey(QString name, QString keyValue);
+    explicit GroupKey(Estring disc, Estring account, Estring keyValue);
+    explicit GroupKey(QString disc, QString account, QString keyValue);
     QString getiKeyValue() const;
     QString getiCheckKeyValue() const;
-    QString account;
+    Estring getiKey() const;
+    Estring getiCheckKey() const;
+
+    Estring disc;
+    Estring account;
     Estring key;
     Estring checkKey;
 
@@ -85,19 +90,30 @@ class Kcdb : public Kcdb_io
 public:
     explicit Kcdb(QString workPath);
     void changeBackupState(bool state);
-    void inserKey(QString account, GroupKey key);
-    void readKcdb();
+    void inserKey(QString disc, GroupKey key);
+    void clearKeys();
+    bool readKcdb();
     void writeKcdb();
+    void setKeys(QMap<QString, GroupKey> keyList);
+    QMap<QString, GroupKey> getKeys() const;
+    Estring getKey() const;
+    Estring getKey_in() const;
+    void setKey(QString k);
+    void setKey_in(QString k);
+    void setBackupState(bool isBackup);
+    void setSavePath(QString path);
+    void setBackupPath(QString path);
+    QFile inFile;
+    QFile outFile;
 
 private:
     Kcdb_io ko;
     QString workPath="";
     Estring key = Estring("259741592652");
     Estring key_in = Estring("259741592652");
-    QString savePath = ".\\pw.kcdb";
-    QString backupPath = ".\\pwbp.kcdb";
-    QFile inFile;
-    QFile outFile;
+    QString savePath = "/pw.kcdb";
+    QString backupPath = "/pwbp.kcdb";
+    QString aesPath = "/dat.ec";
     QDataStream inStream;
     QDataStream outStream;
     // if backup, true; if save, false;

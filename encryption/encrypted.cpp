@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <QRandomGenerator>
 #include <QRandomGenerator64>
+#include "debugshowoptions.h"
 
 #ifdef Q_OS_LINUX
 #include <unistd.h>
@@ -62,17 +63,23 @@ void EncryptedClass<Type>::initKey(int initType)
     // when qsrand() and qrand() are depred, use QRandomGenerator
     // TODO: Test QRandomGenerator on GCC + Qt5.12.10. If work, totally use QRandomGenerator instead.
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+//    qDebug() << "明天去哪吃? [1-3]" << QRandomGenerator::securelySeeded().bounded(1,4);
     switch (initType) {
+
     case 1:
-        key_16 = QRandomGenerator::global()->bounded(0x1000, 0x6FFF);
-        key_check_16 = QRandomGenerator::global()->bounded(0x1000, 0x6FFF);
-//                qDebug() << "init key_16 and key_check_16:" << key_16 << key_check_16;
+        key_16 = QRandomGenerator::securelySeeded().bounded(0x1000, 0x6FFF);
+        key_check_16 = QRandomGenerator::securelySeeded().bounded(0x1000, 0x6FFF);
+#ifdef DEBUG_SHOW_KEYS
+                qDebug() << "init key_16 and key_check_16:" << key_16 << key_check_16;
+#endif
         break;
 
     case 2:
-        key_32 = QRandomGenerator::global()->bounded(0x10000000, 0x6FFFFFFF);
-        key_check_32 = QRandomGenerator::global()->bounded(0x10000000, 0x6FFFFFFF);
-//                qDebug() << "init key_32 and key_check_32:" << key_32 << key_check_32;
+        key_32 = QRandomGenerator::securelySeeded().bounded(0x10000000, 0x6FFFFFFF);
+        key_check_32 = QRandomGenerator::securelySeeded().bounded(0x10000000, 0x6FFFFFFF);
+#ifdef DEBUG_SHOW_KEYS
+                qDebug() << "init key_32 and key_check_32:" << key_32 << key_check_32;
+#endif
         break;
 
     case 3:
@@ -80,15 +87,19 @@ void EncryptedClass<Type>::initKey(int initType)
         qsrand(QTime(0,0,0).secsTo(QTime::currentTime()));
         while (key_64 <= 0x1000000000000000 || key_check_64 <= 0x1000000000000000
                || key_64 >= 0x6FFFFFFFFFFFFFFF || key_check_64 >= 0x6FFFFFFFFFFFFFFF) {
-            key_64 =  QRandomGenerator64::global()->generate64();
-            key_check_64 =  QRandomGenerator64::global()->generate64();
+            key_64 =  QRandomGenerator64::securelySeeded().generate64();
+            key_check_64 =  QRandomGenerator64::securelySeeded().generate64();
         }
-//                qDebug() << "init key_64 and key_check_64:" << key_64 << key_check_64;
+#ifdef DEBUG_SHOW_KEYS
+                qDebug() << "init key_64 and key_check_64:" << key_64 << key_check_64;
+#endif
         break;
     case 4:
-        key_string = QRandomGenerator::global()->bounded(0x1000, 0x6FFF);
-        key_check_string = QRandomGenerator::global()->bounded(0x1000, 0x6FFF);
-//        qDebug() << "init key_string and key_check_string" << key_string << key_check_string;
+        key_string = QRandomGenerator::securelySeeded().bounded(0x1000, 0x6FFF);
+        key_check_string = QRandomGenerator::securelySeeded().bounded(0x1000, 0x6FFF);
+#ifdef DEBUG_SHOW_KEYS
+        qDebug() << "init key_string and key_check_string" << key_string << key_check_string;
+#endif
         break;
 
     default:
@@ -322,7 +333,7 @@ void Euint_16::setVal(quint16 val)
 {
     this->ec_16 = EncryptedClass<quint16>(1);
     this->val = ec_16.EncryptVal(val);
-    qDebug() <<val;
+//    qDebug() <<val;
     this->check = ec_16.EncryptCheck(val);
 }
 

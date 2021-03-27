@@ -19,6 +19,10 @@ class MainUi : public QWidget
 public:
     MainUi(QWidget *parent = nullptr);
     ~MainUi();
+    bool loginCorrent = false;
+
+public slots:
+    void log(QString log);
 
 signals:
     void open2();
@@ -39,6 +43,9 @@ private slots:
     void on_restartProgBtn_clicked();
     void on_changeInitKeyBtn_clicked();
     void on_saveKeyBtn_clicked();
+    void on_backupKeyBtn_clicked();
+    void on_selectSavePathBtn_clicked();
+    void on_selectBackupPathBtn_clicked();
 
 private:
     Kcdb *kcdb;
@@ -46,13 +53,17 @@ private:
     void initUi();
     void initConfig();
     QWidget* addCheckBox();
-    void keyTW_addNewRow(int rowIndex, QString disc, QString account, QString key, int rowHeight);
+    void keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight);
     void keyTW_deleteSeledtedKeys();
     void showKeyTableKeys();
     void addKey();
     // TODO: How to Refresh Aes Key?
     void refreshAESKey();
     void checkDb();
+    void syncKeyFromMap();
+    void syncKeyMapToKcdb();
+    void refreshKeyTW();
+    void writeCheckFile(QString checkPath);
 
 
     LogIn *logIn;
@@ -67,7 +78,8 @@ private:
     bool open = false;
     Estring truePwdHash = Estring();
     QString workPath = "";
-    QString savePath = "";
-    QString backupPath = "";
+    QString savePath = "/pw.kcdb";
+    QString backupPath = "/pwbp.kcdb";
+
 };
 #endif // MAINUI_H
