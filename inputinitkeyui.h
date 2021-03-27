@@ -3,6 +3,11 @@
 
 #include <QDialog>
 #include "encryption/encrypted.h"
+#include <QFile>
+
+#if _MSC_VER >= 1600
+#pragma execution_character_set("utf-8")
+#endif
 
 namespace Ui {
 class InputInitKeyUi;
@@ -13,8 +18,10 @@ class InputInitKeyUi : public QDialog
     Q_OBJECT
 
 public:
-    explicit InputInitKeyUi(QWidget *parent = nullptr, Estring oldPwdHash = Estring());
+    explicit InputInitKeyUi(QWidget *parent = nullptr, Estring oldPwdHash = Estring(), Estring pwFilePath = Estring());
     ~InputInitKeyUi();
+signals:
+    void changedPw(QString s);
 protected:
     void keyPressEvent(QKeyEvent *event) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
@@ -27,12 +34,14 @@ private slots:
 private:
     void initUi();
     void checkInput();
-    bool getNewPwdHash();
-    const QString salt1 = "15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破";
-    const QString salt2 = "離れない君といた夏のおわりゼロゼロさてんるいこおかえり";
+    bool checkInputOldPwHash();
+    const Estring salt1 = Estring("15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破");
+    const Estring salt2 = Estring("離れない君といた夏のおわりゼロゼロさてんるいこおかえり");
     const Estring m_oldPwdHash;
+    const Estring pwFilePath;
     Ui::InputInitKeyUi *ui;
     bool showing = false;
+    QFile hashFile;
 };
 
 #endif // INPUTINITKEYUI_H

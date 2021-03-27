@@ -1,4 +1,5 @@
 ﻿#include "commoninclude.h"
+#include "debugshowoptions.h"
 
 KeyMap::KeyMap()
 {

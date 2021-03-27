@@ -4,13 +4,14 @@
 #include <QCryptographicHash>
 #include "qssinstaller.h"
 #include <QDebug>
+#include "debugshowoptions.h"
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
 
-InputInitKeyUi::InputInitKeyUi(QWidget *parent, Estring oldPwdHash) :
-    QDialog(parent), m_oldPwdHash(oldPwdHash),
+InputInitKeyUi::InputInitKeyUi(QWidget *parent, Estring oldPwdHash, Estring pwFilePath) :
+    QDialog(parent), m_oldPwdHash(oldPwdHash), pwFilePath(pwFilePath),
     ui(new Ui::InputInitKeyUi)
 {
     ui->setupUi(this);
@@ -111,28 +112,49 @@ void InputInitKeyUi::checkInput()
         ui->hintLabel->setText("两次输入密码不一致");
         ui->hintLabel->setVisible(true);
     }
-    else if(!getNewPwdHash()){
+    else if(!checkInputOldPwHash()){
         ui->hintLabel->setText("旧密码不正确");
         ui->hintLabel->setVisible(true);
     }
     else{
         ui->hintLabel->setVisible(false);
         // TODO: 写入新密码
-        qDebug() << "success";
+        hashFile.setFileName(pwFilePath.getVal());
+        if(hashFile.open(QIODevice::WriteOnly)){
+            QByteArray tmpMD5;
+            QByteArray resultHash;
+            QCryptographicHash hash1(QCryptographicHash::Keccak_512);
+            hash1.addData(ui->inputKey_newPwdLE->text().toUtf8());
+            hash1.addData(salt1.getVal().toUtf8());
+            tmpMD5 = hash1.result().toHex();
+            QCryptographicHash hash2(QCryptographicHash::Keccak_512);
+            hash2.addData(tmpMD5);
+            hash2.addData(salt2.getVal().toUtf8());
+            resultHash = hash2.result().toHex();
+            QFile hashFile(pwFilePath.getVal());
+            if(hashFile.open(QIODevice::ReadWrite)){
+                QDataStream hashStream(&hashFile);
+                hashStream.setVersion(QDataStream::Qt_5_12);
+                hashStream << resultHash;
+                hashFile.close();
+                this->close();
+            emit changedPw("已更新启动密码。");
+            }
+        }
     }
 }
 
-bool InputInitKeyUi::getNewPwdHash()
+bool InputInitKeyUi::checkInputOldPwHash()
 {
     QByteArray tmpMD5;
     QByteArray resultHash;
     QCryptographicHash hash1(QCryptographicHash::Keccak_512);
     hash1.addData(ui->inputKey_oldPwdLE->text().toUtf8());
-    hash1.addData(salt1.toUtf8());
+    hash1.addData(salt1.getVal().toUtf8());
     tmpMD5 = hash1.result().toHex();
     QCryptographicHash hash2(QCryptographicHash::Keccak_512);
     hash2.addData(tmpMD5);
-    hash2.addData(salt2.toUtf8());
+    hash2.addData(salt2.getVal().toUtf8());
     resultHash = hash2.result().toHex();
     return resultHash == m_oldPwdHash.getVal() ? true : false;
 }

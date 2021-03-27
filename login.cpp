@@ -6,6 +6,9 @@
 #include <QCoreApplication>
 #include <QMessageBox>
 #include <QCryptographicHash>
+#include <QDir>
+#include <QDebug>
+#include "debugshowoptions.h"
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -18,7 +21,8 @@ LogIn::LogIn(QWidget *parent) :
     ui->setupUi(this);
     initUi();
 
-    workPath = QCoreApplication::applicationDirPath() +  "\\login.ec";
+    pwPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec");
+//    qDebug() << "login pwPath:" <<pwPath;
     readPwd();
 }
 
@@ -61,30 +65,28 @@ void LogIn::initUi()
 
 void LogIn::readPwd()
 {
-    QFileInfo fileInfo(workPath);
-    if(fileInfo.exists()){
-        QFile hashFile(workPath);
-        if(hashFile.open(QIODevice::ReadOnly)){
-            QDataStream hashData(&hashFile);
-            QByteArray hashString;
-            hashData >> hashString;
-            hashFile.close();
-            if(hashString == ""){
-                QMessageBox::information(NULL, tr("密码错误"), tr("检测到密码为空。"));
-                this->close();
-            }
-            truePwdHash = Estring(hashString);
-        }
-        else{
-            QMessageBox::information(NULL, tr("无法读取启动密码"), tr("密码文件可能被其他程序占用。"));
-            this->close();
-        }
-    }
-    else{
+    QFileInfo fileInfo(pwPath);
+    if(!fileInfo.exists()){
         QMessageBox::information(NULL, tr("无法启动"), tr("密码文件丢失，无法启动。"));
         this->close();
+        return;
     }
-
+    QFile hashFile(pwPath);
+    if(!hashFile.open(QIODevice::ReadOnly)){
+        QMessageBox::information(NULL, tr("无法读取启动密码"), tr("密码文件可能被其他程序占用。"));
+        this->close();
+        return;
+    }
+    QDataStream hashData(&hashFile);
+    QByteArray hashString;
+    hashData >> hashString;
+    hashFile.close();
+    if(hashString == ""){
+        QMessageBox::information(NULL, tr("密码错误"), tr("检测到密码为空。"));
+        this->close();
+        return;
+    }
+    truePwdHash = Estring(hashString);
 }
 
 bool LogIn::checkPwd()
@@ -98,11 +100,11 @@ bool LogIn::checkPwd()
         return false;
     }
     hash1.addData(ui->lineEdit->text().toUtf8());
-    hash1.addData(salt1.toUtf8());
+    hash1.addData(salt1.getVal().toUtf8());
     tmpMD5 = hash1.result().toHex();
     QCryptographicHash hash2(QCryptographicHash::Keccak_512);
     hash2.addData(tmpMD5);
-    hash2.addData(salt2.toUtf8());
+    hash2.addData(salt2.getVal().toUtf8());
     resultHash = hash2.result().toHex();
     if(resultHash == truePwdHash.getVal()){
         return true;
