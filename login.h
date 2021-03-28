@@ -20,11 +20,10 @@ class LogIn : public QDialog
 public:
     explicit LogIn(QWidget *parent = nullptr);
     ~LogIn();
+    bool getContinueStart() const;
 
 signals:
     void finish(bool r, Estring truePwdHash);
-protected:
-    void closeEvent(QCloseEvent *event);
 
 private slots:
     void on_logInB_clicked();
@@ -35,6 +34,7 @@ private:
     bool checkPwd();
 
     bool pwdTruth = false;
+    bool continueStart = true;
     const Estring salt1 = Estring("15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破");
     const Estring salt2 = Estring("離れない君といた夏のおわりゼロゼロさてんるいこおかえり");
     QString pwPath = "";

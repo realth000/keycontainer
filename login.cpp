@@ -31,10 +31,9 @@ LogIn::~LogIn()
     delete ui;
 }
 
-void LogIn::closeEvent(QCloseEvent *event)
+bool LogIn::getContinueStart() const
 {
-    emit finish(pwdTruth, truePwdHash);
-    event->accept();
+    return this->continueStart;
 }
 
 void LogIn::initUi()
@@ -68,13 +67,15 @@ void LogIn::readPwd()
     QFileInfo fileInfo(pwPath);
     if(!fileInfo.exists()){
         QMessageBox::information(NULL, tr("无法启动"), tr("密码文件丢失，无法启动。"));
-        this->close();
+        emit finish(false, Estring(""));
+        continueStart = false;
         return;
     }
     QFile hashFile(pwPath);
     if(!hashFile.open(QIODevice::ReadOnly)){
         QMessageBox::information(NULL, tr("无法读取启动密码"), tr("密码文件可能被其他程序占用。"));
-        this->close();
+        emit finish(false, Estring(""));
+        continueStart = false;
         return;
     }
     QDataStream hashData(&hashFile);
@@ -83,7 +84,8 @@ void LogIn::readPwd()
     hashFile.close();
     if(hashString == ""){
         QMessageBox::information(NULL, tr("密码错误"), tr("检测到密码为空。"));
-        this->close();
+        emit finish(false, Estring(""));
+        continueStart = false;
         return;
     }
     truePwdHash = Estring(hashString);
@@ -121,7 +123,7 @@ void LogIn::on_logInB_clicked()
 {
     if(checkPwd()){
         pwdTruth = true;
-        this->close();
+        emit finish(true, truePwdHash);
     }
     else{
         ui->warnL->setVisible(true);

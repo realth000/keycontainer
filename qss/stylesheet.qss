@@ -12,6 +12,9 @@ QTabBar::tab:selected{background-color:rgb(51,51,51)}
 QTableWidget{border:1px solid %2;outline:2xp solid rgb(255,0,0);gridline-color:%2;color:rgb(230,230,230);background:%3}
 QTableWidget::item{border:none}
 QTableWidget::item:selected{color:rgb(240,255,255);background-color:rgb(75,75,75);outline:none;}
+QLabel#about_titleL{color:rgb(175,200,210);font:26px;font-weight:bold}
+QLabel#about_versionL{font:15px;font-weight:bold}
+QLabel#about_timeL{font:15px;}
 QLineEdit#logLE{color:rgb(230,230,230);border:none;background-color:rgb(30,30,30);font-size:14px}
 QLineEdit{font-family:Microsoft YaHei Mono;color:rgb(240,255,255);background:%3; border:1px solid %2;selection-background-color:rgb(93,94,95)}
 QMenu{background:%3; border:2px solid %2;selection-background-color:rgb(93,94,95)}
@@ -19,8 +22,9 @@ QMenu::separator{height:0px; border:1px solid %2}
 QTextEdit{background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));
 border:1px solid rgb(55,85,100);selection-color:rgb(240,255,255);selection-background-color:rgb(93,94,95)}
 QTextEdit{background:rgb(40,40,40);border:none}
-QTextEdit#logTE{border-right:1px solid %2;border-top:1px solid %2}
+QTextEdit#logTE{color:rgb(240,255,255);border-right:1px solid %2;border-top:1px solid %2}
 QTextEdit#hintTE{border-top:1px solid %2}
+QTextEdit#about_baseTE{color:rgb(240,255,255);font-family:Microsoft YaHei;font:15px;border:none;font:15px;background:transparent}
 QGroupBox{color:rgb(240,255,255);background-color:%3;border:1px solid %2;}
 QGroupBox#securityGB{background-color:rgb(40,40,40)}
 QRadioButton{color:rgb(240,255,255)}

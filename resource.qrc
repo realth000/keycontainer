@@ -24,5 +24,7 @@
         <file>src/initUiBackground.png</file>
         <file>qss/stylesheet_login.qss</file>
         <file>qss/stylesheet_inputinitkeyui.qss</file>
+        <file>src/about.png</file>
+        <file>src/about_reverse.png</file>
     </qresource>
 </RCC>
