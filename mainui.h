@@ -6,6 +6,7 @@
 #include "inputkeyui.h"
 #include "login.h"
 #include "kcdb.h"
+#include <QPoint>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
@@ -46,6 +47,7 @@ private slots:
     void on_backupKeyBtn_clicked();
     void on_selectSavePathBtn_clicked();
     void on_selectBackupPathBtn_clicked();
+    void on_changeAESKeyBtn_clicked();
 
 private:
     Kcdb *kcdb;
@@ -64,7 +66,8 @@ private:
     void syncKeyMapToKcdb();
     void refreshKeyTW();
     void writeCheckFile(QString checkPath);
-
+    void showPw();
+    void deleteSingleKey();
 
     LogIn *logIn;
     Ui::MainUi *ui;
@@ -80,6 +83,12 @@ private:
     QString workPath = "";
     QString savePath = "/pw.kcdb";
     QString backupPath = "/pwbp.kcdb";
+    int rightClickSelectedItemRow = false;
+    bool isShowing = true;
 
+private slots:
+    void showKeyTableMenu(QPoint);
+
+    void on_clearLogBtn_clicked();
 };
 #endif // MAINUI_H

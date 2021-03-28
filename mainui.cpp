@@ -20,6 +20,7 @@
 #include <QTime>
 #include "debugshowoptions.h"
 #include <QFileDialog>
+#include <QMenu>
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -41,8 +42,10 @@ MainUi::MainUi(QWidget *parent)
         emit open2();
     });
     connect(this, &MainUi::open2, &loop, &QEventLoop::quit);
-    logIn->show();
-    loop.exec();
+    if(logIn->getContinueStart()){
+        logIn->show();
+        loop.exec();
+    }
     if(!loginCorrent){
         return;
     }
@@ -88,7 +91,7 @@ void MainUi::initUi()
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
     ui->titleBar->setCloseIcon(":/src/close.png");
-    ui->titleBar->setTitleText("KeyContainer - 2.1");
+    ui->titleBar->setTitleText("Key Container");
 
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
@@ -98,6 +101,7 @@ void MainUi::initUi()
     // 选项卡样式
     ui->mainTabWidget->setTabText(0, "管理");
     ui->mainTabWidget->setTabText(1, "设置");
+    ui->mainTabWidget->setTabText(2, "关于");
     ui->mainTabWidget->setTabPosition(QTabWidget::West);
     ui->mainTabWidget->setAttribute(Qt::WA_StyledBackground);
     ui->mainTabWidget->tabBar()->setStyle(new TabBarStyle);
@@ -121,6 +125,16 @@ void MainUi::initUi()
 
     }
     ui->mainTabWidget->tabBar()->setTabIcon(1, tabIco1);
+
+    QIcon tabIco2;
+    const QPixmap tab2_1 = QPixmap(":/src/about.png");
+    const QPixmap tab2_2 = QPixmap(":/src/about_reverse.png");
+    if(!tab2_1.isNull() && !tab2_2.isNull()){
+        tabIco1.addPixmap(tab2_1, QIcon::Selected, QIcon::Off);
+        tabIco1.addPixmap(tab2_2, QIcon::Normal, QIcon::Off);
+
+    }
+    ui->mainTabWidget->tabBar()->setTabIcon(2, tabIco1);
 
     // TextEdiit
     ui->logTE->setEnabled(false);
@@ -248,7 +262,7 @@ void MainUi::initUi()
     ui->keyTW->horizontalHeader()->setStretchLastSection(true);
     ui->keyTW->setAlternatingRowColors(true);
     // TODO: keyTW右键菜单
-//    connect(ui->keyTW, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(showKeyTableMenu(QPoint)), Qt::UniqueConnection);
+    connect(ui->keyTW, &QTableWidget::customContextMenuRequested, this, &MainUi::showKeyTableMenu, Qt::UniqueConnection);
 
     ui->keyTW->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
     ui->keyTW->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
@@ -262,8 +276,27 @@ void MainUi::initUi()
 
     ui->autoChangeAESKeyChB->setStyle(new CheckBoxStyle);
 
+    QPixmap* about_logo_pix = new QPixmap(":/src/title.png");
+    about_logo_pix->scaled(ui->about_logoL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    ui->about_logoL->setScaledContents(true);
+    ui->about_logoL->setPixmap(*about_logo_pix);
+    ui->about_logoL->setVisible(false);
+    QFont *about_title_font = new QFont("Microsoft YaHei");
+    about_title_font->setPointSize(20);
+    about_title_font->setBold(true);
+    ui->about_titleL->setFont(*about_title_font);
+    ui->about_titleL->setAlignment(Qt::AlignCenter);
+    ui->about_plantformL->setText(ABOUT_PLANTFORM);
+    ui->about_plantformL->setAlignment(Qt::AlignRight |Qt::AlignVCenter);
+    ui->about_versionL->setText(ABOUT_VERSION);
+    ui->about_timeL->setText(ABOUT_TIME);
+    ui->about_baseTE->clear();
+    ui->about_baseTE->append(ABOUT_BASE_QT);
+    ui->about_baseTE->append(ABOUT_BASE_COMPILER);
+    ui->about_baseTE->setEnabled(false);
+    ui->about_baseTE->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
+    ui->about_baseTE->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
 }
-
 void MainUi::initConfig()
 {
     savePath = QDir::toNativeSeparators(workPath + savePath);
@@ -297,6 +330,7 @@ void MainUi::initConfig()
     autoChangeAES = ini->value("/Setting/AutoChangeAESKey").toBool();
     ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
     delete ini;
+    log("读取配置");
 }
 
 QWidget* MainUi::addCheckBox()
@@ -326,9 +360,9 @@ void MainUi::keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estrin
     QTableWidgetItem *idItem = new QTableWidgetItem(QString::number(rowIndex));
     idItem->setTextAlignment(Qt::AlignVCenter);
     ui->keyTW->setItem(rowIndex, 1, idItem);
+    ui->keyTW->item(rowIndex,1)->setTextAlignment(Qt::AlignCenter);
     ui->keyTW->setItem(rowIndex, 2, new QTableWidgetItem(disc.getVal()));
     if(is_show_pwd){
-        // TODO: 此处应该显示账号及密码的明文，等一个取的方法
         ui->keyTW->setItem(rowIndex, 3, new QTableWidgetItem(account.getVal()));
         ui->keyTW->setItem(rowIndex, 4, new QTableWidgetItem(key.getVal()));
     }
@@ -372,6 +406,7 @@ void MainUi::keyTW_deleteSeledtedKeys()
         }
     }
     keyTW_chkBoxCheckNum = 0;
+    log("删除密码");
 }
 
 void MainUi::showKeyTableKeys()
@@ -391,6 +426,7 @@ void MainUi::showKeyTableKeys()
         }
         is_show_pwd = true;
         ui->showKeyBtn->setText("隐藏密码");
+        log("显示密码");
     }
     else{
         for(quint32 i=0; i<keyTableRowCount; i++){
@@ -401,6 +437,7 @@ void MainUi::showKeyTableKeys()
         }
         is_show_pwd = false;
         ui->showKeyBtn->setText("显示密码");
+        log("隐藏密码");
     }
 }
 
@@ -448,9 +485,9 @@ void MainUi::refreshAESKey()
         qDebug() << "refreshAESKey: write new AES key(Encrypted)=" << resultAes;
 #endif
         aesFile.close();
+        log("已刷新AES密钥");
     }
     else{QMessageBox::information(NULL, tr("无法保存密码"), tr("密码文件被其他程序占用，请重试。"));}
-
 }
 
 void MainUi::checkDb()
@@ -500,10 +537,8 @@ void MainUi::syncKeyFromMap()
     qDebug() << "sync keyMap: get" << tmp.size() << "keys";
     int count=0;
     while (t != tmp.cend()) {
-
         // TODO: sync KeyMap id and disc -> support both version of KeyContainer
         KeyMap nKey(count, t.value().disc, t.value().account, t.value().key);
-
         keyMap.insert(count, nKey);
         count++;
         t++;
@@ -537,6 +572,7 @@ void MainUi::refreshKeyTW()
         keyTableRowCount++;
         i++;
     }
+    log("刷新列表");
 }
 
 void MainUi::writeCheckFile(QString checkPath)
@@ -565,8 +601,76 @@ void MainUi::writeCheckFile(QString checkPath)
         outData.setVersion(QDataStream::Qt_5_12);
         outData << resultHash;
         hashFile.close();
+        log("已生成校验文件");
     }
     else{QMessageBox::information(NULL, tr("无法生成校验文件"), tr("无法生成校验文件，建议重新保存"));}
+
+}
+
+void MainUi::showPw()
+{
+    delete ui->keyTW->takeItem(rightClickSelectedItemRow,3);
+    delete ui->keyTW->takeItem(rightClickSelectedItemRow,4);
+    if(isShowing){
+        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).account.getVal()));
+        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).password.getVal()));
+    }
+    else{
+        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(pwdCharacterString));
+        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(pwdCharacterString));
+    }
+}
+
+void MainUi::deleteSingleKey()
+{
+    //            qDebug() << "delete" <<i;
+    delete checkBoxItem[rightClickSelectedItemRow];
+    checkBoxItem.removeAt(rightClickSelectedItemRow);
+    ui->keyTW->removeRow(rightClickSelectedItemRow);
+    keyTableRowCount--;
+
+    for(quint32 i=rightClickSelectedItemRow; i<keyTableRowCount;i++){
+        // ID为行号，为保证行号与ID时刻统一，在删除时同步更新ID为新行号
+        QTableWidgetItem *i1 = ui->keyTW->takeItem(i,1);
+        KeyMap newKeyMapItem = keyMap[i1->text().toInt()];
+        quint32 newItemId = i;
+        newKeyMapItem.id = newItemId;
+        keyMap.insert(newItemId, newKeyMapItem);
+        keyMap.remove(i1->text().toInt());
+        delete i1;
+        ui->keyTW->setItem(i, 1, new QTableWidgetItem(QString::number(newItemId)));
+        ui->keyTW->item(i,1)->setTextAlignment(Qt::AlignCenter);
+    }
+}
+
+void MainUi::showKeyTableMenu(QPoint)
+{
+    QMenu *menu = new QMenu(ui->keyTW);
+    QAction *pnew0 = new QAction("删除",ui->keyTW);
+    QAction *pnew1 = new QAction("隐藏密码", ui->keyTW);
+
+    rightClickSelectedItemRow = (ui->keyTW->selectedItems()[0])->row();
+    if(ui->keyTW->item(rightClickSelectedItemRow, 3)->text() == pwdCharacterString){
+        isShowing = true;
+        pnew1 = new QAction("显示密码", ui->keyTW);
+    }
+    else {
+        isShowing = false;
+        pnew1 = new QAction("隐藏密码", ui->keyTW);
+    }
+
+    connect(pnew0, &QAction::triggered, this, &MainUi::deleteSingleKey, Qt::UniqueConnection);
+    connect(pnew1, &QAction::triggered, this, [&](){showPw();}, Qt::UniqueConnection);
+    menu->addAction(pnew1);
+    menu->addSeparator();
+    menu->addAction(pnew0);
+    menu->move (cursor().pos());
+    menu->setStyleSheet("\
+        QMenu{color:rgb(240,255,255);background-color:rgb(64,66,68);border:1px solid rgb(140,155,155);}\
+        QMenu::item{height:23px;}\
+        QMenu::Separator{height:0px;border: 1px solid rgb(55,85,100);} \
+        QMenu:selected{background-color:rgb(51,51,51);}");
+    menu->show ();
 
 }
 
@@ -655,6 +759,7 @@ void MainUi::on_saveConfigBtn_clicked()
     }
     ini->setValue("/Setting/AutoChangeAESKey", autoChangeAES);
     delete ini;
+    log("已保存设置");
 }
 void MainUi::on_autoChangeAESKeyChB_stateChanged(int arg1)
 {
@@ -685,8 +790,10 @@ void MainUi::on_saveKeyBtn_clicked()
         if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
     }
     syncKeyMapToKcdb();
+    log("正在保存数据...");
     kcdb->writeKcdb();
     writeCheckFile(savePath);
+    log("数据保存完成");
 }
 
 
@@ -697,10 +804,11 @@ void MainUi::on_backupKeyBtn_clicked()
     QFileInfo saveInfo(ui->backupPathLE->text());
     QDir saveDir(saveInfo.path());
     syncKeyMapToKcdb();
+    log("正在备份数据...");
     kcdb->writeKcdb();
     writeCheckFile(backupPath);
     kcdb->setBackupState(false);
-
+    log("数据备份完成");
 }
 
 void MainUi::on_selectSavePathBtn_clicked()
@@ -723,4 +831,23 @@ void MainUi::on_selectBackupPathBtn_clicked()
         ui->backupPathLE->setText(backupPath);
         ui->backupPathLE->setCursorPosition(0);
     }
+}
+
+void MainUi::on_changeAESKeyBtn_clicked()
+{
+    int re = QMessageBox::warning(NULL, "重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？",
+                                  QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+    if(re == QMessageBox::Yes){
+        if(!ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
+        on_saveKeyBtn_clicked();
+    }
+    else{
+        return;
+    }
+
+}
+
+void MainUi::on_clearLogBtn_clicked()
+{
+    ui->logTE->clear();
 }
