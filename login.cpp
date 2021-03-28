@@ -99,6 +99,7 @@ bool LogIn::checkPwd()
     if(ui->lineEdit->text() == ""){
         ui->lineEdit->clear();
         ui->lineEdit->setFocus();
+        this->close();
         return false;
     }
     hash1.addData(ui->lineEdit->text().toUtf8());
@@ -124,6 +125,7 @@ void LogIn::on_logInB_clicked()
     if(checkPwd()){
         pwdTruth = true;
         emit finish(true, truePwdHash);
+        this->close();
     }
     else{
         ui->warnL->setVisible(true);
