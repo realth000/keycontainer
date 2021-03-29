@@ -291,8 +291,15 @@ void MainUi::initUi()
     ui->about_versionL->setText(ABOUT_VERSION);
     ui->about_timeL->setText(ABOUT_TIME);
     ui->about_baseTE->clear();
+    ui->about_baseTE->append(QString("C++ ") + QString::number(ABOUT_BASE_CPP));
     ui->about_baseTE->append(ABOUT_BASE_QT);
-    ui->about_baseTE->append(ABOUT_BASE_COMPILER);
+    QString ABOUT_BASE_COMPILER_type = typeid (ABOUT_BASE_COMPILER).name();
+#ifdef ABOUT_BASE_COMPILER_STRING
+    ui->about_baseTE->append(QString(ABOUT_BASE_COMPILER_TYPE) + QString(ABOUT_BASE_COMPILER));
+#else
+    ui->about_baseTE->append(QString(ABOUT_BASE_COMPILER_TYPE) + QString::number(ABOUT_BASE_COMPILER));
+#endif
+
     ui->about_baseTE->setEnabled(false);
     ui->about_baseTE->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
     ui->about_baseTE->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
@@ -460,7 +467,7 @@ void MainUi::addKey()
 
 void MainUi::refreshAESKey()
 {
-    int max = 12;
+    int max = 17;
     QString tmp = QString("12TocJn%BFde6Ng}0fGSY5s34H-PIwWEhi+#x)DuvptklabZUKq8z9jQmM$VA{R7C[X(rLOy");
     QString str;
     QTime t;

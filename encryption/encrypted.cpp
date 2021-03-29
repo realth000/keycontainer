@@ -63,7 +63,6 @@ void EncryptedClass<Type>::initKey(int initType)
     // when qsrand() and qrand() are depred, use QRandomGenerator
     // TODO: Test QRandomGenerator on GCC + Qt5.12.10. If work, totally use QRandomGenerator instead.
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
-//    qDebug() << "明天去哪吃? [1-3]" << QRandomGenerator::securelySeeded().bounded(1,4);
     switch (initType) {
 
     case 1:
