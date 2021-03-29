@@ -6,7 +6,7 @@ CONFIG += c++17 no_batch
 RC_ICONS = KeyContainer.ico
 TARGET = "Key Container"
 
-LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\User32.Lib
+#LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\User32.Lib
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
 
 # The following define makes your compiler emit warnings if you use

@@ -7,19 +7,36 @@
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
 
-#define ABOUT_VERSION "2.1.2"
-#define ABOUT_TIME "2021-3-28"
+#define ABOUT_VERSION "2.1.3"
+#define ABOUT_TIME "2021-3-29"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
-
+#define ABOUT_BASE_CPP __cplusplus
 
 #ifdef Q_CC_MSVC
-#   define ABOUT_BASE_COMPILER "MSVC " TO_STR2(_MSVC_LANG)
+#   define ABOUT_BASE_COMPILER_TYPE "MSVC "
+#   define ABOUT_BASE_COMPILER _MSVC_LANG
 #elif defined(Q_CC_MINGW)
+#   define ABOUT_BASE_COMPILER_TYPE "MinGW"
 #   define ABOUT_BASE_COMPILER "MinGW " TO_STR2(__GNUC__) "." TO_STR2(__GNUC_MINOR__) "." TO_STR2(__GNUC_PATCHLEVEL__)
-#elif defined(__GNUC__)
-#   define ABOUT_BASE_COMPILER "GCC " TO_STR2(__GNUC__) "." TO_STR2(__GNUC_MINOR__) "." TO_STR2(__GNUC_PATCHLEVEL__)
+#   define ABOUT_BASE_COMPILER_STRING
+#elif defined(Q_CC_GNU)
+#   ifdef Q_CC_CLANG
+#   define ABOUT_BASE_COMPILER_TYPE "GCC "
+#   define ABOUT_BASE_COMPILER TO_STR2(__GNUC__) "." TO_STR2(__GNUC_MINOR__) "." TO_STR2(__GNUC_PATCHLEVEL__) "\n"\
+    "Clang " TO_STR2(__clang_major__) "." TO_STR2(__clang_minor__)
+#   define ABOUT_BASE_COMPILER_STRING
 #else
-#   define ABOUT_BASE_COMPILER "Unknown"
+#   define ABOUT_BASE_COMPILER_TYPE "GCC "
+#   define ABOUT_BASE_COMPILER TO_STR2(__GNUC__) "." TO_STR2(__GNUC_MINOR__) "." TO_STR2(__GNUC_PATCHLEVEL__)
+#   define ABOUT_BASE_COMPILER_STRING
+#   endif
+#elif defined(Q_CC_CLANG)
+#   define ABOUT_BASE_COMPILER_TYPE "CLANG "
+#   define ABOUT_BASE_COMPILER TO_STR2(__clang_major__) "." TO_STR2(__clang_minor__)
+#   define ABOUT_BASE_COMPILER_STRING
+#else
+#   define ABOUT_BASE_COMPILER_TYPE "Unknown "
+#   define ABOUT_BASE_COMPILER "  -  "
 #endif
 
 #ifdef Q_OS_LINUX
