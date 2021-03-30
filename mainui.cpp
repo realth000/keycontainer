@@ -63,7 +63,7 @@ MainUi::~MainUi()
 
 void MainUi::log(QString log)
 {
-    ui->logTE->append(log);
+    ui->logTE->append( QDateTime::currentDateTime().toString("HH:mm:ss")+ " " + log);
 }
 
 void MainUi::initKeyData()
@@ -90,13 +90,13 @@ void MainUi::initUi()
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
-    ui->titleBar->setCloseIcon(":/src/close.png");
+    ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText("Key Container");
 
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
-    ui->titleBar->setTitleIcon(":/src/title.png");
+    ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 
     // 选项卡样式
     ui->mainTabWidget->setTabText(0, "管理");
@@ -106,6 +106,7 @@ void MainUi::initUi()
     ui->mainTabWidget->setAttribute(Qt::WA_StyledBackground);
     ui->mainTabWidget->tabBar()->setStyle(new TabBarStyle);
     ui->mainTabWidget->setStyle(new TabWidgetStyle);
+    ui->mainTabWidget->setCurrentIndex(0);
 
     QIcon tabIco0;
     const QPixmap tab0_1 = QPixmap(":/src/manage.png");
@@ -137,7 +138,9 @@ void MainUi::initUi()
     ui->mainTabWidget->tabBar()->setTabIcon(2, tabIco1);
 
     // TextEdiit
-    ui->logTE->setEnabled(false);
+    ui->logTE->setReadOnly(true);
+    ui->logTE->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
+    ui->logTE->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
     ui->hintTE->setEnabled(false);
 
     // PushButton style
@@ -276,11 +279,10 @@ void MainUi::initUi()
 
     ui->autoChangeAESKeyChB->setStyle(new CheckBoxStyle);
 
-    QPixmap* about_logo_pix = new QPixmap(":/src/title.png");
+    QPixmap* about_logo_pix = new QPixmap(":/src/Key Container.jpeg");
     about_logo_pix->scaled(ui->about_logoL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->about_logoL->setScaledContents(true);
     ui->about_logoL->setPixmap(*about_logo_pix);
-    ui->about_logoL->setVisible(false);
     QFont *about_title_font = new QFont("Microsoft YaHei");
     about_title_font->setPointSize(20);
     about_title_font->setBold(true);
@@ -311,7 +313,7 @@ void MainUi::initConfig()
     kcdb = new Kcdb(workPath);
 
 
-    QSettings *ini = new QSettings(QCoreApplication::applicationDirPath() + "\\config.ini", QSettings::IniFormat);
+    QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
     ui->savePathLE->setText(ini->value("/Path/SavePath").toString());
     kcdb->setSavePath(ui->savePathLE->text());
     ui->backupPathLE->setText(ini->value("/Path/BackupPath").toString());
@@ -467,7 +469,7 @@ void MainUi::addKey()
 
 void MainUi::refreshAESKey()
 {
-    int max = 17;
+    int max = 256;
     QString tmp = QString("12TocJn%BFde6Ng}0fGSY5s34H-PIwWEhi+#x)DuvptklabZUKq8z9jQmM$VA{R7C[X(rLOy");
     QString str;
     QTime t;
@@ -752,7 +754,7 @@ void MainUi::on_key_doubleClickRB_clicked()
 
 void MainUi::on_saveConfigBtn_clicked()
 {
-    QSettings *ini = new QSettings(QCoreApplication::applicationDirPath() + "\\config.ini", QSettings::IniFormat);
+    QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
     ini->setValue("/Path/SavePath", ui->savePathLE->text().replace("\\", "/"));
     ini->setValue("/Path/BackupPath", ui->backupPathLE->text().replace("\\", "/"));
     if(ui->key_check_defaultRB->isChecked()){
@@ -857,4 +859,42 @@ void MainUi::on_changeAESKeyBtn_clicked()
 void MainUi::on_clearLogBtn_clicked()
 {
     ui->logTE->clear();
+}
+
+void MainUi::on_exportKeyBtn_clicked()
+{
+    // yyyy-MM-dd HH:mm:ss yyyymmddHHmmss
+    QString exportPath = QFileDialog::getSaveFileName(this, "导出文件",
+                             workPath + "/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".txt", "文本文件(*.txt)");
+    if(exportPath.isEmpty()){
+       return;
+    }
+    QFile exportFile(exportPath);
+    QTextStream exportStream;
+    exportStream.setCodec("UTF-8");
+    exportStream.setDevice(&exportFile);
+    if(!exportFile.open(QIODevice::WriteOnly | QIODevice::Text)){
+        log("导出失败，无法保存到文件");
+        return;
+    }
+    Estring outEstring("");
+    if(keyTW_chkBoxCheckNum !=0) {
+        for (quint32 row=0; row< keyTableRowCount; row++) {
+            if(checkBoxItem[row]->isChecked()){
+                outEstring = Estring(outEstring.getVal() + "Discription=" + keyMap.value(row).disc.getVal() + \
+                                     " Account=" + keyMap.value(row).account.getVal() + \
+                                     " Password=" + keyMap.value(row).password.getVal() + "\n");
+            }
+        }
+    }
+    else{
+        for (quint32 row=0; row< keyTableRowCount; row++) {
+            outEstring = Estring(outEstring.getVal() + "Discription=" + keyMap.value(row).disc.getVal() + \
+                                 " Account=" + keyMap.value(row).account.getVal() + \
+                                 " Password=" + keyMap.value(row).password.getVal() + "\n");
+        }
+    }
+    exportStream << outEstring.getVal();
+    exportFile.close();
+    log("导出完成： " + exportPath.replace("\\","/"));
 }

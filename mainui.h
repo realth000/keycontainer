@@ -74,7 +74,7 @@ private:
     quint32 keyTableRowCount = 0;
     QList<QCheckBox *> checkBoxItem;
     QMap<int, KeyMap> keyMap;
-    quint32 keyTW_chkBoxCheckNum;
+    quint32 keyTW_chkBoxCheckNum=0;
     bool is_show_pwd = false;
     const QString pwdCharacterString = "❄❄❄❄❄❄❄";
     bool autoChangeAES = false;
@@ -90,5 +90,6 @@ private slots:
     void showKeyTableMenu(QPoint);
 
     void on_clearLogBtn_clicked();
+    void on_exportKeyBtn_clicked();
 };
 #endif // MAINUI_H

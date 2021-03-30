@@ -65,13 +65,13 @@ void InputKeyUi::initUi()
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
-    ui->titleBar->setCloseIcon(":/src/close.png");
+    ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText("添加密码");
 
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
-    ui->titleBar->setTitleIcon(":/src/title.png");
+    ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 
     setTabOrder(ui->inputKey_discLE, ui->inputKey_accLE);
     setTabOrder(ui->inputKey_accLE, ui->inputKey_pwdLE);
