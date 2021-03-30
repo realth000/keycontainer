@@ -26,5 +26,7 @@
         <file>qss/stylesheet_inputinitkeyui.qss</file>
         <file>src/about.png</file>
         <file>src/about_reverse.png</file>
+        <file>src/Key Container.jpeg</file>
+        <file>src/Key Container.ico</file>
     </qresource>
 </RCC>

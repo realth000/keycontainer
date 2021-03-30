@@ -7,8 +7,8 @@
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
 
-#define ABOUT_VERSION "2.1.3"
-#define ABOUT_TIME "2021-3-29"
+#define ABOUT_VERSION "2.1.4"
+#define ABOUT_TIME "2021-3-30"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
@@ -47,6 +47,8 @@
 #   define ABOUT_PLANTFORM "Unknown"
 #endif
 
+#define TITLEBAR_TITLEICON ":/src/Key Container.ico"
+#define TITLEBAR_CLOSEICON ":/src/close.png"
 
 namespace CI{
     class KeyMap;
