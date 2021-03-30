@@ -7,8 +7,8 @@
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
 
-#define ABOUT_VERSION "2.1.4"
-#define ABOUT_TIME "2021-3-30"
+#define ABOUT_VERSION "2.1.5"
+#define ABOUT_TIME "2021-3-31"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
@@ -46,8 +46,12 @@
 #else
 #   define ABOUT_PLANTFORM "Unknown"
 #endif
-
+#ifdef Q_OS_WINDOWS
 #define TITLEBAR_TITLEICON ":/src/Key Container.ico"
+#elif defined Q_OS_LINUX
+#define TITLEBAR_TITLEICON ":/src/KeyContainer.ico"
+#endif
+
 #define TITLEBAR_CLOSEICON ":/src/close.png"
 
 namespace CI{

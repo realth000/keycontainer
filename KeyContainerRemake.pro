@@ -3,7 +3,7 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
-RC_ICONS = "KeyContainer.ico"
+RC_ICONS = "Key Container.ico"
 TARGET = "KeyContainer"
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\User32.Lib

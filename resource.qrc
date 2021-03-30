@@ -28,5 +28,6 @@
         <file>src/about_reverse.png</file>
         <file>src/Key Container.jpeg</file>
         <file>src/Key Container.ico</file>
+        <file>src/KeyContainer.ico</file>
     </qresource>
 </RCC>

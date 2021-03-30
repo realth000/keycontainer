@@ -98,6 +98,7 @@ public:
     QMap<QString, GroupKey> getKeys() const;
     Estring getKey() const;
     Estring getKey_in() const;
+    Estring getAESKeyPath() const;
     void setKey(QString k);
     void setKey_in(QString k);
     void setBackupState(bool isBackup);

@@ -46,6 +46,7 @@ MainUi::MainUi(QWidget *parent)
         logIn->show();
         loop.exec();
     }
+
     if(!loginCorrent){
         return;
     }
@@ -68,16 +69,16 @@ void MainUi::log(QString log)
 
 void MainUi::initKeyData()
 {
-    checkDb();
-    if(kcdb->readKcdb()){
-        syncKeyFromMap();
-        refreshKeyTW();
-        qDebug() << "refresh key table";
+    if(checkDb()){
+        if(kcdb->readKcdb()){
+            syncKeyFromMap();
+            refreshKeyTW();
+            qDebug() << "refresh key table";
+        }
+        else{
+            qDebug() <<"kcdb not exists";
+        }
     }
-    else{
-        qDebug() <<"kcdb not exists";
-    }
-
 
 }
 
@@ -499,7 +500,7 @@ void MainUi::refreshAESKey()
     else{QMessageBox::information(NULL, tr("无法保存密码"), tr("密码文件被其他程序占用，请重试。"));}
 }
 
-void MainUi::checkDb()
+bool MainUi::checkDb()
 {
     QFileInfo configFileInfo(savePath+ ".chf");
 //    qDebug()<<"checkDb" <<savePath+".chf";
@@ -519,6 +520,8 @@ void MainUi::checkDb()
         QString salt2 = "未因若风柳起絮";
         hash2.addData(salt2.toUtf8());
         resultHash = hash2.result().toHex();
+
+
         QString hashFilePath = savePath + ".chf";
         QFile hashFile(hashFilePath);
         if(hashFile.open(QIODevice::ReadOnly)){
@@ -527,15 +530,48 @@ void MainUi::checkDb()
             QByteArray hashString;
             hashData >> hashString;
             hashFile.close();
-            if(hashString.compare(resultHash) != 0){QMessageBox::information(NULL, tr("数据库被篡改"), tr("校验得数据库已被篡改，建议读取备份。"));};
+
+            // Update(2.1.5): Encryption on *.chf
+            Estring key_in;
+            QFileInfo aes(kcdb->getAESKeyPath().getVal());
+            if(aes.exists()){
+                QFile aesHashFile(kcdb->getAESKeyPath().getVal());
+                if(aesHashFile.open(QIODevice::ReadOnly)){
+                    QDataStream aesStream(&aesHashFile);
+                    QByteArray aesString;
+                    aesStream >> aesString;
+                    aesHashFile.close();
+                    AesClass *de = new AesClass;
+                    de->initTestCase(kcdb->getKey().getVal());
+                    key_in = Estring(de->CFB256Decrypt(aesString).toUtf8());
+                    delete de;
+                }
+            }
+            else{
+                QMessageBox::information(NULL, QObject::tr("无法读取数据库密码"), QObject::tr("密码文件可能被其他程序占用。"));
+                return false;
+            }
+            AesClass *ec = new AesClass;
+            ec->initTestCase(key_in.getVal());
+            QByteArray hashString_de = ec->CFB256Decrypt(hashString).toUtf8();
+            delete ec;
+
+            if(hashString_de.compare(resultHash) != 0){
+                QMessageBox::information(NULL, tr("数据库被篡改"), tr("校验得数据库已被篡改，建议读取备份。"));
+                return false;
+            }
+            return true;
         }
         else{
             QMessageBox::information(NULL, tr("无法校验数据库"), tr("数据库校验文件无法打开，数据库可能能够成功读取但可能已被篡改。"));
+            return false;
         }
     }
     else{
         QMessageBox::information(NULL, tr("数据库可能已被篡改"), tr("检测不到数据库的校验文件，数据库可能能够成功读取但可能已被篡改。"));
+        return false;
     }
+
 }
 
 void MainUi::syncKeyFromMap()
@@ -603,12 +639,19 @@ void MainUi::writeCheckFile(QString checkPath)
         QString salt2 = "未因若风柳起絮";
         hash2.addData(salt2.toUtf8());
         resultHash = hash2.result().toHex();
+
+        // Update(2.1.5): Encryption on *.chf
+        AesClass *ec = new AesClass;
+        ec->initTestCase(kcdb->getKey_in().getVal());
+        QByteArray resultHash_en = ec->CFB256Encrypt(resultHash);
+        delete ec;
+
         QString hashFilePath = checkPath + ".chf";
         QFile hashFile(hashFilePath);
         hashFile.open(QIODevice::WriteOnly);
         QDataStream outData(&hashFile);
         outData.setVersion(QDataStream::Qt_5_12);
-        outData << resultHash;
+        outData << resultHash_en;
         hashFile.close();
         log("已生成校验文件");
     }
