@@ -61,7 +61,7 @@ private:
     void addKey();
     // TODO: How to Refresh Aes Key?
     void refreshAESKey();
-    void checkDb();
+    bool checkDb();
     void syncKeyFromMap();
     void syncKeyMapToKcdb();
     void refreshKeyTW();

@@ -51,6 +51,7 @@ void Kcdb_io::output(QDataStream &outStream, Estring data, AesClass *code)
     char *a = new char(len);
     outStream.writeRawData(a,1);
     outStream.writeRawData(outArray, len);
+    delete a;
 }
 
 void Kcdb_io::output(QDataStream &outStream, quint8 argc, AesClass *code)
@@ -60,6 +61,7 @@ void Kcdb_io::output(QDataStream &outStream, quint8 argc, AesClass *code)
     char *a = new char(len);
     outStream.writeRawData(a,1);
     outStream.writeRawData(outArray, len);
+    delete a;
 }
 
 void Kcdb_io::outKcdbHead(QDataStream &outStream, quint8 inType, AesClass *code)
@@ -251,6 +253,7 @@ bool Kcdb::readKcdb()
             AesClass *de = new AesClass;
             de->initTestCase(key.getVal());
             key_in = Estring(de->CFB256Decrypt(aesString));
+            delete de;
         }
         else{
             QMessageBox::information(NULL, QObject::tr("无法读取数据库密码"), QObject::tr("密码文件可能被其他程序占用。"));
@@ -299,6 +302,7 @@ bool Kcdb::readKcdb()
     }
     inFile.close();
 //    qDebug() << "readed kcdb items:" << groupKeyList.size();
+    delete code;
     return true;
 }
 
@@ -341,7 +345,7 @@ void Kcdb::writeKcdb()
 //                tempMaintainKey.iKey.operator QString(), tempMaintainKey.iCheckKey.operator QString(), EOF_, code);
 //    }
     outFile.close();
-
+    delete code;
 }
 
 void Kcdb::setKeys(QMap<QString, GroupKey> keyList)
@@ -362,6 +366,11 @@ Estring Kcdb::getKey() const
 Estring Kcdb::getKey_in() const
 {
     return this->key_in;
+}
+
+Estring Kcdb::getAESKeyPath() const
+{
+    return Estring(this->aesPath);
 }
 
 void Kcdb::setKey(QString k)
