@@ -69,15 +69,18 @@ void MainUi::log(QString log)
 
 void MainUi::initKeyData()
 {
-    if(checkDb()){
-        if(kcdb->readKcdb()){
-            syncKeyFromMap();
-            refreshKeyTW();
-            qDebug() << "refresh key table";
-        }
-        else{
-            qDebug() <<"kcdb not exists";
-        }
+    if(!(QFileInfo(savePath)).exists()){
+        log("未找到数据文件");
+        return;
+    }
+
+    if(!checkDb()){
+        log("数据校验未通过，拒绝读取数据");
+        return;
+    }
+    if(kcdb->readKcdb()){
+        syncKeyFromMap();
+        refreshKeyTW();
     }
 
 }
@@ -92,7 +95,7 @@ void MainUi::initUi()
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
-    ui->titleBar->setTitleText("Key Container");
+    ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
 
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
@@ -313,7 +316,10 @@ void MainUi::initConfig()
     backupPath = QDir::toNativeSeparators(workPath + backupPath);
     kcdb = new Kcdb(workPath);
 
-
+    if(!QFileInfo(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini")).exists()){
+        log("未找到配置文件");
+        return;
+    }
     QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
     ui->savePathLE->setText(ini->value("/Path/SavePath").toString());
     kcdb->setSavePath(ui->savePathLE->text());
@@ -835,6 +841,10 @@ void MainUi::on_changeInitKeyBtn_clicked()
 
 void MainUi::on_saveKeyBtn_clicked()
 {
+    if(keyTableRowCount==0){
+        log("密码为空");
+        return;
+    }
     kcdb->setBackupState(false);
     QFileInfo saveInfo(ui->savePathLE->text());
     QDir saveDir(saveInfo.path());
@@ -852,6 +862,10 @@ void MainUi::on_saveKeyBtn_clicked()
 
 void MainUi::on_backupKeyBtn_clicked()
 {
+    if(keyTableRowCount==0){
+        log("密码为空");
+        return;
+    }
     kcdb->setBackupState(true);
     QFileInfo saveInfo(ui->backupPathLE->text());
     QDir saveDir(saveInfo.path());
@@ -907,6 +921,10 @@ void MainUi::on_clearLogBtn_clicked()
 void MainUi::on_exportKeyBtn_clicked()
 {
     // yyyy-MM-dd HH:mm:ss yyyymmddHHmmss
+    if(keyTableRowCount==0){
+        log("密码为空");
+        return;
+    }
     QString exportPath = QFileDialog::getSaveFileName(this, "导出文件",
                              workPath + "/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".txt", "文本文件(*.txt)");
     if(exportPath.isEmpty()){
