@@ -47,7 +47,7 @@ void LogIn::initUi()
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
-    ui->titleBar->setTitleText("启动");
+    ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
 
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",

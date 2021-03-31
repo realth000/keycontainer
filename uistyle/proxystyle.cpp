@@ -1,5 +1,6 @@
 ﻿#include "proxystyle.h"
 #include <QRadialGradient>
+#include <QDebug>
 
 #define ARR_DRAW_POLYGON
 //#define PUSHBUTTON_TEXT_BOLD
