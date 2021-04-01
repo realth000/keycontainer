@@ -10,7 +10,7 @@
 #include <QDebug>
 #include "debugshowoptions.h"
 #include "commoninclude.h"
-
+//83 69 91
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -35,6 +35,22 @@ LogIn::~LogIn()
 bool LogIn::getContinueStart() const
 {
     return this->continueStart;
+}
+
+void LogIn::setContinueStart(bool yon)
+{
+    this->continueStart = yon;
+}
+
+void LogIn::closeEvent(QCloseEvent *e)
+{
+    Q_UNUSED(e);
+    if(!continueStart){
+        emit finish(false, truePwdHash);
+        return;
+    }
+    emit finish(true, truePwdHash);
+    e->accept();
 }
 
 void LogIn::initUi()
@@ -68,14 +84,14 @@ void LogIn::readPwd()
     QFileInfo fileInfo(pwPath);
     if(!fileInfo.exists()){
         QMessageBox::information(NULL, tr("无法启动"), tr("密码文件丢失，无法启动。"));
-        emit finish(false, Estring(""));
+//        emit finish(false, Estring(""));
         continueStart = false;
         return;
     }
     QFile hashFile(pwPath);
     if(!hashFile.open(QIODevice::ReadOnly)){
         QMessageBox::information(NULL, tr("无法读取启动密码"), tr("密码文件可能被其他程序占用。"));
-        emit finish(false, Estring(""));
+//        emit finish(false, Estring(""));
         continueStart = false;
         return;
     }
@@ -85,11 +101,12 @@ void LogIn::readPwd()
     hashFile.close();
     if(hashString == ""){
         QMessageBox::information(NULL, tr("密码错误"), tr("检测到密码为空。"));
-        emit finish(false, Estring(""));
+//        emit finish(false, Estring(""));
         continueStart = false;
         return;
     }
     truePwdHash = Estring(hashString);
+
 }
 
 bool LogIn::checkPwd()
@@ -100,7 +117,6 @@ bool LogIn::checkPwd()
     if(ui->lineEdit->text() == ""){
         ui->lineEdit->clear();
         ui->lineEdit->setFocus();
-        this->close();
         return false;
     }
     hash1.addData(ui->lineEdit->text().toUtf8());
@@ -125,7 +141,8 @@ void LogIn::on_logInB_clicked()
 {
     if(checkPwd()){
         pwdTruth = true;
-        emit finish(true, truePwdHash);
+//        emit finish(true, truePwdHash);
+        continueStart = true;
         this->close();
     }
     else{

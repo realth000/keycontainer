@@ -43,6 +43,7 @@ MainUi::MainUi(QWidget *parent)
     });
     connect(this, &MainUi::open2, &loop, &QEventLoop::quit);
     if(logIn->getContinueStart()){
+        logIn->setContinueStart(false);
         logIn->show();
         loop.exec();
     }
@@ -58,6 +59,9 @@ MainUi::MainUi(QWidget *parent)
 
 MainUi::~MainUi()
 {
+    // TODO: 为什么*ui不需要初始化，且即使初始化为nullptr在此也不是nullptr？
+    // 可能ui的parent是
+    if(ui==nullptr){qDebug() << "nullptr *ui";}
     delete ui;
     delete kcdb;
 }

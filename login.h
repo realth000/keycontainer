@@ -21,9 +21,12 @@ public:
     explicit LogIn(QWidget *parent = nullptr);
     ~LogIn();
     bool getContinueStart() const;
-
+    void setContinueStart(bool yon);
 signals:
     void finish(bool r, Estring truePwdHash);
+
+protected:
+    void closeEvent(QCloseEvent *e);
 
 private slots:
     void on_logInB_clicked();
@@ -38,7 +41,7 @@ private:
     const Estring salt1 = Estring("15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破");
     const Estring salt2 = Estring("離れない君といた夏のおわりゼロゼロさてんるいこおかえり");
     QString pwPath = "";
-    Estring truePwdHash = Estring();
+    Estring truePwdHash = Estring("");
     Ui::LogIn *ui;
 };
 
