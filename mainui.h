@@ -50,7 +50,6 @@ private slots:
     void on_changeAESKeyBtn_clicked();
 
 private:
-    Kcdb *kcdb;
     void initKeyData();
     void initUi();
     void initConfig();
@@ -69,7 +68,8 @@ private:
     void showPw();
     void deleteSingleKey();
 
-    LogIn *logIn;
+    Kcdb *kcdb = nullptr;
+    LogIn *logIn = nullptr;
     Ui::MainUi *ui;
     quint32 keyTableRowCount = 0;
     QList<QCheckBox *> checkBoxItem;
