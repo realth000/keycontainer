@@ -91,5 +91,6 @@ private slots:
 
     void on_clearLogBtn_clicked();
     void on_exportKeyBtn_clicked();
+    void on_backupKeysBtn_clicked();
 };
 #endif // MAINUI_H

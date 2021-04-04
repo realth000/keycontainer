@@ -182,6 +182,13 @@ void MainUi::initUi()
     }
     ui->backupKeyBtn->setIcon(backupKeyIcon);
 
+    QIcon backupKeysIcon;
+    const QPixmap pixm13 = QPixmap(":/src/backupKeys.png");
+    if(!pixm13.isNull()){
+        backupKeysIcon.addPixmap(pixm13, QIcon::Normal, QIcon::Off);
+    }
+    ui->backupKeysBtn->setIcon(backupKeysIcon);
+
     QIcon saveKeyIcon;
     const QPixmap pixm5 = QPixmap(":/src/saveKey.png");
     if(!pixm5.isNull()){
@@ -240,6 +247,7 @@ void MainUi::initUi()
 
     ui->addKeyBtn->setStyle(new PushButtonStyle);
     ui->backupKeyBtn->setStyle(new PushButtonStyle);
+    ui->backupKeysBtn->setStyle(new PushButtonStyle);
     ui->delSelectKeyBtn->setStyle(new PushButtonStyle);
     ui->exportKeyBtn->setStyle(new PushButtonStyle);
     ui->showKeyBtn->setStyle(new PushButtonStyle);
@@ -962,4 +970,42 @@ void MainUi::on_exportKeyBtn_clicked()
     exportStream << outEstring.getVal();
     exportFile.close();
     log("导出完成： " + exportPath.replace("\\","/"));
+}
+
+void MainUi::on_backupKeysBtn_clicked()
+{
+    if(keyTableRowCount==0){
+        log("密码为空");
+        return;
+    }
+    QString newPath = QFileDialog::getExistingDirectory(this, "导出文件", workPath);
+    if(newPath.isEmpty()){
+        return;
+    }
+    QFile newDatFile(QDir::toNativeSeparators(newPath + "/dat.ec"));
+    QFile oldDatFile(QDir::toNativeSeparators(workPath + "/dat.ec"));
+    QFile newLoginFIle(QDir::toNativeSeparators(newPath + "/login.ec"));
+    QFile oldLoginFile(QDir::toNativeSeparators(workPath + "/login.ec"));
+    if(newDatFile.exists()){
+        if(!newDatFile.remove()){
+            log("文件已存在且无法删除: " + (QFileInfo(newDatFile)).filePath());
+            return;
+        }
+    }
+    if(!oldDatFile.copy(QFileInfo(newDatFile).filePath())){
+        log("无法保存: " + (QFileInfo(newDatFile)).filePath());
+        return;
+    }
+    if(newLoginFIle.exists()){
+        if(!newLoginFIle.remove()){
+            log("文件已存在且无法删除: " + (QFileInfo(newLoginFIle)).filePath());
+            return;
+        }
+    }
+    if(!oldLoginFile.copy(QFileInfo(newLoginFIle).filePath())){
+        log("无法保存: " + (QFileInfo(newLoginFIle)).filePath());
+        return;
+    }
+
+    log("导出完成： " + newPath.replace("\\","/"));
 }

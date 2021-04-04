@@ -29,5 +29,6 @@
         <file>src/Key Container.jpeg</file>
         <file>src/Key Container.ico</file>
         <file>src/KeyContainer.ico</file>
+        <file>src/backupKeys.png</file>
     </qresource>
 </RCC>
