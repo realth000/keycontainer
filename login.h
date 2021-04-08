@@ -4,7 +4,7 @@
 #include <QDialog>
 #include <QCloseEvent>
 #include "encryption/encrypted.h"
-
+#include <QMessageBox>
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
@@ -43,6 +43,7 @@ private:
     QString pwPath = "";
     Estring truePwdHash = Estring("");
     Ui::LogIn *ui;
+    QMessageBox mb;
 };
 
 #endif // LOGIN_H

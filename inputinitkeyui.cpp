@@ -1,6 +1,5 @@
 ﻿#include "inputinitkeyui.h"
 #include "ui_inputinitkeyui.h"
-#include <QMessageBox>
 #include <QCryptographicHash>
 #include "qssinstaller.h"
 #include <QDebug>

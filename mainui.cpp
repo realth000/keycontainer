@@ -21,6 +21,8 @@
 #include "debugshowoptions.h"
 #include <QFileDialog>
 #include <QMenu>
+#include <QTimer>
+//#include <QWaylandObject>
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -64,6 +66,7 @@ MainUi::~MainUi()
     if(ui==nullptr){qDebug() << "nullptr *ui";}
     delete ui;
     delete kcdb;
+    delete mb;
 }
 
 void MainUi::log(QString log)
@@ -97,6 +100,7 @@ void MainUi::initUi()
     this->setStyleSheet(w.QssInstallFromFile(":/qss/stylesheet.qss").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
+    mb = new QMessageBox();
     // 标题栏样式
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
@@ -515,7 +519,7 @@ void MainUi::refreshAESKey()
         aesFile.close();
         log("已刷新AES密钥");
     }
-    else{QMessageBox::information(NULL, tr("无法保存密码"), tr("密码文件被其他程序占用，请重试。"));}
+    else{mb->information(this, tr("无法保存密码"), tr("密码文件被其他程序占用，请重试。"), QString(" 确定 "));}
 }
 
 bool MainUi::checkDb()
@@ -566,7 +570,7 @@ bool MainUi::checkDb()
                 }
             }
             else{
-                QMessageBox::information(NULL, QObject::tr("无法读取数据库密码"), QObject::tr("密码文件可能被其他程序占用。"));
+                mb->information(this, tr("无法读取数据库密码"), tr("密码文件可能被其他程序占用。"), QString(" 确定 "));
                 return false;
             }
             AesClass *ec = new AesClass;
@@ -575,18 +579,18 @@ bool MainUi::checkDb()
             delete ec;
 
             if(hashString_de.compare(resultHash) != 0){
-                QMessageBox::information(NULL, tr("数据库被篡改"), tr("校验得数据库已被篡改，建议读取备份。"));
+                mb->information(this, tr("数据库被篡改"), tr("校验得数据库已被篡改，建议读取备份。"), QString(" 确定 "));
                 return false;
             }
             return true;
         }
         else{
-            QMessageBox::information(NULL, tr("无法校验数据库"), tr("数据库校验文件无法打开，数据库可能能够成功读取但可能已被篡改。"));
+            mb->information(this, tr("无法校验数据库"), tr("数据库校验文件无法打开，数据库可能能够成功读取但可能已被篡改。"), QString(" 确定 "));
             return false;
         }
     }
     else{
-        QMessageBox::information(NULL, tr("数据库可能已被篡改"), tr("检测不到数据库的校验文件，数据库可能能够成功读取但可能已被篡改。"));
+        mb->information(this, tr("数据库可能已被篡改"), tr("检测不到数据库的校验文件，数据库可能能够成功读取但可能已被篡改。"), QString(" 确定 "));
         return false;
     }
 
@@ -673,22 +677,46 @@ void MainUi::writeCheckFile(QString checkPath)
         hashFile.close();
         log("已生成校验文件");
     }
-    else{QMessageBox::information(NULL, tr("无法生成校验文件"), tr("无法生成校验文件，建议重新保存"));}
+    else{mb->information(this, tr("无法生成校验文件"), tr("无法生成校验文件，建议重新保存"), QString(" 确定 "));}
+
+}
+
+void MainUi::showAcPw()
+{
+    delete ui->keyTW->takeItem(rightClickSelectedItemRow,3);
+    delete ui->keyTW->takeItem(rightClickSelectedItemRow,4);
+    if(isAcountShowing || isKeyShowing){
+        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(pwdCharacterString));
+        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(pwdCharacterString));
+    }
+    else{
+        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).account.getVal()));
+        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).password.getVal()));
+    }
+}
+
+void MainUi::showAc()
+{
+    delete ui->keyTW->takeItem(rightClickSelectedItemRow,3);
+    if(isAcountShowing){
+        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(pwdCharacterString));
+    }
+    else{
+        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).account.getVal()));
+    }
 
 }
 
 void MainUi::showPw()
 {
-    delete ui->keyTW->takeItem(rightClickSelectedItemRow,3);
     delete ui->keyTW->takeItem(rightClickSelectedItemRow,4);
-    if(isShowing){
-        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).account.getVal()));
-        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).password.getVal()));
-    }
-    else{
-        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(pwdCharacterString));
+    if(isKeyShowing){
         ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(pwdCharacterString));
     }
+    else{
+        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).password.getVal()));
+    }
+
 }
 
 void MainUi::deleteSingleKey()
@@ -716,22 +744,51 @@ void MainUi::deleteSingleKey()
 void MainUi::showKeyTableMenu(QPoint)
 {
     QMenu *menu = new QMenu(ui->keyTW);
+    connect(menu, &QMenu::triggered, menu, &QMenu::deleteLater);
     QAction *pnew0 = new QAction("删除",ui->keyTW);
-    QAction *pnew1 = new QAction("隐藏密码", ui->keyTW);
+    QAction *pnew1;
+    QAction *pnew2;
+    QAction *pnew3;
 
     rightClickSelectedItemRow = (ui->keyTW->selectedItems()[0])->row();
-    if(ui->keyTW->item(rightClickSelectedItemRow, 3)->text() == pwdCharacterString){
-        isShowing = true;
-        pnew1 = new QAction("显示密码", ui->keyTW);
+    bool show1 = ui->keyTW->item(rightClickSelectedItemRow, 3)->text() == pwdCharacterString ? false : true;
+    bool show2 = ui->keyTW->item(rightClickSelectedItemRow, 4)->text() == pwdCharacterString ? false : true;
+    if(show1 || show2){
+        pnew1 = new QAction("隐藏账户和密码", menu);
+        if(show1){
+            isAcountShowing = true;
+            pnew2 = new QAction("隐藏账户", menu);
+        }
+        else{
+            isAcountShowing = false;
+            pnew2 = new QAction("显示账户", menu);
+        }
+
+        if(show2){
+            isKeyShowing = true;
+            pnew3 = new QAction("隐藏密码", menu);
+        }
+        else{
+            isKeyShowing = false;
+            pnew3 = new QAction("显示密码", menu);
+        }
+
     }
     else {
-        isShowing = false;
-        pnew1 = new QAction("隐藏密码", ui->keyTW);
+        isAcountShowing = false;
+        isKeyShowing = false;
+        pnew1 = new QAction("显示账户和密码", ui->keyTW);
+        pnew2 = new QAction("显示账户", ui->keyTW);
+        pnew3 = new QAction("显示密码", ui->keyTW);
     }
 
     connect(pnew0, &QAction::triggered, this, &MainUi::deleteSingleKey, Qt::UniqueConnection);
-    connect(pnew1, &QAction::triggered, this, [&](){showPw();}, Qt::UniqueConnection);
+    connect(pnew1, &QAction::triggered, this, [&](){showAcPw();}, Qt::UniqueConnection);
+    connect(pnew2, &QAction::triggered, this, [&](){showAc();}, Qt::UniqueConnection);
+    connect(pnew3, &QAction::triggered, this, [&](){showPw();}, Qt::UniqueConnection);
     menu->addAction(pnew1);
+    menu->addAction(pnew2);
+    menu->addAction(pnew3);
     menu->addSeparator();
     menu->addAction(pnew0);
     menu->move (cursor().pos());
@@ -846,7 +903,23 @@ void MainUi::on_changeInitKeyBtn_clicked()
 {
     InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(workPath+"/login.ec"));
     connect(u, &InputInitKeyUi::changedPw, this, &MainUi::log);
-
+    connect(u, &InputInitKeyUi::changedPw, this, [this](){
+        QString pwPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec");
+        QFile hashFile(pwPath);
+        if(!hashFile.open(QIODevice::ReadOnly)){
+            mb->information(this, tr("无法读取启动密码"), tr("密码文件可能被其他程序占用。"), QString(" 确定 "));
+            this->close();
+        }
+        QDataStream hashData(&hashFile);
+        QByteArray hashString;
+        hashData >> hashString;
+        hashFile.close();
+        if(hashString == ""){
+            mb->information(this, tr("密码错误"), tr("检测到密码为空。"), QString(" 确定 "));
+            this->close();
+        }
+        truePwdHash.setVal(hashString);
+    });
 
     u->show();
 }
@@ -913,9 +986,9 @@ void MainUi::on_selectBackupPathBtn_clicked()
 
 void MainUi::on_changeAESKeyBtn_clicked()
 {
-    int re = QMessageBox::warning(NULL, "重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？",
-                                  QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
-    if(re == QMessageBox::Yes){
+    int re = mb->warning(NULL, "重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？",
+                                  mb->Yes | mb->No, mb->No);
+    if(re == mb->Yes){
         if(!ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
         on_saveKeyBtn_clicked();
     }
@@ -1008,4 +1081,10 @@ void MainUi::on_backupKeysBtn_clicked()
     }
 
     log("导出完成： " + newPath.replace("\\","/"));
+}
+
+
+void MainUi::on_about_aboutQtB_clicked()
+{
+    mb->aboutQt(this, "关于Qt");
 }

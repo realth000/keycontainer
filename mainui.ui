@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -155,7 +155,7 @@
     <widget class="QPushButton" name="delSelectKeyBtn">
      <property name="geometry">
       <rect>
-       <x>870</x>
+       <x>760</x>
        <y>0</y>
        <width>115</width>
        <height>40</height>
@@ -168,7 +168,7 @@
     <widget class="QPushButton" name="exportKeyBtn">
      <property name="geometry">
       <rect>
-       <x>550</x>
+       <x>640</x>
        <y>0</y>
        <width>115</width>
        <height>40</height>
@@ -207,7 +207,7 @@
     <widget class="QPushButton" name="backupKeyBtn">
      <property name="geometry">
       <rect>
-       <x>400</x>
+       <x>390</x>
        <y>0</y>
        <width>115</width>
        <height>40</height>
@@ -220,7 +220,7 @@
     <widget class="QPushButton" name="backupKeysBtn">
      <property name="geometry">
       <rect>
-       <x>720</x>
+       <x>510</x>
        <y>0</y>
        <width>115</width>
        <height>40</height>
@@ -628,6 +628,19 @@ p, li { white-space: pre-wrap; }
       </property>
      </widget>
     </widget>
+    <widget class="QPushButton" name="about_aboutQtB">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>0</y>
+       <width>81</width>
+       <height>35</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>关于Qt</string>
+     </property>
+    </widget>
    </widget>
   </widget>
   <widget class="QTextEdit" name="logTE">
@@ -675,7 +688,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="checkKeyMode_defaultBG"/>
   <buttongroup name="checkKeyModeBG"/>
+  <buttongroup name="checkKeyMode_defaultBG"/>
  </buttongroups>
 </ui>
