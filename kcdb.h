@@ -1,6 +1,6 @@
 ﻿#ifndef KCDB_H
 #define KCDB_H
-#include <QObject>
+#include <QWidget>
 #include <QFile>
 #include <QDataStream>
 #include <QByteArray>
@@ -85,7 +85,7 @@ private:
     Estring iCheckKey;
 };
 
-class Kcdb : public Kcdb_io
+class Kcdb : public Kcdb_io, QWidget
 {
 public:
     explicit Kcdb(QString workPath);

@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     QByteArray result = p.readAllStandardOutput();
     QApplication a(argc, argv);
     if(QString(result).count("\n") != 1){
-        QMessageBox::information(NULL, QObject::tr("已启动"), TITLEBAR_TITLETEXT + QString("正在运行"));
+        QMessageBox::information(NULL, QObject::tr("已启动"), TITLEBAR_TITLETEXT + QString("正在运行"), QString(" 确定 "));
         return 0;
     }
 #endif

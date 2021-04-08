@@ -48,6 +48,12 @@ private slots:
     void on_selectSavePathBtn_clicked();
     void on_selectBackupPathBtn_clicked();
     void on_changeAESKeyBtn_clicked();
+    void showKeyTableMenu(QPoint);
+    void on_clearLogBtn_clicked();
+    void on_exportKeyBtn_clicked();
+    void on_backupKeysBtn_clicked();
+
+    void on_about_aboutQtB_clicked();
 
 private:
     void initKeyData();
@@ -65,6 +71,8 @@ private:
     void syncKeyMapToKcdb();
     void refreshKeyTW();
     void writeCheckFile(QString checkPath);
+    void showAcPw();
+    void showAc();
     void showPw();
     void deleteSingleKey();
 
@@ -84,13 +92,9 @@ private:
     QString savePath = "/pw.kcdb";
     QString backupPath = "/pwbp.kcdb";
     int rightClickSelectedItemRow = false;
-    bool isShowing = true;
+    bool isAcountShowing = false;
+    bool isKeyShowing = false;
+    QMessageBox *mb = nullptr;
 
-private slots:
-    void showKeyTableMenu(QPoint);
-
-    void on_clearLogBtn_clicked();
-    void on_exportKeyBtn_clicked();
-    void on_backupKeysBtn_clicked();
 };
 #endif // MAINUI_H
