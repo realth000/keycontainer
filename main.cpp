@@ -28,15 +28,26 @@ int main(int argc, char *argv[])
     }
     QApplication a(argc, argv);
 #elif defined Q_OS_LINUX
-    QProcess p;
+     QProcess p;
+    // 特殊符号，start()会有\n，execute()的\n会解释为换行，execute()的输出直接输出到程序控制台，没法捕获
     p.start("pgrep " + QString(TITLEBAR_TITLETEXT));
     p.waitForFinished();
     QByteArray result = p.readAllStandardOutput();
     QApplication a(argc, argv);
     if(QString(result).count("\n") != 1){
-        QMessageBox::information(NULL, QObject::tr("已启动"), TITLEBAR_TITLETEXT + QString("正在运行"), QString(" 确定 "));
+//        QMessageBox::information(NULL, QObject::tr("已启动"), TITLEBAR_TITLETEXT + QString("正在运行"));
+
+        QProcess q;
+        // 带管道的需要使用(QString programPath, QStringList args);
+        QStringList t;
+        t << "-c" << "wmctrl -l | grep \" KeyContainer$\" | awk -F \" \" '{print $1}' | xargs wmctrl -ia";
+        // q.start("/bin/bash", t);
+        q.execute("/bin/bash", t);
         return 0;
     }
+#else
+    QApplication a(argc, argv);
+
 #endif
 
     MainUi MU;
