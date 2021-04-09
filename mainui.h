@@ -52,7 +52,6 @@ private slots:
     void on_clearLogBtn_clicked();
     void on_exportKeyBtn_clicked();
     void on_backupKeysBtn_clicked();
-
     void on_about_aboutQtB_clicked();
 
 private:
