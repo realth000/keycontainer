@@ -7,7 +7,7 @@
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
 
-#define ABOUT_VERSION "2.1.9"
+#define ABOUT_VERSION "2.1.10"
 #define ABOUT_TIME "2021-4-9"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
