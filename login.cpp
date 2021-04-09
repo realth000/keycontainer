@@ -4,12 +4,12 @@
 #include "ui/titlebar.h"
 #include <QFileInfo>
 #include <QCoreApplication>
-
+#include "commoninclude.h"
 #include <QCryptographicHash>
 #include <QDir>
 #include <QDebug>
 #include "debugshowoptions.h"
-#include "commoninclude.h"
+
 //83 69 91
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -84,14 +84,14 @@ void LogIn::readPwd()
 {
     QFileInfo fileInfo(pwPath);
     if(!fileInfo.exists()){
-        mb.information(this, tr("无法启动"), tr("密码文件丢失，无法启动。"), QString(" 退出 "));
+        mb.information("无法启动", "密码文件丢失，无法启动。", " 退出 ");
 //        emit finish(false, Estring(""));
         continueStart = false;
         return;
     }
     QFile hashFile(pwPath);
     if(!hashFile.open(QIODevice::ReadOnly)){
-        mb.information(this, tr("无法读取启动密码"), tr("密码文件可能被其他程序占用。"), QString(" 退出 "));
+        mb.information("无法读取启动密码", "密码文件可能被其他程序占用。", " 退出 ");
 //        emit finish(false, Estring(""));
         continueStart = false;
         return;
@@ -101,7 +101,7 @@ void LogIn::readPwd()
     hashData >> hashString;
     hashFile.close();
     if(hashString == ""){
-        mb.information(this, tr("密码错误"), tr("检测到密码为空。"), QString(" 退出 "));
+        mb.information("密码错误", "检测到密码为空。", " 退出 ");
 //        emit finish(false, Estring(""));
         continueStart = false;
         return;

@@ -15,7 +15,7 @@ unix {
     TARGET = "KeyContainer"
 }
 
-VERSION = 2.1.12
+VERSION = 2.1.13
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
 
@@ -43,6 +43,7 @@ SOURCES += \
     main.cpp \
     mainui.cpp \
     qssinstaller.cpp \
+    ui/messageboxex.cpp \
     ui/qlineeditpro.cpp \
     ui/titlebar.cpp \
     uistyle/proxystyle.cpp
@@ -59,6 +60,7 @@ HEADERS += \
     login.h \
     mainui.h \
     qssinstaller.h \
+    ui/messageboxex.h \
     ui/qlineeditpro.h \
     ui/titlebar.h \
     uistyle/proxystyle.h
@@ -67,7 +69,8 @@ FORMS += \
     inputinitkeyui.ui \
     inputkeyui.ui \
     login.ui \
-    mainui.ui
+    mainui.ui \
+    ui/messageboxex.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

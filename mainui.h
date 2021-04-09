@@ -7,6 +7,7 @@
 #include "login.h"
 #include "kcdb.h"
 #include <QPoint>
+#include "ui/messageboxex.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
@@ -93,7 +94,7 @@ private:
     int rightClickSelectedItemRow = false;
     bool isAcountShowing = false;
     bool isKeyShowing = false;
-    QMessageBox *mb = nullptr;
+    MessageBoxEx mb;
 
 };
 #endif // MAINUI_H
