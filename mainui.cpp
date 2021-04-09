@@ -350,10 +350,12 @@ void MainUi::initConfig()
     case 1:
         ui->key_clickRB->setChecked(true);
         ui->key_click_defaultRB->setChecked(true);
+        on_key_clickRB_clicked();
         break;
     case 2:
         ui->key_doubleClickRB->setChecked(true);
         ui->key_doubleClick_defaultRB->setChecked(true);
+        on_key_doubleClickRB_clicked();
         break;
     default:
         ui->key_checkRB->setChecked(true);
