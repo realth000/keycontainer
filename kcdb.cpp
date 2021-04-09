@@ -1,12 +1,12 @@
 ﻿#include "kcdb.h"
 #include "encryption/qaesencryption.h"
 #include <QCryptographicHash>
-#include <QMessageBox>
 #include <QIODevice>
 #include <QDir>
 #include <QDebug>
 #include "debugshowoptions.h"
 #include "qssinstaller.h"
+
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -145,14 +145,14 @@ QList<QList<QStringList> > Kcdb_io::inKcdb(QDataStream &inStream, AesClass *code
     quint8 EOF_ = 0xff;
     if(head == BEGIN_OF_GROUPLEY){EOF_ =NEXT_IS_GROUPKEY;}
     else if(head == BEGIN_OF_MTKEY){EOF_ = NEXT_IS_MAINTAINKEY;}
-    else{QMessageBox::information(NULL, QObject::tr("数据损坏"), QObject::tr("密码文件损坏。"), QString(" 确定 "));throw new EOF_Fail_Expection;}
+    else{t.information("数据损坏", "密码文件损坏。");throw new EOF_Fail_Expection;}
     QList<QStringList> readGroupKeyList;
     QList<QStringList> readMaintainKeyList;
     while (EOF_ != END_OF_KCDB)
     {
         if(EOF_ == NEXT_IS_GROUPKEY){ readGroupKeyList << readKeys(inStream, code);}
         else if(EOF_ == NEXT_IS_MAINTAINKEY){ readMaintainKeyList << readKeys(inStream, code);}
-        else{QMessageBox::information(NULL, QObject::tr("数据损坏"), QObject::tr("无法读取密码，请清除密码数据。"), QString(" 确定 "));throw new EOF_Fail_Expection;}
+        else{t.information("数据损坏", "无法读取密码，请清除密码数据。");throw new EOF_Fail_Expection;}
         input(inStream, EOF_, code);
     }
     QList<QList<QStringList>> readResult;
@@ -207,12 +207,6 @@ Kcdb::Kcdb(QString workPath)
     this->savePath = QDir::toNativeSeparators(this->workPath + savePath);
     this->backupPath = QDir::toNativeSeparators(this->workPath + backupPath);
     this->aesPath = QDir::toNativeSeparators(this->workPath + aesPath);
-    QssInstaller w;
-    // FIXME: Could not parse stylesheet of object QWidget(0x55646e83f7b0)
-    this->setStyleSheet(w.QssInstallFromFile(":/qss/stylesheet_login.qss").arg(this->objectName()).arg("rgb(55,85,100)")
-                            .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
-                                 "alternate-background-color:rgb(55,55,55)"));
-
 }
 
 void Kcdb::changeBackupState(bool state)
@@ -236,10 +230,10 @@ bool Kcdb::readKcdb()
     QList<QList<QStringList>> readResult;
     inFile.setFileName(savePath);
     if(!inFile.exists()){
-        QMessageBox::information(this, QObject::tr("数据库不存在"), QObject::tr("切换读取备份数据。"), QString(" 确定 "));
+        t.information("数据库不存在", "切换读取备份数据。");
         inFile.setFileName(backupPath);
         if(!inFile.exists()){
-            QMessageBox::information(this, QObject::tr("找不到数据库"), QObject::tr("找不到数据库及数据库备份，无法读取密码。"), QString(" 确定 "));
+            t.information("找不到数据库", "找不到数据库及数据库备份，无法读取密码。");
             return false;
         }
     }
@@ -263,12 +257,12 @@ bool Kcdb::readKcdb()
             delete de;
         }
         else{
-            QMessageBox::information(this, QObject::tr("无法读取数据库密码"), QObject::tr("密码文件可能被其他程序占用。"), QString(" 确定 "));
+            t.information("无法读取数据库密码", "密码文件可能被其他程序占用。");
             return false;
         }
     }
     else{
-        QMessageBox::information(this, QObject::tr("无法读取数据库密码"), QObject::tr("密码丢失。"), QString(" 确定 "));
+        t.information("无法读取数据库密码", "密码丢失。");
         return false;
     }
     AesClass *code = new AesClass;

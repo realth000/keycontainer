@@ -30,5 +30,6 @@
         <file>src/Key Container.ico</file>
         <file>src/KeyContainer.ico</file>
         <file>src/backupKeys.png</file>
+        <file>qss/stylesheet_messageboxex.qss</file>
     </qresource>
 </RCC>

@@ -66,7 +66,6 @@ MainUi::~MainUi()
     if(ui==nullptr){qDebug() << "nullptr *ui";}
     delete ui;
     delete kcdb;
-    delete mb;
 }
 
 void MainUi::log(QString log)
@@ -100,11 +99,9 @@ void MainUi::initUi()
     this->setStyleSheet(w.QssInstallFromFile(":/qss/stylesheet.qss").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
-    mb = new QMessageBox();
     // 标题栏样式
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
-
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBar::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
@@ -350,12 +347,12 @@ void MainUi::initConfig()
     case 1:
         ui->key_clickRB->setChecked(true);
         ui->key_click_defaultRB->setChecked(true);
-        on_key_clickRB_clicked();
+        connect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox, Qt::UniqueConnection);
         break;
     case 2:
         ui->key_doubleClickRB->setChecked(true);
         ui->key_doubleClick_defaultRB->setChecked(true);
-        on_key_doubleClickRB_clicked();
+        connect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox, Qt::UniqueConnection);
         break;
     default:
         ui->key_checkRB->setChecked(true);
@@ -521,7 +518,7 @@ void MainUi::refreshAESKey()
         aesFile.close();
         log("已刷新AES密钥");
     }
-    else{mb->information(this, tr("无法保存密码"), tr("密码文件被其他程序占用，请重试。"), QString(" 确定 "));}
+    else{mb.information("无法保存密码", "密码文件被其他程序占用，请重试。");}
 }
 
 bool MainUi::checkDb()
@@ -572,7 +569,7 @@ bool MainUi::checkDb()
                 }
             }
             else{
-                mb->information(this, tr("无法读取数据库密码"), tr("密码文件可能被其他程序占用。"), QString(" 确定 "));
+                mb.information("无法读取数据库密码", "密码文件可能被其他程序占用。");
                 return false;
             }
             AesClass *ec = new AesClass;
@@ -581,18 +578,18 @@ bool MainUi::checkDb()
             delete ec;
 
             if(hashString_de.compare(resultHash) != 0){
-                mb->information(this, tr("数据库被篡改"), tr("校验得数据库已被篡改，建议读取备份。"), QString(" 确定 "));
+                mb.information("数据库被篡改", "校验得数据库已被篡改，建议读取备份。");
                 return false;
             }
             return true;
         }
         else{
-            mb->information(this, tr("无法校验数据库"), tr("数据库校验文件无法打开，数据库可能能够成功读取但可能已被篡改。"), QString(" 确定 "));
+            mb.information("无法校验数据库", "数据库校验文件无法打开，数据库可能能够成功读取但可能已被篡改。");
             return false;
         }
     }
     else{
-        mb->information(this, tr("数据库可能已被篡改"), tr("检测不到数据库的校验文件，数据库可能能够成功读取但可能已被篡改。"), QString(" 确定 "));
+        mb.information("数据库可能已被篡改", "检测不到数据库的校验文件，数据库可能能够成功读取但可能已被篡改。");
         return false;
     }
 
@@ -679,7 +676,7 @@ void MainUi::writeCheckFile(QString checkPath)
         hashFile.close();
         log("已生成校验文件");
     }
-    else{mb->information(this, tr("无法生成校验文件"), tr("无法生成校验文件，建议重新保存"), QString(" 确定 "));}
+    else{mb.information("无法生成校验文件", "无法生成校验文件，建议重新保存");}
 
 }
 
@@ -850,25 +847,28 @@ void MainUi::on_selectInverseKeyBtn_clicked()
 
 void MainUi::on_key_checkRB_clicked()
 {
-    if(disconnect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox)
-        || disconnect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox)){
-
+    bool a = disconnect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox);
+    bool b = disconnect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox);
+    if( a || b ){
+        log("勾选选择");
     }
 }
 
 void MainUi::on_key_clickRB_clicked()
 {
-    if(connect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox, Qt::UniqueConnection)
-        || disconnect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox)){
-
+    bool a = connect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox, Qt::UniqueConnection);
+    bool b = disconnect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox);
+    if( a || b){
+        log("单击选择");
     }
 }
 
 void MainUi::on_key_doubleClickRB_clicked()
 {
-    if(disconnect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox)
-        || connect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox, Qt::UniqueConnection)){
-
+    bool a = disconnect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox);
+    bool b = connect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox, Qt::UniqueConnection);
+    if( a || b ){
+        log("双击选择");
     }
 }
 
@@ -909,7 +909,7 @@ void MainUi::on_changeInitKeyBtn_clicked()
         QString pwPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec");
         QFile hashFile(pwPath);
         if(!hashFile.open(QIODevice::ReadOnly)){
-            mb->information(this, tr("无法读取启动密码"), tr("密码文件可能被其他程序占用。"), QString(" 确定 "));
+            mb.information("无法读取启动密码", "密码文件可能被其他程序占用。");
             this->close();
         }
         QDataStream hashData(&hashFile);
@@ -917,7 +917,7 @@ void MainUi::on_changeInitKeyBtn_clicked()
         hashData >> hashString;
         hashFile.close();
         if(hashString == ""){
-            mb->information(this, tr("密码错误"), tr("检测到密码为空。"), QString(" 确定 "));
+            mb.information("密码错误", "检测到密码为空。");
             this->close();
         }
         truePwdHash.setVal(hashString);
@@ -988,9 +988,8 @@ void MainUi::on_selectBackupPathBtn_clicked()
 
 void MainUi::on_changeAESKeyBtn_clicked()
 {
-    int re = mb->warning(NULL, "重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？",
-                                  mb->Yes | mb->No, mb->No);
-    if(re == mb->Yes){
+    int re = mb.warning("重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？");
+    if(re == mb.Yes){
         if(!ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
         on_saveKeyBtn_clicked();
     }
@@ -1088,5 +1087,5 @@ void MainUi::on_backupKeysBtn_clicked()
 
 void MainUi::on_about_aboutQtB_clicked()
 {
-    mb->aboutQt(this, "关于Qt");
+    QMessageBox::aboutQt(this, "关于Qt");
 }
