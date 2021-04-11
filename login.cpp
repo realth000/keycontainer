@@ -72,11 +72,10 @@ void LogIn::initUi()
 
     ui->lineEdit->setEchoMode(QLineEdit::Password);
     ui->lineEdit->setContextMenuPolicy(Qt::NoContextMenu);
-
     ui->warnL->setVisible(false);
-
     ui->backgroundLabel->setPixmap(QPixmap(":/src/initUiBackground.png"));
-
+    ui->lineEdit->setFocus();
+    ui->logInB->setFocusPolicy(Qt::ClickFocus);
 
 }
 

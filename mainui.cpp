@@ -22,6 +22,7 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QTimer>
+
 //#include <QWaylandObject>
 
 #if _MSC_VER >= 1600
@@ -57,6 +58,9 @@ MainUi::MainUi(QWidget *parent)
     initUi();
     initConfig();
     initKeyData();
+
+    // 安装filter
+    QApplication::instance()->installEventFilter(this);
 }
 
 MainUi::~MainUi()
@@ -66,11 +70,65 @@ MainUi::~MainUi()
     if(ui==nullptr){qDebug() << "nullptr *ui";}
     delete ui;
     delete kcdb;
+    delete fkui;
 }
 
 void MainUi::log(QString log)
 {
     ui->logTE->append( QDateTime::currentDateTime().toString("HH:mm:ss")+ " " + log);
+}
+
+bool MainUi::eventFilter(QObject *o, QEvent *e)
+{
+    if(!fkui->isVisible()){
+        return false;
+    }
+//    return false;
+    mouseReleased = reinterpret_cast<QMouseEvent *>(e);
+    if(mouseReleased != nullptr && mouseReleased->type() == QEvent::MouseButtonRelease){
+//        qDebug() << mouseReleased->type();
+        QRect rec = fkui->geometry();
+        if(rec.contains(mouseReleased->globalPos())){
+            // 设置不透明
+            emit mouseReleasedSig(false);
+        }
+        else{
+            // 设置透明
+            emit mouseReleasedSig(true);
+        }
+//        qDebug() << o->objectName() << o->metaObject()->className();
+
+        // FIXME: 多次触发？
+        QString name = QString(o->metaObject()->className());
+        if(eventFilterNames.contains(name)){
+            return false;
+        }
+        else if(name.contains("LineEdit")){
+            QLineEdit *e = reinterpret_cast<QLineEdit *>(o);
+            if(e!=nullptr && !e->isReadOnly() && e->isEnabled()){
+                return false;
+            }
+            else{
+//                qDebug() << "EventFilter true: LineEdit";
+                return true;
+            }
+        }
+        else if(name.contains("TextEdit")){
+            QTextEdit *e = reinterpret_cast<QTextEdit *>(o);
+            if(e!=nullptr && !e->isReadOnly() && e->isEnabled()){
+                return false;
+            }
+            else{
+//                qDebug() << "EventFilter true: TextEdit";
+                return true;
+            }
+        }
+        else{
+//            qDebug() << "EventFilter true: final else";
+            return true;
+        }
+    }
+    return false;
 }
 
 void MainUi::initKeyData()
@@ -246,6 +304,13 @@ void MainUi::initUi()
     }
     ui->changeAESKeyBtn->setIcon(changeAESKeyIcon);
 
+    QIcon findKeyIcon;
+    const QPixmap pixm14 = QPixmap(":/src/findKey_reverse.png");
+    if(!pixm14.isNull()){
+        findKeyIcon.addPixmap(pixm14, QIcon::Normal, QIcon::Off);
+    }
+    ui->findKeyBtn->setIcon(findKeyIcon);
+
     ui->addKeyBtn->setStyle(new PushButtonStyle);
     ui->backupKeyBtn->setStyle(new PushButtonStyle);
     ui->backupKeysBtn->setStyle(new PushButtonStyle);
@@ -260,6 +325,23 @@ void MainUi::initUi()
     ui->restartProgBtn->setStyle(new PushButtonStyle);
     ui->changeInitKeyBtn->setStyle(new PushButtonStyle);
     ui->changeAESKeyBtn->setStyle(new PushButtonStyle);
+    ui->findKeyBtn->setStyle(new PushButtonStyle);
+
+    ui->addKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->backupKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->backupKeysBtn->setFocusPolicy(Qt::NoFocus);
+    ui->delSelectKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->exportKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->showKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->selectAllKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->selectInverseKeyBtn->setFocusPolicy(Qt::NoFocus);
+    //    ui->clearLogBtn->setFocusPolicy(Qt::NoFocus);
+    ui->saveKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->saveConfigBtn->setFocusPolicy(Qt::NoFocus);
+    ui->restartProgBtn->setFocusPolicy(Qt::NoFocus);
+    ui->changeInitKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->changeAESKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->findKeyBtn->setFocusPolicy(Qt::NoFocus);
 
     ui->savePathLE->setReadOnly(true);
     ui->backupPathLE->setReadOnly(true);
@@ -318,10 +400,28 @@ void MainUi::initUi()
 #else
     ui->about_baseTE->append(QString(ABOUT_BASE_COMPILER_TYPE) + QString::number(ABOUT_BASE_COMPILER));
 #endif
-
     ui->about_baseTE->setEnabled(false);
     ui->about_baseTE->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
     ui->about_baseTE->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
+
+    fkui = new FindKeyUi(this);
+    connect(this, &MainUi::mouseReleasedSig, fkui, &FindKeyUi::setTransparency, Qt::UniqueConnection);
+//    connect(fkui, &FindKeyUi::findText, this, &MainUi::findNextKey);
+    // connect上前后搜索
+    connect(fkui, &FindKeyUi::findTextPrevious, this, &MainUi::findPreviousKey);
+    connect(fkui, &FindKeyUi::findTextNext, this, &MainUi::findNextKey);
+    // connect上找到结果与找不到结果的信号
+    connect(this, &MainUi::findKeyNotFound, fkui, &FindKeyUi::setLogNotFound);
+    connect(this, &MainUi::clearLogL, fkui, &FindKeyUi::clearLogL);
+    // connect上防止搜索点击过快导致崩溃的freeze的解冻功能（冻结功能在findBtn的clicked槽函数中，自动的，不需要connect）
+    connect(this, &MainUi::unfreezeFindBtn, fkui, &FindKeyUi::unfreezeFindBtn);
+
+    // 搜索找到行
+    connect(this, &MainUi::findKeyOnRow, ui->keyTW, &QTableWidget::selectRow);
+    // FIXME: 具体滚动到哪一行
+    connect(this, &MainUi::findKeyOnRow,  ui->keyTW->verticalScrollBar(), &QAbstractSlider::setValue);
+    // 没有搜索到行
+
 }
 void MainUi::initConfig()
 {
@@ -367,6 +467,7 @@ void MainUi::initConfig()
 QWidget* MainUi::addCheckBox()
 {
     QCheckBox *check = new QCheckBox(this);
+//    check->installEventFilter(this);
     check->setStyle(new CheckBoxStyle);
     checkBoxItem.append(check);
     // TODO: keyTW 的 CheckBox的select信号与选中信号的减少
@@ -393,6 +494,7 @@ void MainUi::keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estrin
     ui->keyTW->setItem(rowIndex, 1, idItem);
     ui->keyTW->item(rowIndex,1)->setTextAlignment(Qt::AlignCenter);
     ui->keyTW->setItem(rowIndex, 2, new QTableWidgetItem(disc.getVal()));
+    discQuickIndex.append(disc);
     if(is_show_pwd){
         ui->keyTW->setItem(rowIndex, 3, new QTableWidgetItem(account.getVal()));
         ui->keyTW->setItem(rowIndex, 4, new QTableWidgetItem(key.getVal()));
@@ -414,6 +516,7 @@ void MainUi::keyTW_deleteSeledtedKeys()
             // 单纯的QList.removeAt并不会删除指针，用delete删除
             delete checkBoxItem[i];
             checkBoxItem.removeAt(i);
+            discQuickIndex.removeAt(i);
             ui->keyTW->removeRow(i);
             tmp_deleteNum++;
             keyTableRowCount--;
@@ -476,6 +579,7 @@ void MainUi::addKey()
 {
     KeyMap *k = new KeyMap;
     InputKeyUi *u = new InputKeyUi(this, keyTableRowCount, k);
+//    u->installEventFilter(this);q
     connect(u, &InputKeyUi::inputFinish, this, [=](bool result){
         if(result){
             keyTW_addNewRow(keyTableRowCount, k->disc, k->account, k->password, 35);
@@ -723,6 +827,7 @@ void MainUi::deleteSingleKey()
     //            qDebug() << "delete" <<i;
     delete checkBoxItem[rightClickSelectedItemRow];
     checkBoxItem.removeAt(rightClickSelectedItemRow);
+    discQuickIndex.removeAt(rightClickSelectedItemRow);
     ui->keyTW->removeRow(rightClickSelectedItemRow);
     keyTableRowCount--;
 
@@ -904,6 +1009,7 @@ void MainUi::on_restartProgBtn_clicked()
 void MainUi::on_changeInitKeyBtn_clicked()
 {
     InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(workPath+"/login.ec"));
+//    u->installEventFilter(this);
     connect(u, &InputInitKeyUi::changedPw, this, &MainUi::log);
     connect(u, &InputInitKeyUi::changedPw, this, [this](){
         QString pwPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec");
@@ -1081,11 +1187,114 @@ void MainUi::on_backupKeysBtn_clicked()
         return;
     }
 
-    log("导出完成： " + newPath.replace("\\","/"));
+    log("导出完成：" + newPath.replace("\\","/"));
 }
 
 
 void MainUi::on_about_aboutQtB_clicked()
 {
     QMessageBox::aboutQt(this, "关于Qt");
+}
+
+void MainUi::on_findKeyBtn_clicked()
+{
+    if(!fkui->isVisible()){
+
+        fkui->show();
+    }
+    else{
+        emit mouseReleasedSig(false);
+        fkui->setInputFocus();
+    }
+
+}
+
+void MainUi::findPreviousKey(QString s)
+{
+    emit clearLogL();
+    int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
+    if(keyTableFindPos>=keyTableRowCount_int || keyTableFindPos<0){
+        keyTableFindPos=keyTableRowCount_int-1;
+    }
+    int startPos = keyTableFindPos;
+    if(findMode ==0 ){
+        while(keyTableFindPos>=0){
+            qDebug() <<"find previous: routine 1: at" << keyTableFindPos;
+            if(!discQuickIndex[keyTableFindPos].getVal().contains(s)){
+                keyTableFindPos--;
+            }
+            else{
+                emit findKeyOnRow(keyTableFindPos);
+                keyTableFindPos--;
+                emit unfreezeFindBtn();
+                return;
+            }
+        }
+        // 从pos->开头找完了，接着找结尾->pos
+        keyTableFindPos=keyTableRowCount_int-1;
+        while(keyTableFindPos >= startPos){
+            qDebug() <<"find previous: routine 2: at" << keyTableFindPos;
+            if(!discQuickIndex[keyTableFindPos].getVal().contains(s)){
+                keyTableFindPos--;
+            }
+            else{
+                emit findKeyOnRow(keyTableFindPos);
+                emit unfreezeFindBtn();
+                keyTableFindPos--;
+                return;
+            }
+        }
+        keyTableFindPos = startPos;
+        emit findKeyNotFound();
+        emit unfreezeFindBtn();
+        return;
+    }
+}
+
+void MainUi::findNextKey(QString s)
+{
+    emit clearLogL();
+    int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
+    if(keyTableFindPos>=keyTableRowCount_int  || keyTableFindPos<0){
+        keyTableFindPos=0;
+    }
+     int startPos = keyTableFindPos;
+    if(findMode ==0 ){
+        while(keyTableFindPos<keyTableRowCount_int){
+            qDebug() <<"find next: routine 1: at" << keyTableFindPos;
+            if(!discQuickIndex[keyTableFindPos].getVal().contains(s)){
+                keyTableFindPos++;
+            }
+            else{
+                emit findKeyOnRow(keyTableFindPos);
+                keyTableFindPos++;
+                emit unfreezeFindBtn();
+                return;
+            }
+
+        }
+        // 从pos->结尾找完了，接着找开头->pos
+        keyTableFindPos=0;
+        while(keyTableFindPos <= startPos){
+            qDebug() <<"find next: routine 2: at" << keyTableFindPos;
+            if(!discQuickIndex[keyTableFindPos].getVal().contains(s)){
+                keyTableFindPos++;
+            }
+            else{
+                emit findKeyOnRow(keyTableFindPos);
+                keyTableFindPos++;
+                emit unfreezeFindBtn();
+                return;
+            }
+        }
+        keyTableFindPos = startPos;
+        emit findKeyNotFound();
+        emit unfreezeFindBtn();
+        return;
+    }
+}
+
+void MainUi::changeFindMode(int mode)
+{
+    this->findMode = mode;
 }

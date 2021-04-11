@@ -8,11 +8,12 @@
 #include "kcdb.h"
 #include <QPoint>
 #include "ui/messageboxex.h"
+#include <QApplication>
+#include "findkeyui.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
 QT_END_NAMESPACE
-
 
 class MainUi : public QWidget
 {
@@ -28,6 +29,14 @@ public slots:
 
 signals:
     void open2();
+    void mouseReleasedSig(bool pos);
+    void findKeyOnRow(int row);
+    void findKeyNotFound();
+    void clearLogL();
+    void unfreezeFindBtn();
+
+protected:
+    virtual bool eventFilter(QObject *o, QEvent *e) override;
 
 private slots:
     void on_showKeyBtn_clicked();
@@ -54,6 +63,10 @@ private slots:
     void on_exportKeyBtn_clicked();
     void on_backupKeysBtn_clicked();
     void on_about_aboutQtB_clicked();
+    void on_findKeyBtn_clicked();
+    void findNextKey(QString s);
+    void findPreviousKey(QString s);
+    void changeFindMode(int mode);
 
 private:
     void initKeyData();
@@ -80,7 +93,10 @@ private:
     LogIn *logIn = nullptr;
     Ui::MainUi *ui;
     quint32 keyTableRowCount = 0;
+    int keyTableFindPos = 0;
+    int startPos = 0;
     QList<QCheckBox *> checkBoxItem;
+    QList<Estring> discQuickIndex;
     QMap<int, KeyMap> keyMap;
     quint32 keyTW_chkBoxCheckNum=0;
     bool is_show_pwd = false;
@@ -95,6 +111,9 @@ private:
     bool isAcountShowing = false;
     bool isKeyShowing = false;
     MessageBoxEx mb;
-
+    FindKeyUi *fkui;
+    QMouseEvent *mouseReleased;
+    const QList<QString> eventFilterNames = {"QPushButton", "QCheckBox", "QWidgetWindow", "QTabBar", "QRadioButton", "QWidget", "TitleBar", "QMenu"};
+    int findMode = 0;
 };
 #endif // MAINUI_H

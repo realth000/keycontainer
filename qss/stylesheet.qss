@@ -11,7 +11,7 @@ QTabWidget{background:rgb(35,35,35)}
 QTabBar::tab:selected{background-color:rgb(51,51,51)}
 QTableWidget{border:1px solid %2;outline:2xp solid rgb(255,0,0);gridline-color:%2;color:rgb(230,230,230);background:%3}
 QTableWidget::item{border:none}
-QTableWidget::item:selected{color:rgb(240,255,255);background-color:rgb(75,75,75);outline:none;}
+QTableWidget::item:selected{color:rgb(240,255,255);background-color:rgb(105,145,145);outline:none;}
 QLabel#about_titleL{color:rgb(175,200,210);font:26px;font-weight:bold}
 QLabel#about_versionL{font:15px;font-weight:bold}
 QLabel#about_timeL{font:15px;}

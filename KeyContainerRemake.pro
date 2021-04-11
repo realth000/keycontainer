@@ -15,7 +15,7 @@ unix {
     TARGET = "KeyContainer"
 }
 
-VERSION = 2.1.13
+VERSION = 2.2.0
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
 
@@ -35,6 +35,7 @@ SOURCES += \
     debugshowoptions.cpp \
     encryption/encrypted.cpp \
     encryption/qaesencryption.cpp \
+    findkeyui.cpp \
     globalshortcut/globalshortcut.cpp \
     inputinitkeyui.cpp \
     inputkeyui.cpp \
@@ -53,6 +54,7 @@ HEADERS += \
     debugshowoptions.h \
     encryption/encrypted.h \
     encryption/qaesencryption.h \
+    findkeyui.h \
     globalshortcut/globalshortcut.h \
     inputinitkeyui.h \
     inputkeyui.h \
@@ -66,6 +68,7 @@ HEADERS += \
     uistyle/proxystyle.h
 
 FORMS += \
+    findkeyui.ui \
     inputinitkeyui.ui \
     inputkeyui.ui \
     login.ui \
