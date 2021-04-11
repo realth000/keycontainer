@@ -27,7 +27,7 @@ signals:
     void finish(bool r, Estring truePwdHash);
 
 protected:
-    void closeEvent(QCloseEvent *e);
+    virtual void closeEvent(QCloseEvent *e) override;
 
 private slots:
     void on_logInB_clicked();

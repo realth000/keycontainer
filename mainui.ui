@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -45,10 +45,10 @@
     <widget class="QTableWidget" name="keyTW">
      <property name="geometry">
       <rect>
-       <x>170</x>
-       <y>44</y>
+       <x>190</x>
+       <y>42</y>
        <width>685</width>
-       <height>501</height>
+       <height>504</height>
       </rect>
      </property>
     </widget>
@@ -56,7 +56,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>170</y>
+       <y>250</y>
        <width>141</width>
        <height>131</height>
       </rect>
@@ -142,9 +142,9 @@
     <widget class="QPushButton" name="addKeyBtn">
      <property name="geometry">
       <rect>
-       <x>140</x>
+       <x>110</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
@@ -155,9 +155,9 @@
     <widget class="QPushButton" name="delSelectKeyBtn">
      <property name="geometry">
       <rect>
-       <x>760</x>
+       <x>775</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
@@ -168,9 +168,9 @@
     <widget class="QPushButton" name="exportKeyBtn">
      <property name="geometry">
       <rect>
-       <x>640</x>
+       <x>670</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
@@ -183,7 +183,7 @@
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
@@ -194,9 +194,9 @@
     <widget class="QPushButton" name="saveKeyBtn">
      <property name="geometry">
       <rect>
-       <x>270</x>
+       <x>370</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
@@ -207,9 +207,9 @@
     <widget class="QPushButton" name="backupKeyBtn">
      <property name="geometry">
       <rect>
-       <x>390</x>
+       <x>470</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
@@ -220,14 +220,27 @@
     <widget class="QPushButton" name="backupKeysBtn">
      <property name="geometry">
       <rect>
-       <x>510</x>
+       <x>570</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
      <property name="text">
       <string>备份密钥</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="findKeyBtn">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>0</y>
+       <width>100</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>查找密码</string>
      </property>
     </widget>
    </widget>
@@ -240,7 +253,7 @@
       <rect>
        <x>10</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
@@ -253,7 +266,7 @@
       <rect>
        <x>140</x>
        <y>0</y>
-       <width>115</width>
+       <width>100</width>
        <height>40</height>
       </rect>
      </property>
@@ -512,7 +525,7 @@
      <widget class="QLabel" name="about_timeL">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>160</x>
         <y>150</y>
         <width>111</width>
         <height>20</height>
@@ -538,7 +551,7 @@
      <widget class="QLabel" name="about_versionL">
       <property name="geometry">
        <rect>
-        <x>130</x>
+        <x>160</x>
         <y>120</y>
         <width>111</width>
         <height>20</height>
@@ -551,49 +564,49 @@
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>90</x>
         <y>120</y>
         <width>71</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>版本：</string>
+       <string>软件版本</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="label_4">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>90</x>
         <y>150</y>
         <width>71</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>构建时间：</string>
+       <string>构建时间</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="label_5">
       <property name="geometry">
        <rect>
-        <x>60</x>
+        <x>90</x>
         <y>180</y>
         <width>71</width>
         <height>21</height>
        </rect>
       </property>
       <property name="text">
-       <string>基于：</string>
+       <string>构建信息</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
      <widget class="QLabel" name="about_plantformL">
@@ -612,9 +625,9 @@
      <widget class="QTextEdit" name="about_baseTE">
       <property name="geometry">
        <rect>
-        <x>130</x>
-        <y>175</y>
-        <width>201</width>
+        <x>155</x>
+        <y>177</y>
+        <width>171</width>
         <height>151</height>
        </rect>
       </property>
@@ -688,7 +701,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="checkKeyModeBG"/>
   <buttongroup name="checkKeyMode_defaultBG"/>
+  <buttongroup name="checkKeyModeBG"/>
  </buttongroups>
 </ui>
