@@ -931,18 +931,32 @@ void MainUi::showKeyTableMenu(QPoint)
     else {
         isAcountShowing = false;
         isKeyShowing = false;
-        pnew1 = new QAction("显示账户和密码", ui->keyTW);
-        pnew2 = new QAction("显示账户", ui->keyTW);
-        pnew3 = new QAction("显示密码", ui->keyTW);
+        pnew1 = new QAction("显示账户和密码", menu);
+        pnew2 = new QAction("显示账户", menu);
+        pnew3 = new QAction("显示密码", menu);
     }
 
+    QAction *pnew4 = new QAction("从此处向上搜索", menu);
+    QAction *pnew5 = new QAction("从此处向下搜索", menu);
     connect(pnew0, &QAction::triggered, this, &MainUi::deleteSingleKey, Qt::UniqueConnection);
     connect(pnew1, &QAction::triggered, this, [&](){showAcPw();}, Qt::UniqueConnection);
     connect(pnew2, &QAction::triggered, this, [&](){showAc();}, Qt::UniqueConnection);
     connect(pnew3, &QAction::triggered, this, [&](){showPw();}, Qt::UniqueConnection);
+    connect(pnew4, &QAction::triggered, this, [&](){
+        this->keyTableFindPos = rightClickSelectedItemRow;
+        findPreviousKey();
+    }, Qt::UniqueConnection);
+    connect(pnew5, &QAction::triggered, this, [&](){
+        this->keyTableFindPos = rightClickSelectedItemRow;
+        findNextKey();
+    }, Qt::UniqueConnection);
+
     menu->addAction(pnew1);
     menu->addAction(pnew2);
     menu->addAction(pnew3);
+    menu->addSeparator();
+    menu->addAction(pnew4);
+    menu->addAction(pnew5);
     menu->addSeparator();
     menu->addAction(pnew0);
     menu->move (cursor().pos());
@@ -951,8 +965,9 @@ void MainUi::showKeyTableMenu(QPoint)
         QMenu::item{height:23px;}\
         QMenu::Separator{height:0px;border: 1px solid rgb(55,85,100);} \
         QMenu:selected{background-color:rgb(51,51,51);}");
-    menu->show ();
-
+    // 及时删除QMenu防止内存泄露
+    connect(menu, &QMenu::aboutToHide, &QMenu::deleteLater);
+    menu->show();
 }
 
 void MainUi::selectCheckBox(int row, int column)
