@@ -31,7 +31,7 @@ signals:
     void open2();
     void mouseReleasedSig(bool pos);
     void findKeyOnRow(int row);
-    void findKeyNotFound();
+    void sendLogLText(QString s);
     void clearLogL();
     void unfreezeFindBtn();
 
@@ -64,9 +64,10 @@ private slots:
     void on_backupKeysBtn_clicked();
     void on_about_aboutQtB_clicked();
     void on_findKeyBtn_clicked();
-    void findNextKey(QString s);
-    void findPreviousKey(QString s);
+    void findNextKey();
+    void findPreviousKey();
     void changeFindMode(int mode);
+    void changeFindText(QString s);
 
 private:
     void initKeyData();
@@ -111,9 +112,12 @@ private:
     bool isAcountShowing = false;
     bool isKeyShowing = false;
     MessageBoxEx mb;
-    FindKeyUi *fkui;
-    QMouseEvent *mouseReleased;
+    FindKeyUi *fkui = nullptr;
+    QMouseEvent *mouseReleased = nullptr;
+    QKeyEvent *keyReleased = nullptr;
     const QList<QString> eventFilterNames = {"QPushButton", "QCheckBox", "QWidgetWindow", "QTabBar", "QRadioButton", "QWidget", "TitleBar", "QMenu"};
     int findMode = 0;
+    bool findDirection = true; // =bool，快捷键F3控制向下搜索，=false，快捷键F3控制向上搜索
+    QString findText = "";
 };
 #endif // MAINUI_H

@@ -23,23 +23,28 @@ public:
     void setInputFocus();
 signals:
     void closed();
-//    void findText(QString s) const;
-    void findTextPrevious(QString s) const;
-    void findTextNext(QString s) const;
+    void changeFindText(QString s) const;
+    void findTextPrevious() const;
+    void findTextNext() const;
 
 public slots:
     void setTransparency(bool pos);
-    void setLogNotFound();
+    void setLogLText(QString s);
     void clearLogL();
+    void freezeFindBtn() const;
     void unfreezeFindBtn() const;
+    bool isFinBtnFreezed() const;
 
 private slots:
     void on_findPreBtn_clicked();
-
     void on_findNextBtn_clicked();
+
+    void on_findKeywordLE_textChanged(const QString &arg1);
 
 private:
     Ui::FindKeyUi *ui;
+    int F3FindMode = 1;// =1时F3控制向下搜索， =0时F3控制向上搜索
+
     void initUi();
 };
 

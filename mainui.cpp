@@ -71,6 +71,8 @@ MainUi::~MainUi()
     delete ui;
     delete kcdb;
     delete fkui;
+    delete mouseReleased;
+    delete keyReleased;
 }
 
 void MainUi::log(QString log)
@@ -80,54 +82,102 @@ void MainUi::log(QString log)
 
 bool MainUi::eventFilter(QObject *o, QEvent *e)
 {
-    if(!fkui->isVisible()){
-        return false;
-    }
-//    return false;
-    mouseReleased = reinterpret_cast<QMouseEvent *>(e);
-    if(mouseReleased != nullptr && mouseReleased->type() == QEvent::MouseButtonRelease){
-//        qDebug() << mouseReleased->type();
-        QRect rec = fkui->geometry();
-        if(rec.contains(mouseReleased->globalPos())){
-            // 设置不透明
-            emit mouseReleasedSig(false);
-        }
-        else{
-            // 设置透明
-            emit mouseReleasedSig(true);
-        }
-//        qDebug() << o->objectName() << o->metaObject()->className();
 
-        // FIXME: 多次触发？
-        QString name = QString(o->metaObject()->className());
-        if(eventFilterNames.contains(name)){
+    // 键盘按键按下事件中，处理打开FindKeyUi与否
+    // 用press而不用release的原因是，release的触发很慢且组合键不灵敏，，且无法按住Modifier多次触发快捷键，会显得快捷键很难用
+    keyReleased = reinterpret_cast<QKeyEvent *>(e);
+    if(keyReleased != nullptr && keyReleased->type() == QEvent::KeyPress){
+        // 检查是否是press + CTRL+F
+        if(keyReleased->modifiers() == Qt::ControlModifier && keyReleased->key() == Qt::Key_F){
+            // 只在表格的那页打开查找功能
+            if(ui->mainTabWidget->currentIndex()!=0){return false;}
+            if(fkui->isVisible()){
+                fkui->close();
+                qDebug() << "catch Ctrl + F: close fkUi";
+                return true;
+            }
+            else{
+                on_findKeyBtn_clicked();
+                qDebug() << "catch Ctrl + F: open fkUi";
+                return true;
+            }
+        }
+
+        // F3向前或向后搜索
+        if(keyReleased->modifiers() == Qt::NoModifier && keyReleased->key() == Qt::Key_F3){
+            // fkUi不可见时，什么也不做
+            if(!fkui->isVisible()){
+                return true;
+            }
+            else{
+                //如果正在搜索中（被冻结），什么也不做
+                if(fkui->isFinBtnFreezed()){
+                    return true;
+                }
+                else {
+                    // 判断搜索方向，执行一次搜索，先freeze再搜索，防止按快捷键多次搜索或者先unfreeze再freeze
+                    fkui->freezeFindBtn();
+                    findDirection==0 ? findPreviousKey() : findNextKey();
+                    return true;
+                }
+            }
+        }
+    }
+
+
+    mouseReleased = reinterpret_cast<QMouseEvent *>(e);
+    if(mouseReleased != nullptr){
+        // 鼠标左键释放事件中，处理FindKeyUi透明与否
+        // 自然地就是，当前tabWidget不是表格那个的时，怎么点也都是透明状态
+        if(!fkui->isVisible()){
             return false;
         }
-        else if(name.contains("LineEdit")){
-            QLineEdit *e = reinterpret_cast<QLineEdit *>(o);
-            if(e!=nullptr && !e->isReadOnly() && e->isEnabled()){
-                return false;
+        if(mouseReleased->type() == QEvent::MouseButtonRelease){
+    //        qDebug() << mouseReleased->type();
+            QRect rec = fkui->geometry();
+            if(rec.contains(mouseReleased->globalPos())){
+                // 设置不透明
+                emit mouseReleasedSig(false);
             }
             else{
-//                qDebug() << "EventFilter true: LineEdit";
+                // 设置透明
+                emit mouseReleasedSig(true);
+            }
+    //        qDebug() << o->objectName() << o->metaObject()->className();
+
+            // FIXME: 多次触发？
+            QString name = QString(o->metaObject()->className());
+            if(eventFilterNames.contains(name)){
+                return false;
+            }
+            else if(name.contains("LineEdit")){
+                QLineEdit *e = reinterpret_cast<QLineEdit *>(o);
+                if(e!=nullptr && !e->isReadOnly() && e->isEnabled()){
+                    return false;
+                }
+                else{
+    //                qDebug() << "EventFilter true: LineEdit";
+                    return true;
+                }
+            }
+            else if(name.contains("TextEdit")){
+                QTextEdit *e = reinterpret_cast<QTextEdit *>(o);
+                if(e!=nullptr && !e->isReadOnly() && e->isEnabled()){
+                    return false;
+                }
+                else{
+    //                qDebug() << "EventFilter true: TextEdit";
+                    return true;
+                }
+            }
+            else{
+    //            qDebug() << "EventFilter true: final else";
                 return true;
             }
         }
-        else if(name.contains("TextEdit")){
-            QTextEdit *e = reinterpret_cast<QTextEdit *>(o);
-            if(e!=nullptr && !e->isReadOnly() && e->isEnabled()){
-                return false;
-            }
-            else{
-//                qDebug() << "EventFilter true: TextEdit";
-                return true;
-            }
-        }
-        else{
-//            qDebug() << "EventFilter true: final else";
-            return true;
-        }
+        return false;
     }
+
     return false;
 }
 
@@ -406,12 +456,12 @@ void MainUi::initUi()
 
     fkui = new FindKeyUi(this);
     connect(this, &MainUi::mouseReleasedSig, fkui, &FindKeyUi::setTransparency, Qt::UniqueConnection);
-//    connect(fkui, &FindKeyUi::findText, this, &MainUi::findNextKey);
+    connect(fkui, &FindKeyUi::changeFindText, this, &MainUi::changeFindText);
     // connect上前后搜索
     connect(fkui, &FindKeyUi::findTextPrevious, this, &MainUi::findPreviousKey);
     connect(fkui, &FindKeyUi::findTextNext, this, &MainUi::findNextKey);
     // connect上找到结果与找不到结果的信号
-    connect(this, &MainUi::findKeyNotFound, fkui, &FindKeyUi::setLogNotFound);
+    connect(this, &MainUi::sendLogLText, fkui, &FindKeyUi::setLogLText);
     connect(this, &MainUi::clearLogL, fkui, &FindKeyUi::clearLogL);
     // connect上防止搜索点击过快导致崩溃的freeze的解冻功能（冻结功能在findBtn的clicked槽函数中，自动的，不需要connect）
     connect(this, &MainUi::unfreezeFindBtn, fkui, &FindKeyUi::unfreezeFindBtn);
@@ -1209,8 +1259,14 @@ void MainUi::on_findKeyBtn_clicked()
 
 }
 
-void MainUi::findPreviousKey(QString s)
+void MainUi::findPreviousKey()
 {
+    if(findText == ""){
+        emit sendLogLText("搜索内容为空");
+        emit unfreezeFindBtn();
+        return;
+    }
+    findDirection = false;
     emit clearLogL();
     int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
     if(keyTableFindPos>=keyTableRowCount_int || keyTableFindPos<0){
@@ -1219,12 +1275,13 @@ void MainUi::findPreviousKey(QString s)
     int startPos = keyTableFindPos;
     if(findMode ==0 ){
         while(keyTableFindPos>=0){
-            qDebug() <<"find previous: routine 1: at" << keyTableFindPos;
-            if(!discQuickIndex[keyTableFindPos].getVal().contains(s)){
+//            qDebug() <<"find previous: routine 1: at" << keyTableFindPos;
+            if(!discQuickIndex[keyTableFindPos].getVal().contains(findText)){
                 keyTableFindPos--;
             }
             else{
                 emit findKeyOnRow(keyTableFindPos);
+                emit sendLogLText("id: " + QString::number(keyTableFindPos));
                 keyTableFindPos--;
                 emit unfreezeFindBtn();
                 return;
@@ -1233,26 +1290,34 @@ void MainUi::findPreviousKey(QString s)
         // 从pos->开头找完了，接着找结尾->pos
         keyTableFindPos=keyTableRowCount_int-1;
         while(keyTableFindPos >= startPos){
-            qDebug() <<"find previous: routine 2: at" << keyTableFindPos;
-            if(!discQuickIndex[keyTableFindPos].getVal().contains(s)){
+//            qDebug() <<"find previous: routine 2: at" << keyTableFindPos;
+            if(!discQuickIndex[keyTableFindPos].getVal().contains(findText)){
                 keyTableFindPos--;
             }
             else{
                 emit findKeyOnRow(keyTableFindPos);
-                emit unfreezeFindBtn();
+                emit sendLogLText("id: " + QString::number(keyTableFindPos));
                 keyTableFindPos--;
+                emit unfreezeFindBtn();
                 return;
             }
         }
         keyTableFindPos = startPos;
-        emit findKeyNotFound();
+        emit sendLogLText("搜索结果为空");
         emit unfreezeFindBtn();
         return;
     }
 }
 
-void MainUi::findNextKey(QString s)
+void MainUi::findNextKey()
 {
+//    qDebug() << "find text" << findText;
+    if(findText == ""){
+        emit sendLogLText("搜索内容为空");
+        emit unfreezeFindBtn();
+        return;
+    }
+    findDirection = true;
     emit clearLogL();
     int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
     if(keyTableFindPos>=keyTableRowCount_int  || keyTableFindPos<0){
@@ -1261,12 +1326,13 @@ void MainUi::findNextKey(QString s)
      int startPos = keyTableFindPos;
     if(findMode ==0 ){
         while(keyTableFindPos<keyTableRowCount_int){
-            qDebug() <<"find next: routine 1: at" << keyTableFindPos;
-            if(!discQuickIndex[keyTableFindPos].getVal().contains(s)){
+//            qDebug() <<"find next: routine 1: at" << keyTableFindPos;
+            if(!discQuickIndex[keyTableFindPos].getVal().contains(findText)){
                 keyTableFindPos++;
             }
             else{
                 emit findKeyOnRow(keyTableFindPos);
+                emit sendLogLText("id: " + QString::number(keyTableFindPos));
                 keyTableFindPos++;
                 emit unfreezeFindBtn();
                 return;
@@ -1276,19 +1342,20 @@ void MainUi::findNextKey(QString s)
         // 从pos->结尾找完了，接着找开头->pos
         keyTableFindPos=0;
         while(keyTableFindPos <= startPos){
-            qDebug() <<"find next: routine 2: at" << keyTableFindPos;
-            if(!discQuickIndex[keyTableFindPos].getVal().contains(s)){
+//            qDebug() <<"find next: routine 2: at" << keyTableFindPos;
+            if(!discQuickIndex[keyTableFindPos].getVal().contains(findText)){
                 keyTableFindPos++;
             }
             else{
                 emit findKeyOnRow(keyTableFindPos);
+                emit sendLogLText("id: " + QString::number(keyTableFindPos));
                 keyTableFindPos++;
                 emit unfreezeFindBtn();
                 return;
             }
         }
         keyTableFindPos = startPos;
-        emit findKeyNotFound();
+        emit sendLogLText("搜索结果为空");
         emit unfreezeFindBtn();
         return;
     }
@@ -1297,4 +1364,12 @@ void MainUi::findNextKey(QString s)
 void MainUi::changeFindMode(int mode)
 {
     this->findMode = mode;
+}
+
+void MainUi::changeFindText(QString s)
+{
+    if(s == ""){
+        return;
+    }
+    this->findText = s;
 }
