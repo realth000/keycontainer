@@ -7,7 +7,7 @@
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
 
-#define ABOUT_VERSION "2.2.1"
+#define ABOUT_VERSION "2.2.2"
 #define ABOUT_TIME "2021.4.12"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
@@ -33,6 +33,10 @@
 #elif defined(Q_CC_CLANG)
 #   define ABOUT_BASE_COMPILER_TYPE "CLANG "
 #   define ABOUT_BASE_COMPILER TO_STR2(__clang_major__) "." TO_STR2(__clang_minor__)
+#   define ABOUT_BASE_COMPILER_STRING
+#elif defined(Q_CC_MIPS)
+#   define ABOUT_BASE_COMPILER_TYPE "MIPSpro CC"
+#   define ABOUT_BASE_COMPILER TO_STR2(_COMPILER_VERSION)
 #   define ABOUT_BASE_COMPILER_STRING
 #else
 #   define ABOUT_BASE_COMPILER_TYPE "Unknown "

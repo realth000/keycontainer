@@ -35,7 +35,7 @@ void FindKeyUi::setTransparency(bool pos)
 {
     if(pos){
 //        qDebug() << "FindKeyUi: setTransparency lost focus";
-        this->setWindowOpacity(0.4);
+        this->setWindowOpacity(0.666);
     }
     else{
 //        qDebug() << "FindKeyUi: setTransparency get focus";
