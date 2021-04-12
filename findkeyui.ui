@@ -83,12 +83,25 @@
     <rect>
      <x>10</x>
      <y>170</y>
-     <width>131</width>
+     <width>201</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="countBtn">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>100</y>
+     <width>55</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>计数</string>
    </property>
   </widget>
  </widget>

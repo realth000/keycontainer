@@ -76,6 +76,31 @@ bool FindKeyUi::isFinBtnFreezed() const
     }
 }
 
+void FindKeyUi::keyPressEvent(QKeyEvent *e)
+{
+    // 键盘按键按下事件中，处理打开FindKeyUi与否
+    // 用press而不用release的原因是，release的触发很慢且组合键不灵敏，，且无法按住Modifier多次触发快捷键，会显得快捷键很难用
+    //  保持与FindKeyUi中的keyPressEvent相同
+    // F3向前或向后搜索
+    if(e->key() == Qt::Key_F3 || e->key() == Qt::Key_Return || e->key() == Qt::Key_Enter){
+
+            //如果正在搜索中（被冻结），什么也不做
+            if(this->isFinBtnFreezed()){
+                e->accept();
+                return;
+            }
+            else {
+                qDebug() << "get" <<e->key();
+                // 判断搜索方向，执行一次搜索，先freeze再搜索，防止按快捷键多次搜索或者先unfreeze再freeze
+                findDirection==false ? on_findPreBtn_clicked() : on_findNextBtn_clicked();
+                e->accept();
+                return;
+            }
+
+    }
+    e->ignore();
+}
+
 void FindKeyUi::initUi()
 {
     this->setWindowFlag(Qt::FramelessWindowHint);
@@ -122,12 +147,14 @@ void FindKeyUi::initUi()
 void FindKeyUi::on_findPreBtn_clicked()
 {
     // 注意要先setDisable，再emit查找信号，否则大概率出现先找完，setEnable再setDisable的问题
+    findDirection=false;
     freezeFindBtn();
     emit findTextPrevious();
 }
 
 void FindKeyUi::on_findNextBtn_clicked()
 {
+    findDirection=true;
     freezeFindBtn();
     emit findTextNext();
 }
@@ -135,4 +162,10 @@ void FindKeyUi::on_findNextBtn_clicked()
 void FindKeyUi::on_findKeywordLE_textChanged(const QString &arg1)
 {
     emit changeFindText(arg1);
+}
+
+void FindKeyUi::on_countBtn_clicked()
+{
+    freezeFindBtn();
+    emit countAll();
 }
