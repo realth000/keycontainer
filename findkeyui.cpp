@@ -43,9 +43,9 @@ void FindKeyUi::setTransparency(bool pos)
     }
 }
 
-void FindKeyUi::setLogNotFound()
+void FindKeyUi::setLogLText(QString s)
 {
-    ui->logL->setText("搜索结果为空");
+    ui->logL->setText(s);
 }
 
 void FindKeyUi::clearLogL()
@@ -53,11 +53,27 @@ void FindKeyUi::clearLogL()
     ui->logL->setText("");
 }
 
+void FindKeyUi::freezeFindBtn() const
+{
+    ui->findPreBtn->setEnabled(false);
+    ui->findNextBtn->setEnabled(false);
+}
+
 void FindKeyUi::unfreezeFindBtn() const
 {
     ui->findPreBtn->setEnabled(true);
     ui->findNextBtn->setEnabled(true);
-//    qDebug() << "unfreeeze" << ui->findPreBtn->isEnabled() << ui->findNextBtn->isEnabled();
+    //    qDebug() << "unfreeeze" << ui->findPreBtn->isEnabled() << ui->findNextBtn->isEnabled();
+}
+
+bool FindKeyUi::isFinBtnFreezed() const
+{
+    if((!ui->findPreBtn->isEnabled()) || (!ui->findNextBtn->isEnabled())){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 void FindKeyUi::initUi()
@@ -106,14 +122,17 @@ void FindKeyUi::initUi()
 void FindKeyUi::on_findPreBtn_clicked()
 {
     // 注意要先setDisable，再emit查找信号，否则大概率出现先找完，setEnable再setDisable的问题
-    ui->findPreBtn->setEnabled(false);
-    ui->findNextBtn->setEnabled(false);
-    emit findTextPrevious(ui->findKeywordLE->text());
+    freezeFindBtn();
+    emit findTextPrevious();
 }
 
 void FindKeyUi::on_findNextBtn_clicked()
 {
-    ui->findPreBtn->setEnabled(false);
-    ui->findNextBtn->setEnabled(false);
-    emit findTextNext(ui->findKeywordLE->text());
+    freezeFindBtn();
+    emit findTextNext();
+}
+
+void FindKeyUi::on_findKeywordLE_textChanged(const QString &arg1)
+{
+    emit changeFindText(arg1);
 }
