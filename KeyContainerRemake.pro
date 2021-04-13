@@ -15,7 +15,7 @@ unix {
     TARGET = "KeyContainer"
 }
 
-VERSION = 2.2.3
+VERSION = 2.2.4
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
 
@@ -46,6 +46,7 @@ SOURCES += \
     qssinstaller.cpp \
     ui/messageboxex.cpp \
     ui/qlineeditpro.cpp \
+    ui/tablewidgetex.cpp \
     ui/titlebar.cpp \
     uistyle/proxystyle.cpp
 
@@ -64,6 +65,7 @@ HEADERS += \
     qssinstaller.h \
     ui/messageboxex.h \
     ui/qlineeditpro.h \
+    ui/tablewidgetex.h \
     ui/titlebar.h \
     uistyle/proxystyle.h
 

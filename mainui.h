@@ -26,6 +26,7 @@ public:
 
 public slots:
     void log(QString log);
+    void switchToRow(int row);
 
 signals:
     void open2();
@@ -38,6 +39,7 @@ signals:
 protected:
     virtual bool eventFilter(QObject *o, QEvent *e) override;
     virtual void keyPressEvent(QKeyEvent *e) override;
+//    virtual void keyReleaseEvent(QKeyEvent *e) override;
 
 private slots:
     void on_showKeyBtn_clicked();
@@ -70,6 +72,7 @@ private slots:
     void changeFindMode(int mode);
     void changeFindText(QString s);
     void countAll() const;
+    void on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
 
 private:
     void initKeyData();
@@ -96,6 +99,7 @@ private:
     LogIn *logIn = nullptr;
     Ui::MainUi *ui;
     quint32 keyTableRowCount = 0;
+    int keyTWCurrentRow = -1;
     int keyTableFindPos = 0;
     int startPos = 0;
     QList<QCheckBox *> checkBoxItem;
@@ -119,5 +123,6 @@ private:
     int findMode = 0;
     bool findDirection = true; // =true，快捷键F3控制向下搜索，=false，快捷键F3控制向上搜索
     QString findText = "";
+
 };
 #endif // MAINUI_H
