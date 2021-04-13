@@ -3,12 +3,13 @@
 
 #include <QWidget>
 #include "encryption/encrypted.h"
+#include <QDateTime>
 
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
 
-#define ABOUT_VERSION "2.2.3"
-#define ABOUT_TIME "2021.4.12"
+#define ABOUT_VERSION "2.2.4"
+#define ABOUT_TIME  QDateTime::currentDateTime().toString("yyyy.MM.dd")
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 

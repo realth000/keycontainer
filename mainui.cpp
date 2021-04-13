@@ -61,6 +61,8 @@ MainUi::MainUi(QWidget *parent)
 
     // 安装filter
     QApplication::instance()->installEventFilter(this);
+//    ui->keyTW->installEventFilter(this);
+//    qDebug() << "new << keyTWCurrentRow_init" << ui->keyTW->selectedItems()[0]->row() << QApplication::focusWidget() <<QApplication::focusObject();
 }
 
 MainUi::~MainUi()
@@ -77,6 +79,12 @@ MainUi::~MainUi()
 void MainUi::log(QString log)
 {
     ui->logTE->append( QDateTime::currentDateTime().toString("HH:mm:ss")+ " " + log);
+}
+
+void MainUi::switchToRow(int row)
+{
+    ui->keyTW->selectRow(row);
+    ui->keyTW->verticalScrollBar()->setValue(row);
 }
 
 bool MainUi::eventFilter(QObject *o, QEvent *e)
@@ -138,6 +146,7 @@ bool MainUi::eventFilter(QObject *o, QEvent *e)
 
 void MainUi::keyPressEvent(QKeyEvent *e)
 {
+//    qDebug() << "MainUi: keyPressEvent" << e->modifiers() << e->key();
     // 键盘按键按下事件中，处理打开FindKeyUi与否
     // 用press而不用release的原因是，release的触发很慢且组合键不灵敏，，且无法按住Modifier多次触发快捷键，会显得快捷键很难用
     //  保持与FindKeyUi中的keyPressEvent相同
@@ -145,13 +154,11 @@ void MainUi::keyPressEvent(QKeyEvent *e)
         if(ui->mainTabWidget->currentIndex()!=0){return;}
         if(fkui->isVisible()){
             fkui->close();
-            qDebug() << "catch Ctrl + F: close fkUi";
             e->accept();
             return;
         }
         else{
             on_findKeyBtn_clicked();
-            qDebug() << "catch Ctrl + F: open fkUi";
             e->accept();
             return;
         }
@@ -179,8 +186,33 @@ void MainUi::keyPressEvent(QKeyEvent *e)
             }
         }
     }
+    // Ctrl + Tab切换选项卡
+    if(e->modifiers() == Qt::ControlModifier && e->key() == Qt::Key_Tab){
+        int currentIndex = ui->mainTabWidget->currentIndex();
+        if(currentIndex < ui->mainTabWidget->count()-1){
+            ui->mainTabWidget->setCurrentIndex(currentIndex+1);
+            e->accept();
+            return;
+        }
+        else{
+            ui->mainTabWidget->setCornerWidget(0);
+            e->accept();
+            return;
+        }
+    }
     e->ignore();
 }
+
+//void MainUi::keyReleaseEvent(QKeyEvent *e)
+//{
+//     qDebug() << "MainUi: keyReleaseEvent" << e->modifiers() << e->key();
+//     if(e->modifiers() == Qt::NoModifier && (e->key() == Qt::Key_Left || e->key() == Qt::Key_Right)){
+//         qDebug() << "accept";
+//         e->accept();
+//         return;
+//     }
+//     e->ignore();
+//}
 
 void MainUi::initKeyData()
 {
@@ -225,6 +257,7 @@ void MainUi::initUi()
     ui->mainTabWidget->tabBar()->setStyle(new TabBarStyle);
     ui->mainTabWidget->setStyle(new TabWidgetStyle);
     ui->mainTabWidget->setCurrentIndex(0);
+    ui->mainTabWidget->setFocusPolicy(Qt::NoFocus);
 
     QIcon tabIco0;
     const QPixmap tab0_1 = QPixmap(":/src/manage.png");
@@ -394,6 +427,14 @@ void MainUi::initUi()
     ui->changeAESKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->findKeyBtn->setFocusPolicy(Qt::NoFocus);
 
+    ui->groupBox->setFocusPolicy(Qt::NoFocus);
+    ui->key_checkRB->setFocusPolicy(Qt::NoFocus);
+    ui->key_clickRB->setFocusPolicy(Qt::NoFocus);
+    ui->key_doubleClickRB->setFocusPolicy(Qt::NoFocus);
+//    ui->key_check_defaultRB->setFocusPolicy(Qt::NoFocus);
+//    ui->key_click_defaultRB->setFocusPolicy(Qt::NoFocus);
+//    ui->key_doubleClick_defaultRB->setFocusPolicy(Qt::NoFocus);
+
     ui->savePathLE->setReadOnly(true);
     ui->backupPathLE->setReadOnly(true);
 
@@ -414,6 +455,8 @@ void MainUi::initUi()
     ui->keyTW->horizontalHeader()->setHighlightSections(false);
     ui->keyTW->horizontalHeader()->setStretchLastSection(true);
     ui->keyTW->setAlternatingRowColors(true);
+    ui->keyTW->setFocusPolicy(Qt::NoFocus);
+    ui->keyTW->setFocus();
     // TODO: keyTW右键菜单
     connect(ui->keyTW, &QTableWidget::customContextMenuRequested, this, &MainUi::showKeyTableMenu, Qt::UniqueConnection);
 
@@ -470,9 +513,7 @@ void MainUi::initUi()
     connect(this, &MainUi::unfreezeFindBtn, fkui, &FindKeyUi::unfreezeFindBtn);
 
     // 搜索找到行
-    connect(this, &MainUi::findKeyOnRow, ui->keyTW, &QTableWidget::selectRow);
-    // FIXME: 具体滚动到哪一行
-    connect(this, &MainUi::findKeyOnRow,  ui->keyTW->verticalScrollBar(), &QAbstractSlider::setValue);
+    connect(this, &MainUi::findKeyOnRow, this, &MainUi::switchToRow);
     // 没有搜索到行
 
 }
@@ -1406,4 +1447,16 @@ void MainUi::countAll() const
     }
     emit sendLogLText("计数: 共" + QString::number(c) + "个");
     emit unfreezeFindBtn();
+}
+
+void MainUi::on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
+{
+//    Q_UNUSED(currentColumn)
+//    Q_UNUSED(previousRow)
+//    Q_UNUSED(previousColumn)
+//    this->keyTWCurrentRow = currentRow;
+//    qDebug() << "new << keyTWCurrentRow" << keyTWCurrentRow << QApplication::focusWidget() <<QApplication::focusObject();
+//    if(previousRow == -1 && ui->keyTW->selectedItems().length()!=0){
+//        ui->keyTW->selectRow(0);
+//    }
 }
