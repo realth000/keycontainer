@@ -1,25 +1,18 @@
 ﻿#include "proxystyle.h"
 #include <QRadialGradient>
 #include <QDebug>
+#include "commoninclude.h"
 
 #define ARR_DRAW_POLYGON
 //#define PUSHBUTTON_TEXT_BOLD
-
-const int tabBarLabelWidth = 120;
-const int tabBarLabelHeight = 60;
-const int shadowWidth = 3;
-const int button_up_height = 43;                            // tabwidget menu的高度
-const QColor TabBar_background_color(35,35,35);             // tabwidget左侧选项卡的label的背景颜色，需要和qss里QTabWidget的背景颜色一致
-const QColor TabWidget_menu_background_color(40,40,40);     // 一横条的背景，宽度是button_up_height + offset
-const QColor PushButton_disable_color(40,40,40);            // disable color 要比上边这个menu background color 浅
 
 QSize TabBarStyle::sizeFromContents(QStyle::ContentsType type, const QStyleOption *option, const QSize &size, const QWidget *widget) const
 {
     QSize t = QProxyStyle::sizeFromContents(type, option, size, widget);
     if (type == QStyle::CT_TabBarTab) {
         t.transpose();
-        t.rwidth() = tabBarLabelWidth;
-        t.rheight() = tabBarLabelHeight;
+        t.rwidth() = TABBAR_LABEL_WIDTH;
+        t.rheight() = TABBAR_LABEL_HEIGHT;
     }
     return t;
 }
@@ -48,10 +41,10 @@ void TabBarStyle::drawControl(QStyle::ControlElement element, const QStyleOption
                 painter->setPen(QColor(71,71,71));
                 painter->setBrush(QBrush(QColor(71,71,71)));
                 QPoint shadowPoints[8] = {labelRect.topLeft(),labelRect.topRight(),
-                                          QPoint(labelRect.topRight().x()    - shadowWidth, labelRect.topRight().y()    + shadowWidth),
-                                          QPoint(labelRect.topLeft().x()     + shadowWidth, labelRect.topLeft().y()     + shadowWidth),
-                                          QPoint(labelRect.bottomLeft().x()  + shadowWidth, labelRect.bottomLeft().y()  - shadowWidth),
-                                          QPoint(labelRect.bottomRight().x() - shadowWidth, labelRect.bottomRight().y() - shadowWidth),
+                                          QPoint(labelRect.topRight().x()    - TABBAR_SHADOW_WIDTH, labelRect.topRight().y()    + TABBAR_SHADOW_WIDTH),
+                                          QPoint(labelRect.topLeft().x()     + TABBAR_SHADOW_WIDTH, labelRect.topLeft().y()     + TABBAR_SHADOW_WIDTH),
+                                          QPoint(labelRect.bottomLeft().x()  + TABBAR_SHADOW_WIDTH, labelRect.bottomLeft().y()  - TABBAR_SHADOW_WIDTH),
+                                          QPoint(labelRect.bottomRight().x() - TABBAR_SHADOW_WIDTH, labelRect.bottomRight().y() - TABBAR_SHADOW_WIDTH),
                                           labelRect.bottomRight(),
                                           labelRect.bottomLeft()};
                 painter->drawPolygon(shadowPoints, 8);
@@ -61,7 +54,7 @@ void TabBarStyle::drawControl(QStyle::ControlElement element, const QStyleOption
                 // mouseover 在border会有颜色残留bug
                 // 所以 setPen设置边缘为背景颜色
                 painter->save();
-                painter->setPen(TabBar_background_color);
+                painter->setPen(QColor(TABBAR_BACKGROUND_COLOR));
                 painter->setBrush(QColor(56,56,53));
                 painter->drawRect(labelRect);
                 painter->restore();
@@ -69,8 +62,8 @@ void TabBarStyle::drawControl(QStyle::ControlElement element, const QStyleOption
             else{
                 // 平时背景设为与背景颜色一致，透明pushbutton
                 painter->save();
-                painter->setPen(TabBar_background_color);
-                painter->setBrush(TabBar_background_color);
+                painter->setPen(QColor(TABBAR_BACKGROUND_COLOR));
+                painter->setBrush(QColor(TABBAR_BACKGROUND_COLOR));
                 painter->drawRect(labelRect);
                 painter->restore();
             }
@@ -106,8 +99,6 @@ void TabBarStyle::drawControl(QStyle::ControlElement element, const QStyleOption
 }
 
 
-const int TabWidget_menu_horizontal_margin = 0;     // 一横条的高与pushbutton的高度差，要比pushbutton宽。
-const int TabWidget_menu_vertical_margin = 5;     // 一横条的高与pushbutton的高度差，要比pushbutton宽。
 void TabWidgetStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     if(element == PE_FrameTabWidget){
@@ -129,13 +120,13 @@ void TabWidgetStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyl
             //            g.setColorAt(1,QColor(61,61,61));
             painter->setPen(QColor(51,51,51));
             painter->setBrush(QColor(51,51,51));
-            painter->drawRect(r.adjusted(tabBarLabelWidth, button_up_height+TabWidget_menu_horizontal_margin,0,0));
+            painter->drawRect(r.adjusted(TABBAR_LABEL_WIDTH, TABWIDGET_BUTTON_UP_HEIGHT+TABWIDGET_MENU_HORIZONTAL_MARGIN,0,0));
             painter->restore();
             // QTabWidget最上面那一排放按钮的地方的背景
             painter->save();
-            painter->setPen(TabWidget_menu_background_color);
-            painter->setBrush(TabWidget_menu_background_color);
-            painter->drawRect(r.adjusted(tabBarLabelWidth,0,0, button_up_height+TabWidget_menu_horizontal_margin-r.height()));
+            painter->setPen(QColor(TABWIDGET_MENU_BACKGROUND_COLOR));
+            painter->setBrush(QColor(TABWIDGET_MENU_BACKGROUND_COLOR));
+            painter->drawRect(r.adjusted(TABBAR_LABEL_WIDTH,0,0, TABWIDGET_BUTTON_UP_HEIGHT+TABWIDGET_MENU_HORIZONTAL_MARGIN-r.height()));
             painter->restore();
             return;
         }
@@ -149,7 +140,7 @@ QRect TabWidgetStyle::subElementRect(QStyle::SubElement element, const QStyleOpt
     QRect rect  = QProxyStyle::subElementRect(element, option, widget);
     if(element == SE_TabWidgetTabBar){
         // 把tabbar向下移一段距离，这段距离的长度是顶端要显示的那一行按钮的高度 + offset_width
-        rect.adjust(0,button_up_height+TabWidget_menu_horizontal_margin,0, button_up_height+TabWidget_menu_horizontal_margin);
+        rect.adjust(0,TABWIDGET_BUTTON_UP_HEIGHT+TABWIDGET_MENU_HORIZONTAL_MARGIN,0, TABWIDGET_BUTTON_UP_HEIGHT+TABWIDGET_MENU_HORIZONTAL_MARGIN);
     }
     return rect;
 }
@@ -163,6 +154,14 @@ const int icon_offset = 7;                  // 图标左侧和border的距离
 const int text_offset = 3;                  // 文字左侧和图标的距离
 const int pushButton_iconWidth = 30;        // 图标的长度和宽度
 const int pushButton_iconHeight = 30;
+
+// normalColor: 普通状态时，为使PushButton整个透明，需要把边界的颜色设置为与背景颜色相同
+PushButtonStyle::PushButtonStyle(QString normalColor):
+    normalColor(normalColor)
+{
+
+}
+
 void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
 {
     Q_UNUSED(widget)
@@ -194,8 +193,13 @@ void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOp
                 else{
                     // 背景颜色
                     painter->save();
-                    painter->setPen(TabWidget_menu_background_color);
-                    painter->setBrush(TabWidget_menu_background_color);
+                    painter->setPen(QColor(normalColor));
+                    painter->setBrush(QColor(normalColor));
+                    QPen emptyPen;
+                    emptyPen.setWidth(0);
+                    // 不要用painter->setCompositionMode(QPainter::CompositionMode_Clear);，会把border的setPen覆盖掉使之失效
+//                    painter->setCompositionMode(QPainter::CompositionMode_Clear);
+//                    painter->setBackgroundMode(Qt::TransparentMode);
                     painter->drawRect(labelRect);
                     painter->restore();
                 }
@@ -215,8 +219,8 @@ void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOp
             // diabled
             else{
                 painter->save();
-                painter->setPen(PushButton_disable_color);
-                painter->setBrush(PushButton_disable_color);
+                painter->setPen(QColor(PUSHBUTTON_DISABLE_COLOR));
+                painter->setBrush(QColor(PUSHBUTTON_DISABLE_COLOR));
                 painter->drawRect(labelRect);
                 painter->restore();
 
@@ -239,7 +243,7 @@ void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOp
             // 设置图标
             painter->save();
             QRect iconRect(labelRect.topLeft().x()+icon_offset
-                           , labelRect.topLeft().y()+TabWidget_menu_vertical_margin
+                           , labelRect.topLeft().y()+TABWIDGET_MENU_VERTICAL_MARGIN
                            , pushButton_iconWidth,pushButton_iconHeight);
             painter->drawPixmap(iconRect, pb->icon.pixmap(QSize(pushButton_iconWidth, pushButton_iconHeight), QIcon::Mode::Normal));
             painter->restore();
@@ -251,10 +255,6 @@ void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOp
     QProxyStyle::drawControl(element, option, painter, widget);
 
 }
-
-const int padding_up = 4;
-const int padding_left = 4;
-const int padding_down = 4;
 
 void HorizontalScrollBarStyle::drawComplexControl(ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
 {
@@ -324,14 +324,14 @@ void HorizontalScrollBarStyle::drawComplexControl(ComplexControl control, const 
             int topwidth = upRect.width();
             int downRightX = downRect.x();
             QPoint leftArr[3] = {
-                QPoint(padding_up, topRightY*0.5),
-                QPoint(topwidth-padding_down, padding_left),
-                QPoint(topwidth-padding_down, topRightY-padding_left),
+                QPoint(PADDING_UP, topRightY*0.5),
+                QPoint(topwidth-PADDING_DOWN, PADDING_LEFT),
+                QPoint(topwidth-PADDING_DOWN, topRightY-PADDING_LEFT),
                 };
             QPoint rightArr[3] = {
-                QPoint(padding_down+downRightX, padding_left),
-                QPoint(padding_down+downRightX, topRightY-padding_left),
-                QPoint(topwidth-padding_down+downRightX, topwidth*0.5),
+                QPoint(PADDING_DOWN+downRightX, PADDING_LEFT),
+                QPoint(PADDING_DOWN+downRightX, topRightY-PADDING_LEFT),
+                QPoint(topwidth-PADDING_DOWN+downRightX, topwidth*0.5),
                 };
             painter->drawPolygon(leftArr,3);
             painter->drawPolygon(rightArr,3);
@@ -414,14 +414,14 @@ void VerticalScrollBarStyle::drawComplexControl(QStyle::ComplexControl control, 
             int topHeight = upRect.height();
             int downRightY = downRect.y();
             QPoint upArr[3] = {
-                QPoint(topRightX*0.5, padding_up),
-                QPoint(padding_left, topHeight-padding_down),
-                QPoint(topRightX-padding_left, topHeight-padding_down),
+                QPoint(topRightX*0.5, PADDING_UP),
+                QPoint(PADDING_LEFT, topHeight-PADDING_DOWN),
+                QPoint(topRightX-PADDING_LEFT, topHeight-PADDING_DOWN),
                 };
             QPoint downArr[3] = {
-                QPoint(padding_left, padding_down+downRightY),
-                QPoint(topRightX-padding_left, padding_down+downRightY),
-                QPoint(topHeight*0.5, topHeight-padding_down+downRightY),
+                QPoint(PADDING_LEFT, PADDING_DOWN+downRightY),
+                QPoint(topRightX-PADDING_LEFT, PADDING_DOWN+downRightY),
+                QPoint(topHeight*0.5, topHeight-PADDING_DOWN+downRightY),
                 };
             painter->drawPolygon(upArr,3);
             painter->drawPolygon(downArr,3);

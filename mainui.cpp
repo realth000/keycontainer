@@ -177,8 +177,7 @@ void MainUi::keyPressEvent(QKeyEvent *e)
                 return;
             }
             else {
-                qDebug() << "get" <<e->key();
-                // 判断搜索方向，执行一次搜索，先freeze再搜索，防止按快捷键多次搜索或者先unfreeze再freeze
+                 // 判断搜索方向，执行一次搜索，先freeze再搜索，防止按快捷键多次搜索或者先unfreeze再freeze
                 fkui->freezeFindBtn();
                 findDirection==false ? findPreviousKey() : findNextKey();
                 e->accept();
@@ -395,21 +394,30 @@ void MainUi::initUi()
     }
     ui->findKeyBtn->setIcon(findKeyIcon);
 
-    ui->addKeyBtn->setStyle(new PushButtonStyle);
-    ui->backupKeyBtn->setStyle(new PushButtonStyle);
-    ui->backupKeysBtn->setStyle(new PushButtonStyle);
-    ui->delSelectKeyBtn->setStyle(new PushButtonStyle);
-    ui->exportKeyBtn->setStyle(new PushButtonStyle);
-    ui->showKeyBtn->setStyle(new PushButtonStyle);
-    ui->selectAllKeyBtn->setStyle(new PushButtonStyle);
-    ui->selectInverseKeyBtn->setStyle(new PushButtonStyle);
+    QIcon about_aboutQtIcon;
+    const QPixmap pixmp15 = QPixmap(":/qt-project.org/qmessagebox/images/qtlogo-64.png");
+//    const QPixmap pixmp15 = QPixmap(":/src/findKey_reverse.png");
+    if(!pixmp15.isNull()){
+        about_aboutQtIcon.addPixmap(pixmp15, QIcon::Normal, QIcon::Off);
+    }
+    ui->about_aboutQtB->setIcon(pixmp15);
+
+    ui->addKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->backupKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->backupKeysBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->delSelectKeyBtn->setStyle(new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR));
+    ui->exportKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->showKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->selectAllKeyBtn->setStyle(new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR));
+    ui->selectInverseKeyBtn->setStyle(new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR));
 //    ui->clearLogBtn->setStyle(new PushButtonStyle);
-    ui->saveKeyBtn->setStyle(new PushButtonStyle);
-    ui->saveConfigBtn->setStyle(new PushButtonStyle);
-    ui->restartProgBtn->setStyle(new PushButtonStyle);
-    ui->changeInitKeyBtn->setStyle(new PushButtonStyle);
-    ui->changeAESKeyBtn->setStyle(new PushButtonStyle);
-    ui->findKeyBtn->setStyle(new PushButtonStyle);
+    ui->saveKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->saveConfigBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->restartProgBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->changeInitKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->changeAESKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->findKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->about_aboutQtB->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
 
     ui->addKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->backupKeyBtn->setFocusPolicy(Qt::NoFocus);
@@ -426,6 +434,7 @@ void MainUi::initUi()
     ui->changeInitKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->changeAESKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->findKeyBtn->setFocusPolicy(Qt::NoFocus);
+    ui->about_aboutQtB->setFocusPolicy(Qt::NoFocus);
 
     ui->groupBox->setFocusPolicy(Qt::NoFocus);
     ui->key_checkRB->setFocusPolicy(Qt::NoFocus);
@@ -1410,7 +1419,6 @@ void MainUi::findNextKey()
             }
             else{
                 emit findKeyOnRow(keyTableFindPos);
-                qDebug() << "from first";
                 emit sendLogLText("找到id: " + QString::number(keyTableFindPos) + "  从第一个开始查找");
                 keyTableFindPos++;
                 emit unfreezeFindBtn();

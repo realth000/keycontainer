@@ -90,7 +90,6 @@ void FindKeyUi::keyPressEvent(QKeyEvent *e)
                 return;
             }
             else {
-                qDebug() << "get" <<e->key();
                 // 判断搜索方向，执行一次搜索，先freeze再搜索，防止按快捷键多次搜索或者先unfreeze再freeze
                 findDirection==false ? on_findPreBtn_clicked() : on_findNextBtn_clicked();
                 e->accept();
