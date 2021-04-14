@@ -29,7 +29,11 @@ public:
 class PushButtonStyle : public QProxyStyle
 {
 public:
+    PushButtonStyle(QString borderColorNormal = "");
     virtual void drawControl(ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget = nullptr) const override;
+
+private:
+    const QString normalColor;
 };
 
 class HorizontalScrollBarStyle : public QProxyStyle
