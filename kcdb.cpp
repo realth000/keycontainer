@@ -307,13 +307,21 @@ bool Kcdb::readKcdb()
     return true;
 }
 
-void Kcdb::writeKcdb()
+bool Kcdb::writeKcdb(QString inputPath)
 {
     gkptr.toFront();
 //    mtkptr.toFront();
-    if(backupState){outFile.setFileName(backupPath);}
-    else{outFile.setFileName(savePath);}
-    outFile.open(QIODevice::ReadWrite);
+    if(inputPath == ""){
+        if(backupState){outFile.setFileName(backupPath);}
+        else{outFile.setFileName(savePath);}
+
+    }
+    else{
+        outFile.setFileName(inputPath);
+    }
+    if(!outFile.open(QIODevice::ReadWrite)){
+        return false;
+    }
     outStream.setDevice(&outFile);
     AesClass *code = new AesClass;
     code->initTestCase(key_in.getVal());
@@ -347,6 +355,7 @@ void Kcdb::writeKcdb()
 //    }
     outFile.close();
     delete code;
+    return true;
 }
 
 void Kcdb::setKeys(QMap<QString, GroupKey> keyList)

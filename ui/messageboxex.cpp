@@ -74,6 +74,24 @@ int MessageBoxEx::warning(QString titleText, QString text, QString yesText, QStr
     return result;
 }
 
+int MessageBoxEx::question(QString titleText, QString text, QString yesText, QString noText)
+{
+    ui->titleBar->setTitleText(titleText);
+    QMessageBox tmb;
+    tmb.setIcon(QMessageBox::Question);
+    QPixmap t = QPixmap(tmb.iconPixmap());
+    t.scaled(ui->iconL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    ui->iconL->setScaledContents(true);
+    ui->iconL->setPixmap(t);
+    ui->infoTE->setText(text);
+    ui->button->setText(yesText);
+    ui->button2->setText(noText);
+    connect(ui->button, &QPushButton::clicked, this, &MessageBoxEx::resultToYes);
+    connect(ui->button2, &QPushButton::clicked, this, &MessageBoxEx::resultToNo);
+    this->exec();
+    return result;
+}
+
 void MessageBoxEx::resultToYes()
 {
     this->result = Yes;

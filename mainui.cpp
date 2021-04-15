@@ -1159,17 +1159,38 @@ void MainUi::on_saveKeyBtn_clicked()
         log("密码为空");
         return;
     }
+    QString finalPath;
+    int result = mb.question("保存密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
+    if(result){
+        QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", workPath, QFileDialog::ShowDirsOnly);
+        if(newPath.isEmpty()){
+            return;
+        }
+//        if(newPath == workPath){
+//            log("无效路径");
+//            return;
+//        }
+        finalPath = QDir::toNativeSeparators(newPath + "/pw.kcdb");
+    }
+    else{
+        finalPath = savePath;
+    }
     kcdb->setBackupState(false);
-    QFileInfo saveInfo(ui->savePathLE->text());
+    QFileInfo saveInfo(finalPath);
     QDir saveDir(saveInfo.path());
     if(saveDir.exists()){
         if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
     }
     syncKeyMapToKcdb();
     log("正在保存数据...");
-    kcdb->writeKcdb();
-    writeCheckFile(savePath);
-    log("数据保存完成");
+    if(kcdb->writeKcdb(finalPath)){
+        writeCheckFile(finalPath);
+        log("数据保存完成");
+    }
+    else{
+        log("保存失败");
+    }
+
 }
 
 
@@ -1180,15 +1201,35 @@ void MainUi::on_backupKeyBtn_clicked()
         log("密码为空");
         return;
     }
+    QString finalPath;
+    int result = mb.question("备份密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
+    if(result){
+        QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", workPath, QFileDialog::ShowDirsOnly);
+        if(newPath.isEmpty()){
+            return;
+        }
+//        if(newPath == workPath){
+//            log("无效路径");
+//            return;
+//        }
+        finalPath = QDir::toNativeSeparators(newPath + "/pwbp.kcdb");
+    }
+    else{
+        finalPath = savePath;
+    }
     kcdb->setBackupState(true);
-    QFileInfo saveInfo(ui->backupPathLE->text());
+    QFileInfo saveInfo(finalPath);
     QDir saveDir(saveInfo.path());
     syncKeyMapToKcdb();
     log("正在备份数据...");
-    kcdb->writeKcdb();
-    writeCheckFile(backupPath);
-    kcdb->setBackupState(false);
-    log("数据备份完成");
+    if(kcdb->writeKcdb(finalPath)){
+        writeCheckFile(finalPath);
+        log("数据备份完成");
+    }
+    else{
+        log("备份失败");
+    }
+
 }
 
 void MainUi::on_selectSavePathBtn_clicked()
@@ -1281,6 +1322,10 @@ void MainUi::on_backupKeysBtn_clicked()
     }
     QString newPath = QFileDialog::getExistingDirectory(this, "导出文件", workPath);
     if(newPath.isEmpty()){
+        return;
+    }
+    if(newPath == workPath){
+        log("无效路径");
         return;
     }
     QFile newDatFile(QDir::toNativeSeparators(newPath + "/dat.ec"));

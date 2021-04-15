@@ -18,8 +18,6 @@
 
 int main(int argc, char *argv[])
 {
-
-
     // check if running
 #ifdef Q_OS_WINDOWS
 //    QString lpClassName = QString(TITLEBAR_TITLETEXT) + QString(".exe");
@@ -81,6 +79,10 @@ int main(int argc, char *argv[])
     MessageBoxEx t;
     t.information("无法启动", "程序已在运行中");
 #endif
+//    qDebug() << APP_NAME;
+    QCoreApplication::setApplicationName(TITLEBAR_TITLETEXT);
+    QCoreApplication::setOrganizationName("海淀区干饭大队");
+    QCoreApplication::setApplicationVersion(ABOUT_VERSION);
 
     MainUi MU;
     if(!MU.loginCorrent){
