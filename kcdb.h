@@ -97,7 +97,7 @@ public:
     void inserKey(QString disc, GroupKey key);
     void clearKeys();
     bool readKcdb();
-    void writeKcdb();
+    bool writeKcdb(QString path = "");
     void setKeys(QMap<QString, GroupKey> keyList);
     QMap<QString, GroupKey> getKeys() const;
     Estring getKey() const;
