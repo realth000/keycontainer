@@ -64,7 +64,7 @@ private slots:
     void showKeyTableMenu(QPoint);
     void on_clearLogBtn_clicked();
     void on_exportKeyBtn_clicked();
-    void on_backupKeysBtn_clicked();
+    void on_backupDataKeyBtn_clicked();
     void on_about_aboutQtB_clicked();
     void on_findKeyBtn_clicked();
     void findNextKey();
@@ -72,7 +72,7 @@ private slots:
     void changeFindMode(int mode);
     void changeFindText(QString s);
     void countAll() const;
-    void on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
+    void on_importKeysBtn_clicked();
 
 private:
     void initKeyData();
@@ -85,7 +85,7 @@ private:
     void addKey();
     // TODO: How to Refresh Aes Key?
     void refreshAESKey();
-    bool checkDb();
+    bool checkDb(QString dbPath = "");
     void syncKeyFromMap();
     void syncKeyMapToKcdb();
     void refreshKeyTW();
