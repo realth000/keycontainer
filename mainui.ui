@@ -142,7 +142,7 @@
     <widget class="QPushButton" name="addKeyBtn">
      <property name="geometry">
       <rect>
-       <x>150</x>
+       <x>130</x>
        <y>0</y>
        <width>100</width>
        <height>40</height>
@@ -194,7 +194,7 @@
     <widget class="QPushButton" name="saveKeyBtn">
      <property name="geometry">
       <rect>
-       <x>390</x>
+       <x>360</x>
        <y>0</y>
        <width>100</width>
        <height>40</height>
@@ -207,7 +207,7 @@
     <widget class="QPushButton" name="backupKeyBtn">
      <property name="geometry">
       <rect>
-       <x>490</x>
+       <x>460</x>
        <y>0</y>
        <width>100</width>
        <height>40</height>
@@ -217,10 +217,10 @@
       <string>备份密码</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="backupKeysBtn">
+    <widget class="QPushButton" name="backupDataKeyBtn">
      <property name="geometry">
       <rect>
-       <x>630</x>
+       <x>560</x>
        <y>0</y>
        <width>100</width>
        <height>40</height>
@@ -233,7 +233,7 @@
     <widget class="QPushButton" name="findKeyBtn">
      <property name="geometry">
       <rect>
-       <x>270</x>
+       <x>240</x>
        <y>0</y>
        <width>100</width>
        <height>40</height>
@@ -241,6 +241,19 @@
      </property>
      <property name="text">
       <string>查找密码</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="importKeysBtn">
+     <property name="geometry">
+      <rect>
+       <x>675</x>
+       <y>0</y>
+       <width>100</width>
+       <height>40</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>导入密码</string>
      </property>
     </widget>
    </widget>

@@ -324,12 +324,12 @@ void MainUi::initUi()
     }
     ui->backupKeyBtn->setIcon(backupKeyIcon);
 
-    QIcon backupKeysIcon;
+    QIcon backupDataKeyIcon;
     const QPixmap pixm13 = QPixmap(":/src/backupKeys.png");
     if(!pixm13.isNull()){
-        backupKeysIcon.addPixmap(pixm13, QIcon::Normal, QIcon::Off);
+        backupDataKeyIcon.addPixmap(pixm13, QIcon::Normal, QIcon::Off);
     }
-    ui->backupKeysBtn->setIcon(backupKeysIcon);
+    ui->backupDataKeyBtn->setIcon(backupDataKeyIcon);
 
     QIcon saveKeyIcon;
     const QPixmap pixm5 = QPixmap(":/src/saveKey.png");
@@ -402,26 +402,36 @@ void MainUi::initUi()
     }
     ui->about_aboutQtB->setIcon(pixmp15);
 
-    ui->addKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->backupKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->backupKeysBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->delSelectKeyBtn->setStyle(new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR));
-    ui->exportKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->showKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->selectAllKeyBtn->setStyle(new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR));
-    ui->selectInverseKeyBtn->setStyle(new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR));
+    QIcon importKeysIcon;
+    const QPixmap pixmp16 = QPixmap(":/src/importKeys.png");
+    if(!pixmp16.isNull()){
+        importKeysIcon.addPixmap(pixmp16, QIcon::Normal, QIcon::Off);
+    }
+    ui->importKeysBtn->setIcon(importKeysIcon);
+
+    PushButtonStyle *t = new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR);
+    PushButtonStyle *y = new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR);
+    ui->addKeyBtn->setStyle(t);
+    ui->backupKeyBtn->setStyle(t);
+    ui->backupDataKeyBtn->setStyle(t);
+    ui->delSelectKeyBtn->setStyle(y);
+    ui->exportKeyBtn->setStyle(t);
+    ui->showKeyBtn->setStyle(t);
+    ui->selectAllKeyBtn->setStyle(y);
+    ui->selectInverseKeyBtn->setStyle(y);
 //    ui->clearLogBtn->setStyle(new PushButtonStyle);
-    ui->saveKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->saveConfigBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->restartProgBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->changeInitKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->changeAESKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->findKeyBtn->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
-    ui->about_aboutQtB->setStyle(new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR));
+    ui->saveKeyBtn->setStyle(t);
+    ui->saveConfigBtn->setStyle(t);
+    ui->restartProgBtn->setStyle(t);
+    ui->changeInitKeyBtn->setStyle(t);
+    ui->changeAESKeyBtn->setStyle(t);
+    ui->findKeyBtn->setStyle(t);
+    ui->about_aboutQtB->setStyle(t);
+    ui->importKeysBtn->setStyle(t);
 
     ui->addKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->backupKeyBtn->setFocusPolicy(Qt::NoFocus);
-    ui->backupKeysBtn->setFocusPolicy(Qt::NoFocus);
+    ui->backupDataKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->delSelectKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->exportKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->showKeyBtn->setFocusPolicy(Qt::NoFocus);
@@ -435,6 +445,7 @@ void MainUi::initUi()
     ui->changeAESKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->findKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->about_aboutQtB->setFocusPolicy(Qt::NoFocus);
+    ui->importKeysBtn->setFocusPolicy(Qt::NoFocus);
 
     ui->groupBox->setFocusPolicy(Qt::NoFocus);
     ui->key_checkRB->setFocusPolicy(Qt::NoFocus);
@@ -472,12 +483,13 @@ void MainUi::initUi()
     ui->keyTW->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
     ui->keyTW->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
 
-    ui->key_checkRB->setStyle(new RadioButtonStyle);
-    ui->key_clickRB->setStyle(new RadioButtonStyle);
-    ui->key_doubleClickRB->setStyle(new RadioButtonStyle);
-    ui->key_check_defaultRB->setStyle(new RadioButtonStyle);
-    ui->key_click_defaultRB->setStyle(new RadioButtonStyle);
-    ui->key_doubleClick_defaultRB->setStyle(new RadioButtonStyle);
+    RadioButtonStyle *rbs = new RadioButtonStyle;
+    ui->key_checkRB->setStyle(rbs);
+    ui->key_clickRB->setStyle(rbs);
+    ui->key_doubleClickRB->setStyle(rbs);
+    ui->key_check_defaultRB->setStyle(rbs);
+    ui->key_click_defaultRB->setStyle(rbs);
+    ui->key_doubleClick_defaultRB->setStyle(rbs);
 
     ui->autoChangeAESKeyChB->setStyle(new CheckBoxStyle);
 
@@ -615,7 +627,6 @@ void MainUi::keyTW_deleteSeledtedKeys()
     quint32 tmp_deleteNum = 0;
     for(quint32 i=0; i<keyTableRowCount;){
         if(checkBoxItem[i]->isChecked()){
-//            qDebug() << "delete" <<i;
             // 单纯的QList.removeAt并不会删除指针，用delete删除
             delete checkBoxItem[i];
             checkBoxItem.removeAt(i);
@@ -625,7 +636,6 @@ void MainUi::keyTW_deleteSeledtedKeys()
             keyTableRowCount--;
         }
         else if(tmp_deleteNum!=0){
-//            qDebug() << "update" <<i;
             // ID为行号，为保证行号与ID时刻统一，在删除时同步更新ID为新行号
             QTableWidgetItem *i1 = ui->keyTW->takeItem(i,1);
             KeyMap newKeyMapItem = keyMap[i1->text().toInt()];
@@ -634,11 +644,12 @@ void MainUi::keyTW_deleteSeledtedKeys()
             keyMap.insert(newItemId, newKeyMapItem);
             keyMap.remove(i1->text().toInt());
             delete i1;
-            ui->keyTW->setItem(i, 1, new QTableWidgetItem(QString::number(newItemId)));
+            QTableWidgetItem *i2 = new QTableWidgetItem(QString::number(newItemId));
+            i2->setTextAlignment(Qt::AlignCenter);
+            ui->keyTW->setItem(i, 1, i2);
             i++;
         }
         else{
-//            qDebug() << "pass" <<i;
             i++;
         }
     }
@@ -730,14 +741,25 @@ void MainUi::refreshAESKey()
     else{mb.information("无法保存密码", "密码文件被其他程序占用，请重试。");}
 }
 
-bool MainUi::checkDb()
+bool MainUi::checkDb(QString dbPath)
 {
-    QFileInfo configFileInfo(savePath+ ".chf");
+    QFileInfo configFileInfo;
+    QFile dbFile;
+    QString hashFilePath;
+    if(dbPath.isEmpty()){
+        configFileInfo.setFile(savePath+ ".chf");
+        dbFile.setFileName(savePath);
+        hashFilePath = savePath + ".chf";
+    }
+    else{
+        configFileInfo.setFile(dbPath+ ".chf");
+        dbFile.setFileName(dbPath);
+        hashFilePath = dbPath + ".chf";
+    }
 //    qDebug()<<"checkDb" <<savePath+".chf";
     if(configFileInfo.exists()){
         QByteArray tmpMD5;
         QByteArray resultHash;
-        QFile dbFile(savePath);
         dbFile.open(QIODevice::ReadOnly);
         QCryptographicHash hash1(QCryptographicHash::Keccak_512);
         hash1.addData(&dbFile);
@@ -751,8 +773,6 @@ bool MainUi::checkDb()
         hash2.addData(salt2.toUtf8());
         resultHash = hash2.result().toHex();
 
-
-        QString hashFilePath = savePath + ".chf";
         QFile hashFile(hashFilePath);
         if(hashFile.open(QIODevice::ReadOnly)){
             QDataStream hashData(&hashFile);
@@ -793,12 +813,12 @@ bool MainUi::checkDb()
             return true;
         }
         else{
-            mb.information("无法校验数据库", "数据库校验文件无法打开，数据库可能能够成功读取但可能已被篡改。");
+            mb.information("无法校验数据库", "数据库校验文件无法打开。");
             return false;
         }
     }
     else{
-        mb.information("数据库可能已被篡改", "检测不到数据库的校验文件，数据库可能能够成功读取但可能已被篡改。");
+        mb.information("数据库可能已被篡改", "检测不到数据库的校验文件。");
         return false;
     }
 
@@ -842,7 +862,6 @@ void MainUi::refreshKeyTW()
     QMap<int, KeyMap>::const_iterator i  = keyMap.begin();
     keyTableRowCount=0;
     while (i != keyMap.cend()) {
-//        qDebug() <<"add new row to key table at" <<i->id;
         keyTW_addNewRow(keyTableRowCount, i->disc, i->account, i->password, 35);
         keyTableRowCount++;
         i++;
@@ -1159,32 +1178,16 @@ void MainUi::on_saveKeyBtn_clicked()
         log("密码为空");
         return;
     }
-    QString finalPath;
-    int result = mb.question("保存密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
-    if(result){
-        QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", workPath, QFileDialog::ShowDirsOnly);
-        if(newPath.isEmpty()){
-            return;
-        }
-//        if(newPath == workPath){
-//            log("无效路径");
-//            return;
-//        }
-        finalPath = QDir::toNativeSeparators(newPath + "/pw.kcdb");
-    }
-    else{
-        finalPath = savePath;
-    }
     kcdb->setBackupState(false);
-    QFileInfo saveInfo(finalPath);
+    QFileInfo saveInfo(savePath);
     QDir saveDir(saveInfo.path());
     if(saveDir.exists()){
         if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
     }
     syncKeyMapToKcdb();
     log("正在保存数据...");
-    if(kcdb->writeKcdb(finalPath)){
-        writeCheckFile(finalPath);
+    if(kcdb->writeKcdb(savePath)){
+        writeCheckFile(savePath);
         log("数据保存完成");
     }
     else{
@@ -1203,7 +1206,7 @@ void MainUi::on_backupKeyBtn_clicked()
     }
     QString finalPath;
     int result = mb.question("备份密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
-    if(result){
+    if(result == MessageBoxEx::Yes){
         QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", workPath, QFileDialog::ShowDirsOnly);
         if(newPath.isEmpty()){
             return;
@@ -1214,8 +1217,11 @@ void MainUi::on_backupKeyBtn_clicked()
 //        }
         finalPath = QDir::toNativeSeparators(newPath + "/pwbp.kcdb");
     }
-    else{
+    else if(result == MessageBoxEx::No){
         finalPath = savePath;
+    }
+    else{
+        return;
     }
     kcdb->setBackupState(true);
     QFileInfo saveInfo(finalPath);
@@ -1257,7 +1263,7 @@ void MainUi::on_selectBackupPathBtn_clicked()
 void MainUi::on_changeAESKeyBtn_clicked()
 {
     int re = mb.warning("重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？");
-    if(re == mb.Yes){
+    if(re == MessageBoxEx::Yes){
         if(!ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
         on_saveKeyBtn_clicked();
     }
@@ -1314,7 +1320,7 @@ void MainUi::on_exportKeyBtn_clicked()
     log("导出完成： " + exportPath.replace("\\","/"));
 }
 
-void MainUi::on_backupKeysBtn_clicked()
+void MainUi::on_backupDataKeyBtn_clicked()
 {
     if(keyTableRowCount==0){
         log("密码为空");
@@ -1502,14 +1508,26 @@ void MainUi::countAll() const
     emit unfreezeFindBtn();
 }
 
-void MainUi::on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
+void MainUi::on_importKeysBtn_clicked()
 {
-//    Q_UNUSED(currentColumn)
-//    Q_UNUSED(previousRow)
-//    Q_UNUSED(previousColumn)
-//    this->keyTWCurrentRow = currentRow;
-//    qDebug() << "new << keyTWCurrentRow" << keyTWCurrentRow << QApplication::focusWidget() <<QApplication::focusObject();
-//    if(previousRow == -1 && ui->keyTW->selectedItems().length()!=0){
-//        ui->keyTW->selectRow(0);
-//    }
+    QString importPath = QFileDialog::getOpenFileName(this, "导入数据", workPath,
+                            "KeyContainerDataBase (*.kcdb)", nullptr ,QFileDialog::DontResolveSymlinks);
+    if(importPath.isEmpty()){
+        return;
+    }
+    if(!(QFileInfo(importPath+".chf")).exists()){
+        log("检验文件丢失，无法读取");
+        return;
+    }
+    if(!checkDb(importPath)){
+        log("导入失败");
+        return;
+    }
+    if(!kcdb->readKcdb(importPath)){
+        log("导入失败");
+        return;
+    }
+    syncKeyFromMap();
+    refreshKeyTW();
+    log("导入成功");
 }

@@ -35,5 +35,6 @@
         <file>src/arrow_left_30.png</file>
         <file>src/arrow_right_30.png</file>
         <file>src/findKey_reverse.png</file>
+        <file>src/importKeys.png</file>
     </qresource>
 </RCC>

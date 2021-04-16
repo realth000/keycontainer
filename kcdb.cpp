@@ -225,19 +225,34 @@ void Kcdb::clearKeys()
     groupKeyList.clear();
 }
 
-bool Kcdb::readKcdb()
+bool Kcdb::readKcdb(QString dbPath)
 {
-    QList<QList<QStringList>> readResult;
-    inFile.setFileName(savePath);
-    if(!inFile.exists()){
-        t.information("数据库不存在", "切换读取备份数据。");
-        inFile.setFileName(backupPath);
+    QString aesPath;
+    if(dbPath.isEmpty()){
+        inFile.setFileName(savePath);
         if(!inFile.exists()){
-            t.information("找不到数据库", "找不到数据库及数据库备份，无法读取密码。");
+            t.information("数据库不存在", "切换读取备份数据。");
+            inFile.setFileName(backupPath);
+            if(!inFile.exists()){
+                t.information("找不到数据库", "找不到数据库及数据库备份，无法读取密码。");
+                return false;
+            }
+        }
+        aesPath = this->aesPath;
+
+    }
+    else{
+        inFile.setFileName(dbPath);
+        if(!inFile.exists()){
+            t.information("数据库不存在", "切换读取备份数据。");
             return false;
         }
+        aesPath = QDir::toNativeSeparators(QFileInfo(inFile).path().replace("\\", "/") + "/dat.ec");
     }
-    inFile.open(QIODevice::ReadOnly);
+    QList<QList<QStringList>> readResult;
+    if(!inFile.open(QIODevice::ReadOnly)){
+        return false;
+    }
     inStream.setDevice(&inFile);
     Estring aesKeyFilePath = Estring(QDir::toNativeSeparators(aesPath));
 #ifdef DEBUG_SHOW_KEYS

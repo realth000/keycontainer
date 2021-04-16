@@ -96,7 +96,7 @@ public:
     void changeBackupState(bool state);
     void inserKey(QString disc, GroupKey key);
     void clearKeys();
-    bool readKcdb();
+    bool readKcdb(QString dbPath = "");
     bool writeKcdb(QString path = "");
     void setKeys(QMap<QString, GroupKey> keyList);
     QMap<QString, GroupKey> getKeys() const;

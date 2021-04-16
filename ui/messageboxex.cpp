@@ -57,6 +57,7 @@ void MessageBoxEx::information(QString titleText, QString text, QString buttonTe
 
 int MessageBoxEx::warning(QString titleText, QString text, QString yesText, QString noText)
 {
+    this->result = Escape;
     ui->titleBar->setTitleText(titleText);
     QMessageBox tmb;
     tmb.setIcon(QMessageBox::Warning);
@@ -76,6 +77,7 @@ int MessageBoxEx::warning(QString titleText, QString text, QString yesText, QStr
 
 int MessageBoxEx::question(QString titleText, QString text, QString yesText, QString noText)
 {
+    this->result = Escape;
     ui->titleBar->setTitleText(titleText);
     QMessageBox tmb;
     tmb.setIcon(QMessageBox::Question);

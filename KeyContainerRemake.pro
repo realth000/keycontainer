@@ -15,7 +15,7 @@ unix {
     TARGET = "KeyContainer"
 }
 
-VERSION = 2.2.6
+VERSION = 2.2.7
 
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
