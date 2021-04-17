@@ -1121,6 +1121,9 @@ void MainUi::on_saveConfigBtn_clicked()
     QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
     ini->setValue("/Path/SavePath", ui->savePathLE->text().replace("\\", "/"));
     ini->setValue("/Path/BackupPath", ui->backupPathLE->text().replace("\\", "/"));
+    // 同时还要同步两个变量
+    kcdb->setSavePath(ui->savePathLE->text());
+    kcdb->setBackupPath(ui->backupPathLE->text());
     if(ui->key_check_defaultRB->isChecked()){
         ini->setValue("/Setting/DefaultSelectMode", 0);
     }
@@ -1134,6 +1137,7 @@ void MainUi::on_saveConfigBtn_clicked()
     delete ini;
     log("已保存设置");
 }
+
 void MainUi::on_autoChangeAESKeyChB_stateChanged(int arg1)
 {
     arg1==0 ? autoChangeAES=false : autoChangeAES=true;
