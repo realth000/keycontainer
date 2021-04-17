@@ -2,23 +2,24 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17 no_batch
+CONFIG += c++17
 
 # 防止linux下程序名中空格造成的问题，分开处理
 win32 {
     RC_ICONS = "Key Container.ico"
     TARGET = "Key Container"
-    LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\User32.Lib
+    LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
 }
 unix {
     RC_ICONS = "KeyContainer.ico"
     TARGET = "KeyContainer"
 }
 
-VERSION = 2.2.7
+VERSION = 2.2.8
 
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
+#LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
