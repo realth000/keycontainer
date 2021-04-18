@@ -82,13 +82,29 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>290</y>
+     <y>350</y>
      <width>101</width>
      <height>21</height>
     </rect>
    </property>
    <property name="text">
     <string>密码错误</string>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="capsLockHintL">
+   <property name="geometry">
+    <rect>
+     <x>100</x>
+     <y>290</y>
+     <width>101</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>大写锁定已打开</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

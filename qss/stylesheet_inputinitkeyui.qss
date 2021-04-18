@@ -13,5 +13,6 @@ QPushButton{background:transparent;border:1px solid %2;color:rgb(240,255,255)}
 QPushButton:hover{background:rgb(64,64,61)}
 QPushButton:pressed{background:rgb(55,55,55)}
 QLabel{color:rgb(240,255,255)}
+QLabel#capsLockHintL{color:rgb(240,80,70)}
 QLabel#hintLabel{color:rgb(240,80,70)}
 QCheckBox{color:rgb(240,255,255)}

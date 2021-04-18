@@ -140,6 +140,19 @@
     <string>显示密码</string>
    </property>
   </widget>
+  <widget class="QLabel" name="capsLockHintL">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>190</y>
+     <width>90</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>大写锁定已打开</string>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>

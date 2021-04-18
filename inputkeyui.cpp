@@ -8,6 +8,16 @@
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
+#ifdef Q_OS_WINDOWS
+#include <windows.h>
+#else
+#include <X11/XKBlib.h>
+#undef KeyPress
+#undef KeyRelease
+#undef FocusIn
+#undef FocusOut
+// #undef those Xlib #defines that conflict with QEvent::Type enum
+#endif
 
 // TODO: 密码验证， 格式，存储
 InputKeyUi::InputKeyUi(QWidget *parent, quint32 id, KeyMap *keyMap) :
@@ -29,19 +39,32 @@ InputKeyUi::~InputKeyUi()
     delete m_keyMap;
 }
 
-void InputKeyUi::keyPressEvent(QKeyEvent *event)
+void InputKeyUi::keyPressEvent(QKeyEvent *e)
 {
-    switch (event->key()) {
-    case Qt::Key_Return:
+    if(e->modifiers() == Qt::NoModifier && e->key() == Qt::Key_CapsLock){
+#ifdef Q_OS_WINDOWS
+        GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
+        e->accept();
+        return;
+#else // X11 version (Linux/Unix/Mac OS X/etc...)
+    Display *d = XOpenDisplay((char*)0);
+    bool caps_state = false;
+    if (d) {
+        unsigned n;
+        XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
+        caps_state = (n & 0x01) == 1;
+    }
+    caps_state ? ui->capslockHintL->setVisible(true) : ui->capslockHintL->setVisible(false);
+    e->accept();
+    return;
+#endif
+    }
+    if((e->modifiers() == Qt::KeypadModifier && e->key() == Qt::Key_Enter)
+            || (e->modifiers() == Qt::NoModifier && e->key() == Qt::Key_Return)){
+        qDebug() << "Key_Enter" << e->modifiers() << e->key();
         on_inputKey_saveB_clicked();
-        event->accept();
-        break;
-    case Qt::Key_Enter:
-        on_inputKey_saveB_clicked();
-        event->accept();
-        break;
-    default:
-        break;
+        e->accept();
+        return;
     }
 }
 
@@ -83,6 +106,19 @@ void InputKeyUi::initUi()
 
     ui->inputKey_pwdLE->setEchoMode(QLineEdit::Password);
     ui->inputKey_conPwdLE->setEchoMode(QLineEdit::Password);
+
+#ifdef Q_OS_WINDOWS
+        GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
+#else // X11 version (Linux/Unix/Mac OS X/etc...)
+    Display *d = XOpenDisplay((char*)0);
+    bool caps_state = false;
+    if (d) {
+        unsigned n;
+        XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
+        caps_state = (n & 0x01) == 1;
+    }
+    caps_state ? ui->capslockHintL->setVisible(true) : ui->capslockHintL->setVisible(false);
+#endif
 }
 
 // TODO: unsafe when inputing new password;
