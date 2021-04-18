@@ -16,7 +16,7 @@ public:
     explicit InputKeyUi(QWidget *parent = nullptr, quint32 id = 0, KeyMap *keyMap = nullptr);
     ~InputKeyUi();
 protected:
-    void keyPressEvent(QKeyEvent *event) override;
+    void keyPressEvent(QKeyEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
 
 signals:

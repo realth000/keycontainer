@@ -506,18 +506,27 @@ void MainUi::initUi()
     ui->about_plantformL->setAlignment(Qt::AlignRight |Qt::AlignVCenter);
     ui->about_versionL->setText(ABOUT_VERSION);
     ui->about_timeL->setText(ABOUT_TIME);
-    ui->about_baseTE->clear();
-    ui->about_baseTE->append(QString("C++ ") + QString::number(ABOUT_BASE_CPP));
-    ui->about_baseTE->append(ABOUT_BASE_QT);
+    ui->about_baseTB->clear();
+    QString aboutText="";
+    aboutText.append( "<p>" + QString("C++ ")+ " " + QString::number(ABOUT_BASE_CPP) + "</p>"
+                      + "<p>" + ABOUT_BASE_QT+ " "  + "</p>");
     QString ABOUT_BASE_COMPILER_type = typeid (ABOUT_BASE_COMPILER).name();
 #ifdef ABOUT_BASE_COMPILER_STRING
-    ui->about_baseTE->append(QString(ABOUT_BASE_COMPILER_TYPE) + QString(ABOUT_BASE_COMPILER));
+    aboutText.append("<p>" + QString(ABOUT_BASE_COMPILER_TYPE)+ " "  + QString(ABOUT_BASE_COMPILER) + "</p>");
 #else
-    ui->about_baseTE->append(QString(ABOUT_BASE_COMPILER_TYPE) + QString::number(ABOUT_BASE_COMPILER));
+    aboutText.append("<p>" + QString(ABOUT_BASE_COMPILER_TYPE)+ " "  + QString::number(ABOUT_BASE_COMPILER) + "</p>");
 #endif
-    ui->about_baseTE->setEnabled(false);
-    ui->about_baseTE->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
-    ui->about_baseTE->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
+    aboutText.append("<p>CapsLockCheck "
+                     "<a href=\"http://github.com/savolai/Qt-Widgets-password-dialog-with-Caps-Lock-check/\"><font color=#6666FF>savolai@github</font></a></p>");
+    aboutText.append("<p>Qt-AES "
+                     "<a href=\"https://github.com/bricke/Qt-AES/\"><font color=#6666FF>bricke@github</font></a></p>");
+
+    ui->about_baseTB->setReadOnly(true);
+    ui->about_baseTB->setOpenExternalLinks(true);
+//    ui->about_baseTB->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    ui->about_baseTB->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
+    ui->about_baseTB->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
+    ui->about_baseTB->setText(aboutText);
 
     fkui = new FindKeyUi(this);
     connect(this, &MainUi::mouseReleasedSig, fkui, &FindKeyUi::setTransparency, Qt::UniqueConnection);

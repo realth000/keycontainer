@@ -45,12 +45,16 @@
 #   define ABOUT_BASE_COMPILER "  -  "
 #endif
 
-#ifdef Q_OS_LINUX
+#if defined(Q_OS_LINUX)  && !defined(Q_OS_ANDROID)
 #   define ABOUT_PLANTFORM "For Linux"
 #   define TITLEBAR_TITLEICON ":/src/KeyContainer.ico"
 #   define TITLEBAR_TITLETEXT "KeyContainer"
-#elif defined Q_OS_WINDOWS
+#elif defined(Q_OS_WINDOWS)
 #   define ABOUT_PLANTFORM "For Windows"
+#   define TITLEBAR_TITLEICON ":/src/Key Container.ico"
+#   define TITLEBAR_TITLETEXT "Key Container"
+#elif defined(Q_OS_ANDROID)
+#   define ABOUT_PLANTFORM "For Android"
 #   define TITLEBAR_TITLEICON ":/src/Key Container.ico"
 #   define TITLEBAR_TITLETEXT "Key Container"
 #else

@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "encryption/encrypted.h"
 #include <QFile>
+#include <QKeyEvent>
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -22,8 +23,9 @@ public:
     ~InputInitKeyUi();
 signals:
     void changedPw(QString s);
+
 protected:
-    void keyPressEvent(QKeyEvent *event) override;
+    void keyPressEvent(QKeyEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
 
 private slots:

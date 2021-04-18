@@ -9,6 +9,16 @@
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
 #endif
+#ifdef Q_OS_WINDOWS
+#include <windows.h>
+#else
+#include <X11/XKBlib.h>
+#undef KeyPress
+#undef KeyRelease
+#undef FocusIn
+#undef FocusOut
+// #undef those Xlib #defines that conflict with QEvent::Type enum
+#endif
 
 InputInitKeyUi::InputInitKeyUi(QWidget *parent, Estring oldPwdHash, Estring pwFilePath) :
     QDialog(parent), m_oldPwdHash(oldPwdHash), pwFilePath(pwFilePath),
@@ -23,20 +33,33 @@ InputInitKeyUi::~InputInitKeyUi()
     delete ui;
 }
 
-void InputInitKeyUi::keyPressEvent(QKeyEvent *event)
+void InputInitKeyUi::keyPressEvent(QKeyEvent *e)
 {
-    switch (event->key()) {
-    case Qt::Key_Return:
-        on_inputKey_saveB_clicked();
-        event->accept();
-        break;
-    case Qt::Key_Enter:
-        on_inputKey_saveB_clicked();
-        event->accept();
-        break;
-    default:
-        break;
+    if(e->modifiers() == Qt::NoModifier && e->key() == Qt::Key_CapsLock){
+#ifdef Q_OS_WINDOWS
+        GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
+        e->accept();
+        return;
+#else // X11 version (Linux/Unix/Mac OS X/etc...)
+    Display *d = XOpenDisplay((char*)0);
+    bool caps_state = false;
+    if (d) {
+        unsigned n;
+        XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
+        caps_state = (n & 0x01) == 1;
     }
+    caps_state ? ui->capslockHintL->setVisible(true) : ui->capslockHintL->setVisible(false);
+    e->accept();
+    return;
+#endif
+    }
+    if((e->modifiers() == Qt::KeypadModifier && e->key() == Qt::Key_Enter)
+            || (e->modifiers() == Qt::NoModifier && e->key() == Qt::Key_Return)){
+        on_inputKey_saveB_clicked();
+        e->accept();
+        return;
+    }
+    e->ignore();
 }
 
 void InputInitKeyUi::mouseReleaseEvent(QMouseEvent *event)
@@ -92,6 +115,18 @@ void InputInitKeyUi::initUi()
     ui->inputKey_newPwdLE->setEchoMode(QLineEdit::Password);
     ui->inputKey_conPwdLE->setEchoMode(QLineEdit::Password);
 
+#ifdef Q_OS_WINDOWS
+        GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
+#else // X11 version (Linux/Unix/Mac OS X/etc...)
+    Display *d = XOpenDisplay((char*)0);
+    bool caps_state = false;
+    if (d) {
+        unsigned n;
+        XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
+        caps_state = (n & 0x01) == 1;
+    }
+    caps_state ? ui->capslockHintL->setVisible(true) : ui->capslockHintL->setVisible(false);
+#endif
 }
 
 void InputInitKeyUi::checkInput()

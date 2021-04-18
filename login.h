@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QCloseEvent>
+#include <QKeyEvent>
 #include "encryption/encrypted.h"
 #include "ui/messageboxex.h"
 
@@ -28,6 +29,7 @@ signals:
 
 protected:
     virtual void closeEvent(QCloseEvent *e) override;
+    virtual void keyPressEvent(QKeyEvent *e) override;
 
 private slots:
     void on_logInB_clicked();
