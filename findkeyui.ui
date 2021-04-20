@@ -104,6 +104,19 @@
     <string>计数</string>
    </property>
   </widget>
+  <widget class="QCheckBox" name="useRegChB">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>100</y>
+     <width>101</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>正则表达式</string>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>

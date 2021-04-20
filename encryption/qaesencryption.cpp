@@ -1,4 +1,4 @@
-#include "qaesencryption.h"
+﻿#include "qaesencryption.h"
 
 /*
  * Static Functions
@@ -123,8 +123,10 @@ QByteArray QAESEncryption::getPadding(int currSize, int alignment)
         return QByteArray(size, size);
         break;
     case Padding::ISO:
-        if (size > 0)
-            return QByteArray (size - 1, 0x00).prepend(0x80);
+        // NOTE: Disabled ISO
+        break;
+//        if (size > 0)
+//            return QByteArray (size - 1, 0x00).prepend(0x80);
         break;
     default:
         return QByteArray(size, 0x00);
