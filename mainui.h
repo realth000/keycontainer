@@ -67,6 +67,7 @@ private slots:
     void on_backupDataKeyBtn_clicked();
     void on_about_aboutQtB_clicked();
     void on_findKeyBtn_clicked();
+    bool findCheckKey();
     void findNextKey();
     void findPreviousKey();
     void changeFindMode(int mode);

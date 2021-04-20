@@ -30,6 +30,11 @@ void FindKeyUi::setInputFocus()
     ui->findKeywordLE->setCursorPosition(ui->findKeywordLE->text().size());
 }
 
+bool FindKeyUi::isFindUseReg() const
+{
+    return this->findKeyUseReg;
+}
+
 
 void FindKeyUi::setTransparency(bool pos)
 {
@@ -137,10 +142,10 @@ void FindKeyUi::initUi()
         findNextBtn.addPixmap(pixm2, QIcon::Normal, QIcon::Off);
     }
     ui->findNextBtn->setIcon(findNextBtn);
-
-    ui->findPreBtn->setStyle(new PushButtonStyle);
-    ui->findNextBtn->setStyle(new PushButtonStyle);
-
+    PushButtonStyle *p = new PushButtonStyle;
+    ui->findPreBtn->setStyle(p);
+    ui->findNextBtn->setStyle(p);
+    ui->useRegChB->setStyle(new CheckBoxStyle);
 }
 
 void FindKeyUi::on_findPreBtn_clicked()
@@ -149,6 +154,7 @@ void FindKeyUi::on_findPreBtn_clicked()
     findDirection=false;
     freezeFindBtn();
     emit findTextPrevious();
+    qDebug() << "Previous";
 }
 
 void FindKeyUi::on_findNextBtn_clicked()
@@ -156,6 +162,7 @@ void FindKeyUi::on_findNextBtn_clicked()
     findDirection=true;
     freezeFindBtn();
     emit findTextNext();
+    qDebug() << "next";
 }
 
 void FindKeyUi::on_findKeywordLE_textChanged(const QString &arg1)
@@ -167,4 +174,11 @@ void FindKeyUi::on_countBtn_clicked()
 {
     freezeFindBtn();
     emit countAll();
+}
+
+void FindKeyUi::on_useRegChB_stateChanged(int arg1)
+{
+    this->findKeyUseReg = arg1;
+    emit findKeyUseRegSig(arg1);
+    qDebug() << "emit" << arg1;
 }

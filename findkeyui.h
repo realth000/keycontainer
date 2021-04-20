@@ -21,6 +21,7 @@ public:
     explicit FindKeyUi(QWidget *parent = nullptr);
     ~FindKeyUi();
     void setInputFocus();
+    bool isFindUseReg() const;
 
 signals:
     void closed();
@@ -28,6 +29,7 @@ signals:
     void findTextPrevious();
     void findTextNext();
     void countAll();
+    void findKeyUseRegSig(int use);
 
 public slots:
     void setTransparency(bool pos);
@@ -45,12 +47,14 @@ private slots:
     void on_findNextBtn_clicked();
     void on_findKeywordLE_textChanged(const QString &arg1);
     void on_countBtn_clicked();
+    void on_useRegChB_stateChanged(int arg1);
 
 private:
     Ui::FindKeyUi *ui;
     int F3FindMode = 1; // =1时F3控制向下搜索， =0时F3控制向上搜索
     bool findDirection = true; // =true，快捷键F3控制向下搜索，=false，快捷键F3控制向上搜索
     void initUi();
+    int findKeyUseReg = 0;
 };
 
 #endif // FINDKEYUI_H

@@ -22,6 +22,7 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QTimer>
+#include <QRegularExpression>
 
 //#include <QWaylandObject>
 
@@ -522,6 +523,7 @@ void MainUi::initUi()
                      "<a href=\"https://github.com/bricke/Qt-AES/\"><font color=#6666FF>bricke@github</font></a></p>");
 
     ui->about_baseTB->setReadOnly(true);
+    ui->about_baseTB->setContextMenuPolicy(Qt::NoContextMenu);
     ui->about_baseTB->setOpenExternalLinks(true);
 //    ui->about_baseTB->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
     ui->about_baseTB->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
@@ -541,10 +543,20 @@ void MainUi::initUi()
     connect(this, &MainUi::clearLogL, fkui, &FindKeyUi::clearLogL);
     // connect上防止搜索点击过快导致崩溃的freeze的解冻功能（冻结功能在findBtn的clicked槽函数中，自动的，不需要connect）
     connect(this, &MainUi::unfreezeFindBtn, fkui, &FindKeyUi::unfreezeFindBtn);
+    // connect改变搜索模式
+    connect(fkui, &FindKeyUi::findKeyUseRegSig, this, [this](int useSig){
+        if(useSig == 2){
+            changeFindMode(1);
+        }
+        else{
+            changeFindMode(0);
+        }
+    });
 
     // 搜索找到行
     connect(this, &MainUi::findKeyOnRow, this, &MainUi::switchToRow);
     // 没有搜索到行
+
 
 }
 void MainUi::initConfig()
@@ -1394,6 +1406,22 @@ void MainUi::on_findKeyBtn_clicked()
 
 }
 
+bool MainUi::findCheckKey()
+{
+    if(findMode == 0 ){
+        qDebug() << "find mode 0";
+        return !discQuickIndex[keyTableFindPos].getVal().contains(findText);
+    }
+    else if(findMode == 1){
+        qDebug() << "find mode 1";
+        return !discQuickIndex[keyTableFindPos].getVal().contains(QRegularExpression(findText));
+    }
+    else{
+        qDebug() << "find mode else";
+        return true;
+    }
+}
+
 void MainUi::findPreviousKey()
 {
     if(findText == ""){
@@ -1404,44 +1432,44 @@ void MainUi::findPreviousKey()
     findDirection = false;
     emit clearLogL();
     int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
+    keyTableFindPos--;
     if(keyTableFindPos>=keyTableRowCount_int){
         keyTableFindPos=keyTableRowCount_int-1;
     }
     int startPos = keyTableFindPos;
-    if(findMode ==0 ){
-        while(keyTableFindPos>=0){
-//            qDebug() <<"find previous: routine 1: at" << keyTableFindPos;
-            if(!discQuickIndex[keyTableFindPos].getVal().contains(findText)){
-                keyTableFindPos--;
-            }
-            else{
-                emit findKeyOnRow(keyTableFindPos);
-                emit sendLogLText("找到id: " + QString::number(keyTableFindPos));
-                keyTableFindPos--;
-                emit unfreezeFindBtn();
-                return;
-            }
+    while(keyTableFindPos>=0){
+            qDebug() <<"find previous: routine 1: at" << keyTableFindPos;
+        if(findCheckKey()){
+            keyTableFindPos--;
         }
-        // 从pos->开头找完了，接着找结尾->pos
-        keyTableFindPos=keyTableRowCount_int-1;
-        while(keyTableFindPos >= startPos){
-//            qDebug() <<"find previous: routine 2: at" << keyTableFindPos;
-            if(!discQuickIndex[keyTableFindPos].getVal().contains(findText)){
-                keyTableFindPos--;
-            }
-            else{
-                emit findKeyOnRow(keyTableFindPos);
-                emit sendLogLText("找到id: " + QString::number(keyTableFindPos) + " 从最后一个开始查找");
-                keyTableFindPos--;
-                emit unfreezeFindBtn();
-                return;
-            }
+        else{
+            emit findKeyOnRow(keyTableFindPos);
+            emit sendLogLText("找到id: " + QString::number(keyTableFindPos));
+//            keyTableFindPos--;
+            emit unfreezeFindBtn();
+            return;
         }
-        keyTableFindPos = startPos;
-        emit sendLogLText("搜索结果为空");
-        emit unfreezeFindBtn();
-        return;
     }
+    // 从pos->开头找完了，接着找结尾->pos
+    keyTableFindPos=keyTableRowCount_int-1;
+    while(keyTableFindPos >= startPos){
+            qDebug() <<"find previous: routine 2: at" << keyTableFindPos;
+        if(findCheckKey()){
+            keyTableFindPos--;
+        }
+        else{
+            emit findKeyOnRow(keyTableFindPos);
+            emit sendLogLText("找到id: " + QString::number(keyTableFindPos) + " 从最后一个开始查找");
+//            keyTableFindPos--;
+            emit unfreezeFindBtn();
+            return;
+        }
+    }
+    qDebug() << "null find";
+    keyTableFindPos = startPos;
+    emit sendLogLText("搜索结果为空");
+    emit unfreezeFindBtn();
+    return;
 }
 
 void MainUi::findNextKey()
@@ -1455,45 +1483,44 @@ void MainUi::findNextKey()
     findDirection = true;
     emit clearLogL();
     int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
+    keyTableFindPos++;
     if(keyTableFindPos>=keyTableRowCount_int  || keyTableFindPos<0){
         keyTableFindPos=0;
     }
      int startPos = keyTableFindPos;
-    if(findMode ==0 ){
-        while(keyTableFindPos<keyTableRowCount_int){
-//            qDebug() <<"find next: routine 1: at" << keyTableFindPos;
-            if(!discQuickIndex[keyTableFindPos].getVal().contains(findText)){
-                keyTableFindPos++;
-            }
-            else{
-                emit findKeyOnRow(keyTableFindPos);
-                emit sendLogLText("找到id: " + QString::number(keyTableFindPos));
-                keyTableFindPos++;
-                emit unfreezeFindBtn();
-                return;
-            }
+    while(keyTableFindPos<keyTableRowCount_int){
+            qDebug() <<"find next: routine 1: at" << keyTableFindPos;
+        if(findCheckKey()){
+            keyTableFindPos++;
+        }
+        else{
+            emit findKeyOnRow(keyTableFindPos);
+            emit sendLogLText("找到id: " + QString::number(keyTableFindPos));
+//            keyTableFindPos++;
+            emit unfreezeFindBtn();
+            return;
+        }
 
-        }
-        // 从pos->结尾找完了，接着找开头->pos
-        keyTableFindPos=0;
-        while(keyTableFindPos <= startPos){
-//            qDebug() <<"find next: routine 2: at" << keyTableFindPos;
-            if(!discQuickIndex[keyTableFindPos].getVal().contains(findText)){
-                keyTableFindPos++;
-            }
-            else{
-                emit findKeyOnRow(keyTableFindPos);
-                emit sendLogLText("找到id: " + QString::number(keyTableFindPos) + "  从第一个开始查找");
-                keyTableFindPos++;
-                emit unfreezeFindBtn();
-                return;
-            }
-        }
-        keyTableFindPos = startPos;
-        emit sendLogLText("搜索结果为空");
-        emit unfreezeFindBtn();
-        return;
     }
+    // 从pos->结尾找完了，接着找开头->pos
+    keyTableFindPos=0;
+    while(keyTableFindPos <= startPos){
+            qDebug() <<"find next: routine 2: at" << keyTableFindPos;
+        if(findCheckKey()){
+            keyTableFindPos++;
+        }
+        else{
+            emit findKeyOnRow(keyTableFindPos);
+            emit sendLogLText("找到id: " + QString::number(keyTableFindPos) + "  从第一个开始查找");
+//            keyTableFindPos++;
+            emit unfreezeFindBtn();
+            return;
+        }
+    }
+    keyTableFindPos = startPos;
+    emit sendLogLText("搜索结果为空");
+    emit unfreezeFindBtn();
+    return;
 }
 
 void MainUi::changeFindMode(int mode)

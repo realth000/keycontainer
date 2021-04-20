@@ -2,9 +2,12 @@ QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-CONFIG += c++17
-
+CONFIG += c++17 no_batch
+QMAKE_CXXFLAGS += /MP
 # 防止linux下程序名中空格造成的问题，分开处理
+VERSION = 2.2.10
+
+
 win32 {
     RC_ICONS = "Key Container.ico"
     TARGET = "Key Container"
@@ -15,7 +18,7 @@ unix {
     TARGET = "KeyContainer"
 }
 
-VERSION = 2.2.9
+
 
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
