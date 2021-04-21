@@ -5,7 +5,7 @@
 #include <QCloseEvent>
 #include <QKeyEvent>
 #include "encryption/encrypted.h"
-#include "ui/messageboxex.h"
+#include "ui/messageboxexx.h"
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -46,7 +46,7 @@ private:
     QString pwPath = "";
     Estring truePwdHash = Estring("");
     Ui::LogIn *ui;
-    MessageBoxEx mb;
+    MessageBoxExX mb;
 };
 
 #endif // LOGIN_H

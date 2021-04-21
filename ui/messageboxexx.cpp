@@ -1,5 +1,5 @@
-﻿#include "messageboxex.h"
-#include "ui_messageboxex.h"
+﻿#include "messageboxexx.h"
+#include "ui_messageboxexx.h"
 #include "ui/titlebar.h"
 #include "commoninclude.h"
 #include "qssinstaller.h"
@@ -8,9 +8,9 @@
 #pragma execution_character_set("utf-8")
 #endif
 
-MessageBoxEx::MessageBoxEx(QWidget *parent) :
+MessageBoxExX::MessageBoxExX(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui::MessageBoxEx)
+    ui(new Ui::MessageBoxExX)
 {
     ui->setupUi(this);
     this->setWindowFlag(Qt::FramelessWindowHint);
@@ -25,20 +25,19 @@ MessageBoxEx::MessageBoxEx(QWidget *parent) :
     ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 
     // 样式
-    QssInstaller w;
-    this->setStyleSheet(w.QssInstallFromFile(":/qss/stylesheet_messageboxex.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_messageboxexx.qss").arg(this->objectName()).arg("rgb(55,85,100)")
             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                  "alternate-background-color:rgb(55,55,55)"));
     ui->infoTE->setReadOnly(true);
 
 }
 
-MessageBoxEx::~MessageBoxEx()
+MessageBoxExX::~MessageBoxExX()
 {
     delete ui;
 }
 
-void MessageBoxEx::information(QString titleText, QString text, QString buttonText)
+void MessageBoxExX::information(QString titleText, QString text, QString buttonText)
 {
     ui->titleBar->setTitleText(titleText);
     QMessageBox tmb;
@@ -51,11 +50,11 @@ void MessageBoxEx::information(QString titleText, QString text, QString buttonTe
 //    ui->infoTE->setAlignment(Qt::AlignHCenter);
     ui->button->setText(buttonText);
     ui->button2->setVisible(false);
-    connect(ui->button, &QPushButton::clicked, this, &MessageBoxEx::close);
+    connect(ui->button, &QPushButton::clicked, this, &MessageBoxExX::close);
     this->exec();
 }
 
-int MessageBoxEx::warning(QString titleText, QString text, QString yesText, QString noText)
+int MessageBoxExX::warning(QString titleText, QString text, QString yesText, QString noText)
 {
     this->result = Escape;
     ui->titleBar->setTitleText(titleText);
@@ -69,13 +68,13 @@ int MessageBoxEx::warning(QString titleText, QString text, QString yesText, QStr
 //    ui->infoTE->setAlignment(Qt::AlignHCenter);
     ui->button->setText(yesText);
     ui->button2->setText(noText);
-    connect(ui->button, &QPushButton::clicked, this, &MessageBoxEx::resultToYes);
-    connect(ui->button2, &QPushButton::clicked, this, &MessageBoxEx::resultToNo);
+    connect(ui->button, &QPushButton::clicked, this, &MessageBoxExX::resultToYes);
+    connect(ui->button2, &QPushButton::clicked, this, &MessageBoxExX::resultToNo);
     this->exec();
     return result;
 }
 
-int MessageBoxEx::question(QString titleText, QString text, QString yesText, QString noText)
+int MessageBoxExX::question(QString titleText, QString text, QString yesText, QString noText)
 {
     this->result = Escape;
     ui->titleBar->setTitleText(titleText);
@@ -88,19 +87,19 @@ int MessageBoxEx::question(QString titleText, QString text, QString yesText, QSt
     ui->infoTE->setText(text);
     ui->button->setText(yesText);
     ui->button2->setText(noText);
-    connect(ui->button, &QPushButton::clicked, this, &MessageBoxEx::resultToYes);
-    connect(ui->button2, &QPushButton::clicked, this, &MessageBoxEx::resultToNo);
+    connect(ui->button, &QPushButton::clicked, this, &MessageBoxExX::resultToYes);
+    connect(ui->button2, &QPushButton::clicked, this, &MessageBoxExX::resultToNo);
     this->exec();
     return result;
 }
 
-void MessageBoxEx::resultToYes()
+void MessageBoxExX::resultToYes()
 {
     this->result = Yes;
     this->close();
 }
 
-void MessageBoxEx::resultToNo()
+void MessageBoxExX::resultToNo()
 {
     this->result = No;
     this->close();

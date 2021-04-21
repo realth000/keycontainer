@@ -22,13 +22,13 @@ TitleBar::TitleBar(QWidget *parent):
 void TitleBar::initUi(TitleBar::TitleBarMode mode, QString textColor, QString hover_textColor, QString background, QString hover_backgroundColor)
 {
     if(useGradient){
-        this->setStyleSheet(QString("QWidget{color:%1}"
+        this->setStyleSheet(QString("QWidget{font:15px;color:%1}"
                                 "QGroupBox{border:none;background:%2;}"
                                 "QPushButton{background:transparent;border:none;border-radius:0px}"
                                 "QPushButton:hover{color:%3;background-color:%4}")
                             .arg(textColor).arg(background).arg(hover_textColor).arg(hover_backgroundColor));
     }else{
-        this->setStyleSheet(QString("QWidget{color:%1}"
+        this->setStyleSheet(QString("QWidget{font:15px;color:%1}"
                                 "QGroupBox{border:none;background-color:%2;}"
                                 "QPushButton{background:transparent;border:none;border-radius:0px}"
                                 "QPushButton:hover{color:%3;background-color:%4}")

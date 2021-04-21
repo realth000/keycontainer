@@ -225,10 +225,13 @@ void MainUi::initKeyData()
         log("数据校验未通过，拒绝读取数据");
         return;
     }
+    ui->keyTW->setEnabled(false);
     if(kcdb->readKcdb()){
         syncKeyFromMap();
         refreshKeyTW();
     }
+    ui->keyTW->setEnabled(true);
+    keyTableFindPos = -1;
 
 }
 
@@ -236,8 +239,7 @@ void MainUi::initUi()
 {
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
-    QssInstaller w;
-    this->setStyleSheet(w.QssInstallFromFile(":/qss/stylesheet.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet.qss").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
@@ -397,7 +399,6 @@ void MainUi::initUi()
 
     QIcon about_aboutQtIcon;
     const QPixmap pixmp15 = QPixmap(":/qt-project.org/qmessagebox/images/qtlogo-64.png");
-//    const QPixmap pixmp15 = QPixmap(":/src/findKey_reverse.png");
     if(!pixmp15.isNull()){
         about_aboutQtIcon.addPixmap(pixmp15, QIcon::Normal, QIcon::Off);
     }
@@ -447,6 +448,7 @@ void MainUi::initUi()
     ui->findKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->about_aboutQtB->setFocusPolicy(Qt::NoFocus);
     ui->importKeysBtn->setFocusPolicy(Qt::NoFocus);
+    ui->clearLogBtn->setFocusPolicy(Qt::NoFocus);
 
     ui->groupBox->setFocusPolicy(Qt::NoFocus);
     ui->key_checkRB->setFocusPolicy(Qt::NoFocus);
@@ -459,7 +461,6 @@ void MainUi::initUi()
     ui->savePathLE->setReadOnly(true);
     ui->backupPathLE->setReadOnly(true);
 
-
     ui->keyTW->setColumnCount(5);
     ui->keyTW->setHorizontalHeaderLabels({"选择", "id", "说明","账户", "密码"});
     ui->keyTW->setColumnWidth(0,40);
@@ -467,6 +468,7 @@ void MainUi::initUi()
     ui->keyTW->setColumnWidth(2,150);
     ui->keyTW->setColumnWidth(3,180);
     ui->keyTW->setColumnWidth(4,200);
+    ui->keyTW->horizontalHeader()->setFixedHeight(40);
 
     ui->keyTW->setEditTriggers(QTableWidget::NoEditTriggers);
     ui->keyTW->setSelectionBehavior(QTableWidget::SelectRows);
@@ -498,10 +500,10 @@ void MainUi::initUi()
     about_logo_pix->scaled(ui->about_logoL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->about_logoL->setScaledContents(true);
     ui->about_logoL->setPixmap(*about_logo_pix);
-    QFont *about_title_font = new QFont("Microsoft YaHei");
-    about_title_font->setPointSize(20);
-    about_title_font->setBold(true);
-    ui->about_titleL->setFont(*about_title_font);
+//    QFont *about_title_font = new QFont("");
+//    about_title_font->setPointSize(20);
+//    about_title_font->setBold(true);
+//    ui->about_titleL->setFont(*about_title_font);
     ui->about_titleL->setAlignment(Qt::AlignCenter);
     ui->about_plantformL->setText(ABOUT_PLANTFORM);
     ui->about_plantformL->setAlignment(Qt::AlignRight |Qt::AlignVCenter);
@@ -606,7 +608,6 @@ QWidget* MainUi::addCheckBox()
 //    check->installEventFilter(this);
     check->setStyle(new CheckBoxStyle);
     checkBoxItem.append(check);
-    // TODO: keyTW 的 CheckBox的select信号与选中信号的减少
     connect(check, SIGNAL(stateChanged(int)), this, SLOT(selectChecked(int)));
     QVBoxLayout *vb = new QVBoxLayout();
     vb->addStretch(1);
@@ -685,13 +686,9 @@ void MainUi::showKeyTableKeys()
             // TODO: 此处应该显示的账号及密码
             // 注意delete 与 takeItem是否有问题
             QTableWidgetItem* i1 = ui->keyTW->item(i,1);
-            QTableWidgetItem* i3 = ui->keyTW->takeItem(i,3);
-            QTableWidgetItem* i4 = ui->keyTW->takeItem(i,4);
+            ui->keyTW->item(i,3)->setText(keyMap.value(i1->text().toInt()).account.getVal());
+            ui->keyTW->item(i,4)->setText(keyMap.value(i1->text().toInt()).password.getVal());
 //            ui->keyTW->setItem(i, 3, new QTableWidgetItem(decrypt(keyMap.value(i1->text().toInt()).account)));
-            ui->keyTW->setItem(i, 3, new QTableWidgetItem(keyMap.value(i1->text().toInt()).account.getVal()));
-            ui->keyTW->setItem(i, 4, new QTableWidgetItem(keyMap.value(i1->text().toInt()).password.getVal()));
-            delete i3;
-            delete i4;
         }
         is_show_pwd = true;
         ui->showKeyBtn->setText("隐藏密码");
@@ -699,10 +696,8 @@ void MainUi::showKeyTableKeys()
     }
     else{
         for(quint32 i=0; i<keyTableRowCount; i++){
-            delete ui->keyTW->takeItem(i,3);
-            delete ui->keyTW->takeItem(i,4);
-            ui->keyTW->setItem(i, 3, new QTableWidgetItem(pwdCharacterString));
-            ui->keyTW->setItem(i, 4, new QTableWidgetItem(pwdCharacterString));
+            ui->keyTW->item(i,3)->setText(pwdCharacterString);
+            ui->keyTW->item(i,4)->setText(pwdCharacterString);
         }
         is_show_pwd = false;
         ui->showKeyBtn->setText("显示密码");
@@ -713,13 +708,32 @@ void MainUi::showKeyTableKeys()
 void MainUi::addKey()
 {
     KeyMap *k = new KeyMap;
-    InputKeyUi *u = new InputKeyUi(this, keyTableRowCount, k);
+    InputKeyUi *u = new InputKeyUi(this, keyTableRowCount, k, discQuickIndex);
 //    u->installEventFilter(this);q
-    connect(u, &InputKeyUi::inputFinish, this, [=](bool result){
+    connect(u, &InputKeyUi::inputFinish, this, [=](bool result, int existPos){
+        // 需要加入密码
         if(result){
-            keyTW_addNewRow(keyTableRowCount, k->disc, k->account, k->password, 35);
-            keyMap.insert(keyTableRowCount, KeyMap(keyTableRowCount, k->disc, k->account,k->password));
-            keyTableRowCount++;
+            // 密码已经存在，更新旧密码
+            if(existPos>=0){
+                keyMap[existPos].disc = k->disc;
+                keyMap[existPos].account = k->account;
+                keyMap[existPos].password = k->password;
+                discQuickIndex[existPos] = k->disc;
+                QTableWidgetItem *i1 = ui->keyTW->item(existPos, 3);
+                if(i1->text() != pwdCharacterString){
+                    i1->setText(k->account.getVal());
+                }
+                QTableWidgetItem *i2 = ui->keyTW->item(existPos, 4);
+                if(i2->text() != pwdCharacterString){
+                    i2->setText(k->password.getVal());
+                }
+            }
+            // 密码不存在，加入新密码
+            else{
+                keyTW_addNewRow(keyTableRowCount, k->disc, k->account, k->password, 35);
+                keyMap.insert(keyTableRowCount, KeyMap(keyTableRowCount, k->disc, k->account,k->password));
+                keyTableRowCount++;
+            }
         }
         QApplication::instance()->installEventFilter(this);
     });
@@ -850,7 +864,6 @@ void MainUi::syncKeyFromMap()
     QMap<QString, GroupKey> tmp = kcdb->getKeys();
     keyMap.clear();
     QMap<QString, GroupKey>::const_iterator t = tmp.begin();
-    qDebug() << "sync keyMap: get" << tmp.size() << "keys";
     int count=0;
     while (t != tmp.cend()) {
         // TODO: sync KeyMap id and disc -> support both version of KeyContainer
@@ -859,7 +872,6 @@ void MainUi::syncKeyFromMap()
         count++;
         t++;
     }
-//    qDebug() << "sync keyMap with" << count+1 << "items";
 }
 
 void MainUi::syncKeyMapToKcdb()
@@ -931,38 +943,44 @@ void MainUi::writeCheckFile(QString checkPath)
 
 void MainUi::showAcPw()
 {
-    delete ui->keyTW->takeItem(rightClickSelectedItemRow,3);
-    delete ui->keyTW->takeItem(rightClickSelectedItemRow,4);
     if(isAcountShowing || isKeyShowing){
-        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(pwdCharacterString));
-        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(pwdCharacterString));
+        ui->keyTW->item(rightClickSelectedItemRow, 3)->setText(pwdCharacterString);
+        ui->keyTW->item(rightClickSelectedItemRow, 4)->setText(pwdCharacterString);
     }
     else{
-        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).account.getVal()));
-        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).password.getVal()));
+        ui->keyTW->item(rightClickSelectedItemRow, 3)->setText(keyMap.value(rightClickSelectedItemRow).account.getVal());
+        ui->keyTW->item(rightClickSelectedItemRow, 4)->setText(keyMap.value(rightClickSelectedItemRow).password.getVal());
     }
+//    delete ui->keyTW->takeItem(rightClickSelectedItemRow,3);
+//    delete ui->keyTW->takeItem(rightClickSelectedItemRow,4);
+//    if(isAcountShowing || isKeyShowing){
+//        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(pwdCharacterString));
+//        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(pwdCharacterString));
+//    }
+//    else{
+//        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).account.getVal()));
+//        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).password.getVal()));
+//    }
 }
 
 void MainUi::showAc()
 {
-    delete ui->keyTW->takeItem(rightClickSelectedItemRow,3);
     if(isAcountShowing){
-        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(pwdCharacterString));
+        ui->keyTW->item(rightClickSelectedItemRow, 3)->setText(pwdCharacterString);
     }
     else{
-        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).account.getVal()));
+        ui->keyTW->item(rightClickSelectedItemRow, 3)->setText(keyMap.value(rightClickSelectedItemRow).account.getVal());
     }
 
 }
 
 void MainUi::showPw()
 {
-    delete ui->keyTW->takeItem(rightClickSelectedItemRow,4);
     if(isKeyShowing){
-        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(pwdCharacterString));
+        ui->keyTW->item(rightClickSelectedItemRow, 4)->setText(pwdCharacterString);
     }
     else{
-        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).password.getVal()));
+        ui->keyTW->item(rightClickSelectedItemRow, 4)->setText(keyMap.value(rightClickSelectedItemRow).password.getVal());
     }
 
 }
@@ -1030,28 +1048,29 @@ void MainUi::showKeyTableMenu(QPoint)
         pnew2 = new QAction("显示账户", menu);
         pnew3 = new QAction("显示密码", menu);
     }
-
-    QAction *pnew4 = new QAction("从此处向上搜索", menu);
-    QAction *pnew5 = new QAction("从此处向下搜索", menu);
-    connect(pnew0, &QAction::triggered, this, &MainUi::deleteSingleKey, Qt::UniqueConnection);
-    connect(pnew1, &QAction::triggered, this, [&](){showAcPw();}, Qt::UniqueConnection);
-    connect(pnew2, &QAction::triggered, this, [&](){showAc();}, Qt::UniqueConnection);
-    connect(pnew3, &QAction::triggered, this, [&](){showPw();}, Qt::UniqueConnection);
-    connect(pnew4, &QAction::triggered, this, [&](){
-        this->keyTableFindPos = rightClickSelectedItemRow;
-        findPreviousKey();
-    }, Qt::UniqueConnection);
-    connect(pnew5, &QAction::triggered, this, [&](){
-        this->keyTableFindPos = rightClickSelectedItemRow;
-        findNextKey();
-    }, Qt::UniqueConnection);
-
     menu->addAction(pnew1);
     menu->addAction(pnew2);
     menu->addAction(pnew3);
-    menu->addSeparator();
-    menu->addAction(pnew4);
-    menu->addAction(pnew5);
+
+    connect(pnew0, &QAction::triggered, this, &MainUi::deleteSingleKey, Qt::UniqueConnection);
+    connect(pnew1, &QAction::triggered, this, [&](){showAcPw();}, Qt::UniqueConnection);
+    connect(pnew2, &QAction::triggered, this, [&](){showAc();}, Qt::UniqueConnection);
+     connect(pnew3, &QAction::triggered, this, [&](){showPw();}, Qt::UniqueConnection);
+     if(this->enableKeyTWContextMenuSearch){
+         QAction *pnew4 = new QAction("从此处向上搜索", menu);
+         QAction *pnew5 = new QAction("从此处向下搜索", menu);
+         connect(pnew4, &QAction::triggered, this, [&](){
+             this->keyTableFindPos = rightClickSelectedItemRow;
+             findPreviousKey();
+         }, Qt::UniqueConnection);
+         connect(pnew5, &QAction::triggered, this, [&](){
+             this->keyTableFindPos = rightClickSelectedItemRow;
+             findNextKey();
+         }, Qt::UniqueConnection);
+         menu->addSeparator();
+         menu->addAction(pnew4);
+         menu->addAction(pnew5);
+     }
     menu->addSeparator();
     menu->addAction(pnew0);
     menu->move (cursor().pos());
@@ -1221,8 +1240,6 @@ void MainUi::on_saveKeyBtn_clicked()
 
 }
 
-
-
 void MainUi::on_backupKeyBtn_clicked()
 {
     if(keyTableRowCount==0){
@@ -1231,18 +1248,14 @@ void MainUi::on_backupKeyBtn_clicked()
     }
     QString finalPath;
     int result = mb.question("备份密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
-    if(result == MessageBoxEx::Yes){
+    if(result == MessageBoxExX::Yes){
         QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", workPath, QFileDialog::ShowDirsOnly);
         if(newPath.isEmpty()){
             return;
         }
-//        if(newPath == workPath){
-//            log("无效路径");
-//            return;
-//        }
         finalPath = QDir::toNativeSeparators(newPath + "/pwbp.kcdb");
     }
-    else if(result == MessageBoxEx::No){
+    else if(result == MessageBoxExX::No){
         finalPath = savePath;
     }
     else{
@@ -1288,7 +1301,7 @@ void MainUi::on_selectBackupPathBtn_clicked()
 void MainUi::on_changeAESKeyBtn_clicked()
 {
     int re = mb.warning("重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？");
-    if(re == MessageBoxEx::Yes){
+    if(re == MessageBoxExX::Yes){
         if(!ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
         on_saveKeyBtn_clicked();
     }
@@ -1396,7 +1409,6 @@ void MainUi::on_about_aboutQtB_clicked()
 void MainUi::on_findKeyBtn_clicked()
 {
     if(!fkui->isVisible()){
-
         fkui->show();
     }
     else{
@@ -1406,18 +1418,17 @@ void MainUi::on_findKeyBtn_clicked()
 
 }
 
-bool MainUi::findCheckKey()
+bool MainUi::findCheckKey() const
 {
     if(findMode == 0 ){
-        qDebug() << "find mode 0";
-        return !discQuickIndex[keyTableFindPos].getVal().contains(findText);
+        return fkui->isFindAllWord() ?
+                    !(discQuickIndex[keyTableFindPos].getVal().compare(findText, fkui->isCaseSen()) == 0) :
+                    !discQuickIndex[keyTableFindPos].getVal().contains(findText, fkui->isCaseSen());
     }
     else if(findMode == 1){
-        qDebug() << "find mode 1";
         return !discQuickIndex[keyTableFindPos].getVal().contains(QRegularExpression(findText));
     }
     else{
-        qDebug() << "find mode else";
         return true;
     }
 }
@@ -1438,7 +1449,7 @@ void MainUi::findPreviousKey()
     }
     int startPos = keyTableFindPos;
     while(keyTableFindPos>=0){
-            qDebug() <<"find previous: routine 1: at" << keyTableFindPos;
+//            qDebug() <<"find previous: routine 1: at" << keyTableFindPos;
         if(findCheckKey()){
             keyTableFindPos--;
         }
@@ -1453,7 +1464,7 @@ void MainUi::findPreviousKey()
     // 从pos->开头找完了，接着找结尾->pos
     keyTableFindPos=keyTableRowCount_int-1;
     while(keyTableFindPos >= startPos){
-            qDebug() <<"find previous: routine 2: at" << keyTableFindPos;
+//            qDebug() <<"find previous: routine 2: at" << keyTableFindPos;
         if(findCheckKey()){
             keyTableFindPos--;
         }
@@ -1465,7 +1476,7 @@ void MainUi::findPreviousKey()
             return;
         }
     }
-    qDebug() << "null find";
+//    qDebug() << "null find";
     keyTableFindPos = startPos;
     emit sendLogLText("搜索结果为空");
     emit unfreezeFindBtn();
@@ -1489,7 +1500,7 @@ void MainUi::findNextKey()
     }
      int startPos = keyTableFindPos;
     while(keyTableFindPos<keyTableRowCount_int){
-            qDebug() <<"find next: routine 1: at" << keyTableFindPos;
+//            qDebug() <<"find next: routine 1: at" << keyTableFindPos;
         if(findCheckKey()){
             keyTableFindPos++;
         }
@@ -1505,7 +1516,7 @@ void MainUi::findNextKey()
     // 从pos->结尾找完了，接着找开头->pos
     keyTableFindPos=0;
     while(keyTableFindPos <= startPos){
-            qDebug() <<"find next: routine 2: at" << keyTableFindPos;
+//            qDebug() <<"find next: routine 2: at" << keyTableFindPos;
         if(findCheckKey()){
             keyTableFindPos++;
         }
@@ -1531,19 +1542,32 @@ void MainUi::changeFindMode(int mode)
 void MainUi::changeFindText(QString s)
 {
     if(s == ""){
+        this->enableKeyTWContextMenuSearch = false;
         return;
     }
+    this->enableKeyTWContextMenuSearch = true;
     this->findText = s;
 }
 
-void MainUi::countAll() const
+void MainUi::countAll()
 {
+    if(findText == ""){
+        return;
+    }
+    fkui->freezeFindBtn();
     int c = 0;
-    foreach(Estring s, discQuickIndex){
-        if(s.getVal().contains(findText)){
+    int const length = discQuickIndex.size();
+    int const keyTableFindPosSave = keyTableFindPos;
+    for(int i=0; i<length; i++){
+        if(keyTableFindPos >= length || keyTableFindPos < 0){
+            keyTableFindPos = 0;
+        }
+        if(!findCheckKey()){
             c++;
         }
+        keyTableFindPos++;
     }
+    keyTableFindPos = keyTableFindPosSave;
     emit sendLogLText("计数: 共" + QString::number(c) + "个");
     emit unfreezeFindBtn();
 }
@@ -1570,4 +1594,12 @@ void MainUi::on_importKeysBtn_clicked()
     syncKeyFromMap();
     refreshKeyTW();
     log("导入成功");
+}
+
+void MainUi::on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)
+{
+    Q_UNUSED(currentColumn);
+    Q_UNUSED(previousRow);
+    Q_UNUSED(previousColumn);
+    keyTableFindPos = currentRow;
 }

@@ -6,7 +6,7 @@
 #include <QByteArray>
 #include <QMap>
 #include "encryption/encrypted.h"
-#include "ui/messageboxex.h"
+#include "ui/messageboxexx.h"
 
 #define NEXT_IS_GROUPKEY 0x01
 #define NEXT_IS_MAINTAINKEY 0x02
@@ -64,7 +64,7 @@ private:
 //    QDataStream inStream;
 //    QDataStream outStream;
 //    bool backupState = false;
-    MessageBoxEx t;
+    MessageBoxExX t;
 
 };
 
@@ -129,7 +129,7 @@ private:
     QMap<QString, GroupKey> groupKeyList;
     QMutableMapIterator<QString, GroupKey> gkptr = groupKeyList;
 //    QMutableMapIterator<int, maintainKey>kcdb::mtkptr = maintainKey::mtKeyList;
-    MessageBoxEx t;
+    MessageBoxExX t;
 
 };
 

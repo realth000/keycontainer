@@ -53,7 +53,8 @@ public:
 class CheckBoxStyle : public QProxyStyle
 {
 public:
-    void drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
+    virtual void drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const override;
+
 };
 
 class RadioButtonStyle : public QProxyStyle

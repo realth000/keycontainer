@@ -7,7 +7,7 @@
 #include "login.h"
 #include "kcdb.h"
 #include <QPoint>
-#include "ui/messageboxex.h"
+#include "ui/messageboxexx.h"
 #include <QApplication>
 #include "findkeyui.h"
 
@@ -67,13 +67,14 @@ private slots:
     void on_backupDataKeyBtn_clicked();
     void on_about_aboutQtB_clicked();
     void on_findKeyBtn_clicked();
-    bool findCheckKey();
+    bool findCheckKey() const;
     void findNextKey();
     void findPreviousKey();
     void changeFindMode(int mode);
     void changeFindText(QString s);
-    void countAll() const;
+    void countAll();
     void on_importKeysBtn_clicked();
+    void on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
 
 private:
     void initKeyData();
@@ -110,7 +111,6 @@ private:
     bool is_show_pwd = false;
     const QString pwdCharacterString = "❄❄❄❄❄❄❄";
     bool autoChangeAES = false;
-    bool open = false;
     Estring truePwdHash = Estring();
     QString workPath = "";
     QString savePath = "/pw.kcdb";
@@ -118,12 +118,13 @@ private:
     int rightClickSelectedItemRow = false;
     bool isAcountShowing = false;
     bool isKeyShowing = false;
-    MessageBoxEx mb;
+    MessageBoxExX mb;
     FindKeyUi *fkui = nullptr;
     const QList<QString> eventFilterNames = {"QPushButton", "QCheckBox", "QWidgetWindow", "QTabBar", "QRadioButton", "QWidget", "TitleBar", "QMenu"};
     int findMode = 0;
     bool findDirection = true; // =true，快捷键F3控制向下搜索，=false，快捷键F3控制向上搜索
     QString findText = "";
+    bool enableKeyTWContextMenuSearch = false; // 当要搜索的文本为空时，禁用表格右键菜单中的搜索
 
 };
 #endif // MAINUI_H

@@ -5,8 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++17 no_batch
 QMAKE_CXXFLAGS += /MP
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 2.2.10
-
+VERSION = 2.2.11
 
 win32 {
     RC_ICONS = "Key Container.ico"
@@ -17,9 +16,6 @@ unix {
     RC_ICONS = "KeyContainer.ico"
     TARGET = "KeyContainer"
 }
-
-
-
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
 #LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
@@ -49,7 +45,7 @@ SOURCES += \
     main.cpp \
     mainui.cpp \
     qssinstaller.cpp \
-    ui/messageboxex.cpp \
+    ui/messageboxexx.cpp \
     ui/qlineeditpro.cpp \
     ui/tablewidgetex.cpp \
     ui/titlebar.cpp \
@@ -68,7 +64,7 @@ HEADERS += \
     login.h \
     mainui.h \
     qssinstaller.h \
-    ui/messageboxex.h \
+    ui/messageboxexx.h \
     ui/qlineeditpro.h \
     ui/tablewidgetex.h \
     ui/titlebar.h \
@@ -80,7 +76,7 @@ FORMS += \
     inputkeyui.ui \
     login.ui \
     mainui.ui \
-    ui/messageboxex.ui
+    ui/messageboxexx.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

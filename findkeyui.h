@@ -21,7 +21,8 @@ public:
     explicit FindKeyUi(QWidget *parent = nullptr);
     ~FindKeyUi();
     void setInputFocus();
-    bool isFindUseReg() const;
+    bool isFindAllWord() const;
+    Qt::CaseSensitivity isCaseSen() const;
 
 signals:
     void closed();
@@ -48,13 +49,17 @@ private slots:
     void on_findKeywordLE_textChanged(const QString &arg1);
     void on_countBtn_clicked();
     void on_useRegChB_stateChanged(int arg1);
+    void on_findAllWordChB_stateChanged(int arg1);
+    void on_findCaseSensitivityChB_stateChanged(int arg1);
 
 private:
     Ui::FindKeyUi *ui;
     int F3FindMode = 1; // =1时F3控制向下搜索， =0时F3控制向上搜索
     bool findDirection = true; // =true，快捷键F3控制向下搜索，=false，快捷键F3控制向上搜索
+    bool findAllWord = false; // 全词查找
+    Qt::CaseSensitivity findCaseSen = Qt::CaseInsensitive; // 匹配大小写，默认不敏感(false, =0)
+
     void initUi();
-    int findKeyUseReg = 0;
 };
 
 #endif // FINDKEYUI_H

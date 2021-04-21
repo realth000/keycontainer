@@ -30,11 +30,12 @@
         <file>src/Key Container.ico</file>
         <file>src/KeyContainer.ico</file>
         <file>src/backupKeys.png</file>
-        <file>qss/stylesheet_messageboxex.qss</file>
         <file>qss/stylesheet_findkeyui.qss</file>
         <file>src/arrow_left_30.png</file>
         <file>src/arrow_right_30.png</file>
         <file>src/findKey_reverse.png</file>
         <file>src/importKeys.png</file>
+        <file>etc/qt.conf</file>
+        <file>qss/stylesheet_messageboxexx.qss</file>
     </qresource>
 </RCC>
