@@ -1,14 +1,17 @@
-﻿要做的事情：
-1. 保存前验证是不是当前存放的文件夹，是的话return，否则会让数据消失。 2.2.6
-2. 保存时选择保存到默认路径还是新选个路径 2.2.6
-3. 做个导入功能 2.2.6
-4. 导出功能的操作分块逻辑，导出功能现在很乱，需要重做 2.2.7
-5. 安全性，拿到dat.ec时是否可以用个已知密码的login.ec来绕过原来的密码 2.2.8 (经分析，会影响导入等等功能，使用起来很麻烦，不再做这条)
-6. 定时检测密码正确性 2.2.9
-7. 增加一些对于密码数据的信息记录，便于区分 2.2.9
+﻿搜索：
+1. 大小写 2.2.11
+2. 全词匹配 2.2.11
+3. 互斥： 全词 <-> 正则(ProxyStyle灰色)
 
-8. FileDialogEx 2.2.8
 
-9. findNext findPrevious时，切换方向后第一次切换不正确的问题 2.2.10
-10. findKey 正则查找 2.2.10
-11. 表格右键菜单的上下搜索修复 2.2.10
+QRadioButton未选中时的抗锯齿
+不搜索表格第一项的问题
+选中项后依然从第一行开始搜索的问题
+MessageBoxEx命名冲突问题
+处理说明相同的密码
+密码隐藏时计数崩溃的问题
+
+delete from stylesheet.qss:
+QHeaderWidget{border:none;color:rgb(240,255,255);background-color:rgb(64,66,68)}
+QHeaderWidget::section:horizontal{border-top:none;border-left:none;border-right:1px solid %2;border-bottom:1px solid %3;
+color:rgb(230,230,230);background-color:rgb(45,45,45);}

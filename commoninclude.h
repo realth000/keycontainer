@@ -10,7 +10,7 @@
 
 #define ABOUT_VERSION APP_VERSION
 //#define ABOUT_TIME  QDateTime::currentDateTime().toString("yyyy.MM.dd")
-#define ABOUT_TIME  "2021.4.20"
+#define ABOUT_TIME  "2021.4.21"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
@@ -76,6 +76,8 @@
 #define TABWIDGET_MENU_BACKGROUND_COLOR "#282828"     // 一横条的背景，宽度是button_up_height + offset
 #define PUSHBUTTON_DISABLE_COLOR "#282828"            // disable color 要比上边这个menu background color 浅
 #define PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR "#333333"    // 设置在widget上而不在一横条背景上的PushButton在普通状态时的背景颜色
+#define CHECKBOX_DIABLE_COLOR "#808080" // QCheckBox disabled color
+#define CHECKBOX_CHECK_WIDTH 4
 
 #define TABWIDGET_MENU_HORIZONTAL_MARGIN 0     // 一横条的高与pushbutton的高度差，要比pushbutton宽。
 #define TABWIDGET_MENU_VERTICAL_MARGIN 5     // 一横条的高与pushbutton的高度差，要比pushbutton宽。

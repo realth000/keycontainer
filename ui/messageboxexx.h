@@ -1,5 +1,5 @@
-﻿#ifndef MESSAGEBOXEX_H
-#define MESSAGEBOXEX_H
+﻿#ifndef MessageBoxExX_H
+#define MessageBoxExX_H
 
 #include <QDialog>
 #include <QMessageBox>
@@ -10,10 +10,10 @@
 #endif
 
 namespace Ui {
-class MessageBoxEx;
+class MessageBoxExX;
 }
 
-class MessageBoxEx : public QDialog
+class MessageBoxExX : public QDialog
 {
     Q_OBJECT
     // Keep these enums sync with them in qmessagebox.h
@@ -80,14 +80,14 @@ public:
     };
     Q_ENUM(StandardButton)
 
-    explicit MessageBoxEx(QWidget *parent = nullptr);
-    ~MessageBoxEx();
+    explicit MessageBoxExX(QWidget *parent = nullptr);
+    ~MessageBoxExX();
     void information(QString titleText = "提示", QString text = "", QString buttonText = "确定");
     int warning(QString titleText = "警告", QString text = "", QString yesText = "确定", QString noText = "取消");
     int question(QString titleText = "?", QString text = "", QString yesText = "是", QString noText = "否");
 
 private:
-    Ui::MessageBoxEx *ui;
+    Ui::MessageBoxExX *ui;
     int result = 0x00000000;
 
 private slots:
@@ -96,4 +96,4 @@ private slots:
 
 };
 
-#endif // MESSAGEBOXEX_H
+#endif // MessageBoxExX_H

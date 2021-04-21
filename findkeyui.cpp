@@ -30,11 +30,15 @@ void FindKeyUi::setInputFocus()
     ui->findKeywordLE->setCursorPosition(ui->findKeywordLE->text().size());
 }
 
-bool FindKeyUi::isFindUseReg() const
+bool FindKeyUi::isFindAllWord() const
 {
-    return this->findKeyUseReg;
+    return this->findAllWord;
 }
 
+Qt::CaseSensitivity FindKeyUi::isCaseSen() const
+{
+    return this->findCaseSen;
+}
 
 void FindKeyUi::setTransparency(bool pos)
 {
@@ -109,8 +113,7 @@ void FindKeyUi::initUi()
 {
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
-    QssInstaller w;
-    this->setStyleSheet(w.QssInstallFromFile(":/qss/stylesheet_findkeyui.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_findkeyui.qss").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
 
@@ -125,6 +128,10 @@ void FindKeyUi::initUi()
     ui->titleBar->setParent(this);
     ui->findPreBtn->setFocusPolicy(Qt::NoFocus);
     ui->findNextBtn->setFocusPolicy(Qt::NoFocus);
+    ui->countBtn->setFocusPolicy(Qt::NoFocus);
+    ui->findAllWordChB->setFocusPolicy(Qt::NoFocus);
+    ui->findCaseSensitivityChB->setFocusPolicy(Qt::NoFocus);
+    ui->useRegChB->setFocusPolicy(Qt::NoFocus);
     ui->findKeywordLE->setFocusPolicy(Qt::StrongFocus);
     ui->findKeywordLE->setFocus();
 //    connect(ui->findKeywordLE, &QLineEdit::textChanged, this, &FindKeyUi::findText, Qt::UniqueConnection);
@@ -145,7 +152,10 @@ void FindKeyUi::initUi()
     PushButtonStyle *p = new PushButtonStyle;
     ui->findPreBtn->setStyle(p);
     ui->findNextBtn->setStyle(p);
+    CheckBoxStyle *c = new CheckBoxStyle;
     ui->useRegChB->setStyle(new CheckBoxStyle);
+    ui->findCaseSensitivityChB->setStyle(c);
+    ui->findAllWordChB->setStyle(c);
 }
 
 void FindKeyUi::on_findPreBtn_clicked()
@@ -154,7 +164,6 @@ void FindKeyUi::on_findPreBtn_clicked()
     findDirection=false;
     freezeFindBtn();
     emit findTextPrevious();
-    qDebug() << "Previous";
 }
 
 void FindKeyUi::on_findNextBtn_clicked()
@@ -162,7 +171,6 @@ void FindKeyUi::on_findNextBtn_clicked()
     findDirection=true;
     freezeFindBtn();
     emit findTextNext();
-    qDebug() << "next";
 }
 
 void FindKeyUi::on_findKeywordLE_textChanged(const QString &arg1)
@@ -178,7 +186,41 @@ void FindKeyUi::on_countBtn_clicked()
 
 void FindKeyUi::on_useRegChB_stateChanged(int arg1)
 {
-    this->findKeyUseReg = arg1;
+    if(arg1 == 2){
+        ui->findAllWordChB->setEnabled(false);
+        ui->findCaseSensitivityChB->setEnabled(false);
+    }
+    else{
+        ui->findAllWordChB->setEnabled(true);
+        ui->findCaseSensitivityChB->setEnabled(true);
+    }
     emit findKeyUseRegSig(arg1);
-    qDebug() << "emit" << arg1;
+}
+
+void FindKeyUi::on_findAllWordChB_stateChanged(int arg1)
+{
+    if(arg1 == 2){
+        this->findAllWord = true;
+        ui->useRegChB->setEnabled(false);
+    }
+    else{
+        this->findAllWord = false;
+        if(!ui->findCaseSensitivityChB->isChecked()){
+            ui->useRegChB->setEnabled(true);
+        }
+    }
+}
+
+void FindKeyUi::on_findCaseSensitivityChB_stateChanged(int arg1)
+{
+    if(arg1 == 2){
+        this->findCaseSen = Qt::CaseSensitive;
+        ui->useRegChB->setEnabled(false);
+    }
+    else{
+        this->findCaseSen = Qt::CaseInsensitive;
+        if(!ui->findAllWordChB->isChecked()){
+            ui->useRegChB->setEnabled(true);
+        }
+    }
 }

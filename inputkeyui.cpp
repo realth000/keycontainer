@@ -4,6 +4,7 @@
 #include "ui/titlebar.h"
 #include <QDebug>
 #include "debugshowoptions.h"
+#include "ui/messageboxexx.h"
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -20,8 +21,8 @@
 #endif
 
 // TODO: 密码验证， 格式，存储
-InputKeyUi::InputKeyUi(QWidget *parent, quint32 id, KeyMap *keyMap) :
-    QDialog(parent), tid(id), m_keyMap(keyMap),
+InputKeyUi::InputKeyUi(QWidget *parent, quint32 id, KeyMap *keyMap, QList<Estring> discIndex) :
+    QDialog(parent), tid(id), m_keyMap(keyMap), m_exsitsKeys(discIndex),
     ui(new Ui::InputKeyUi)
 {
     ui->setupUi(this);
@@ -83,8 +84,7 @@ void InputKeyUi::initUi()
 {
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
-    QssInstaller w;
-    this->setStyleSheet(w.QssInstallFromFile(":/qss/stylesheet_inputkeyui.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_inputkeyui.qss").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
@@ -151,19 +151,43 @@ bool InputKeyUi::checkInput()
     }
     else{
         ui->hintLabel->setVisible(false);
-        m_keyMap->disc = Estring(ui->inputKey_discLE->text());
-        m_keyMap->account = Estring(ui->inputKey_accLE->text());
-        m_keyMap->password = Estring(ui->inputKey_pwdLE->text());
         return true;
     }
 }
 
+bool InputKeyUi::checkExistence()
+{
+    int length = m_exsitsKeys.length();
+    for(int i=0; i<length; i++){
+        if(m_exsitsKeys[i].getVal().compare(ui->inputKey_discLE->text()) == 0){
+            existPos = i;
+            return true;
+        }
+    }
+
+    return false;
+}
+
 void InputKeyUi::on_inputKey_saveB_clicked()
 {
-    if(checkInput()){
-        emit inputFinish(true);
-        this->close();
+    // 输入不符合要求时返回，不保存
+    if(!checkInput()){
+        return;
     }
+    existPos = -1;
+    // 检查对应说明的密码是否已经存在，如果在，选择是否更新其账号和密码（选否则返回）
+    if(checkExistence()){
+        MessageBoxExX m;
+        int result = m.warning("密码已存在", "已经存在与该说明相同的密码，是否将该密码及其更新为刚输入的值？", "确认更改", "不做更改");
+        if(result != MessageBoxExX::Yes){
+            return;
+        }
+    }
+    m_keyMap->disc = Estring(ui->inputKey_discLE->text());
+    m_keyMap->account = Estring(ui->inputKey_accLE->text());
+    m_keyMap->password = Estring(ui->inputKey_pwdLE->text());
+    emit inputFinish(true, existPos);
+    this->close();
 }
 
 void InputKeyUi::on_showPwdB_pressed()

@@ -5,6 +5,7 @@
 #include "commoninclude.h"
 #include <QProcess>
 #include <QString>
+#include <QFont>
 
 #ifdef Q_OS_WINDOWS
 #include <windows.h>
@@ -13,11 +14,13 @@
 #pragma execution_character_set("utf-8")
 #endif
 #elif  ifndef Q_OS_LINUX
-#include "ui/messageboxex.h"
+#include "ui/messageboxexx.h"
 #endif
 
 int main(int argc, char *argv[])
 {
+//    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+//    QApplication::setAttribute(Qt::AA_Use96Dpi);
     // check if running
 #if defined(Q_OS_WINDOWS)
 //    QString lpClassName = QString(TITLEBAR_TITLETEXT) + QString(".exe");
@@ -44,6 +47,7 @@ int main(int argc, char *argv[])
 
 //    qDebug() << "cmd result" << old_pid1 << old_pid2;
     // FIXME: 受同名窗口影响
+//    GetSystemMetrics();
        HWND pwnd = FindWindow(NULL,QString::fromUtf8(TITLEBAR_TITLETEXT).toStdWString().c_str());
         if(pwnd){
 //            DWORD checkProcessID = 0;//12744
@@ -82,10 +86,13 @@ int main(int argc, char *argv[])
 #endif
 #else
     QApplication a(argc, argv);
-    MessageBoxEx t;
+    MessageBoxExX t;
     t.information("无法启动", "程序已在运行中");
 #endif
-//    qDebug() << APP_NAME;
+    QFont af("Consolas");
+    af.setStyleStrategy(QFont::PreferAntialias);
+    a.setFont(af);
+
     QCoreApplication::setApplicationName(TITLEBAR_TITLETEXT);
     QCoreApplication::setOrganizationName("海淀区干饭大队");
     QCoreApplication::setApplicationVersion(ABOUT_VERSION);

@@ -8,7 +8,7 @@ class QssInstaller
 {
 public:
     explicit QssInstaller();
-    QString QssInstallFromFile(QString qssFilePath);
+    static QString QssInstallFromFile(QString qssFilePath);
 };
 
 #endif // QSSINSTALLER_H

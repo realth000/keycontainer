@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>2</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -330,7 +330,7 @@
        <rect>
         <x>20</x>
         <y>110</y>
-        <width>141</width>
+        <width>151</width>
         <height>51</height>
        </rect>
       </property>
@@ -664,7 +664,7 @@ p, li { white-space: pre-wrap; }
       </rect>
      </property>
      <property name="text">
-      <string>  关于Qt</string>
+      <string> 关于Qt</string>
      </property>
     </widget>
    </widget>

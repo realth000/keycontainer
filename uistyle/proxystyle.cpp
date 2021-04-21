@@ -352,7 +352,9 @@ void VerticalScrollBarStyle::drawComplexControl(QStyle::ComplexControl control, 
         if(const QStyleOptionSlider *sli = qstyleoption_cast<const QStyleOptionSlider *>(option)){
             QRect sliRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarSlider, widget);
             QRect grooveRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarGroove, widget);
+            // upRect上箭头的方框
             QRect upRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarSubLine, widget);
+            // downRect下箭头的方框
             QRect downRect = subControlRect(CC_ScrollBar, option, SC_ScrollBarAddLine, widget);
             // 抗锯齿
             painter->setRenderHint(QPainter::Antialiasing);
@@ -410,8 +412,10 @@ void VerticalScrollBarStyle::drawComplexControl(QStyle::ComplexControl control, 
             painter->save();
             painter->setPen(QColor(240,255,255));
             painter->setBrush(QColor(51,51,51));
+            // VerticalScrollBar，坐标轴原点在所在方框的左上角，x轴水平向右，y轴竖直向下
             int topRightX = upRect.topRight().x();
             int topHeight = upRect.height();
+            // downRightY控制把下箭头移动到下箭头该在的方框里
             int downRightY = downRect.y();
             QPoint upArr[3] = {
                 QPoint(topRightX*0.5, PADDING_UP),
@@ -419,6 +423,7 @@ void VerticalScrollBarStyle::drawComplexControl(QStyle::ComplexControl control, 
                 QPoint(topRightX-PADDING_LEFT, topHeight-PADDING_DOWN),
                 };
             QPoint downArr[3] = {
+                // y必须 + downRightY，才能正确绘制到下箭头所在的方框里
                 QPoint(PADDING_LEFT, PADDING_DOWN+downRightY),
                 QPoint(topRightX-PADDING_LEFT, PADDING_DOWN+downRightY),
                 QPoint(topHeight*0.5, topHeight-PADDING_DOWN+downRightY),
@@ -440,20 +445,57 @@ void CheckBoxStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyle
     Q_UNUSED(widget);
     if(element == PE_IndicatorCheckBox){
         if(const QStyleOptionButton *cb = qstyleoption_cast<const QStyleOptionButton *>(option)){
+            // iRect方向：左上角为顶点，x轴水平向右，y轴竖直向下
             QRect iRect= cb->rect;
-            if(cb->state & State_On){
-                // 圆形渐变
-                painter->setRenderHint(QPainter::Antialiasing);
+            painter->setRenderHint(QPainter::Antialiasing);
+            // disabled 绘制打勾方框
+            if(!(cb->state & State_Enabled)){
+                painter->save();
+                painter->setPen(QColor(CHECKBOX_DIABLE_COLOR));
+                painter->setBrush(QBrush(QColor(CHECKBOX_DIABLE_COLOR)));
+                painter->drawRect(iRect);
+                painter->restore();
+            }
+            else if(cb->state & State_On){
+#ifdef CHECKBOX_USE_RG
+                // 方框内使用圆形渐变，而不是打对勾
                 QRadialGradient indicatorColorGradient(QPointF(iRect.topLeft().x()*0.5 + iRect.bottomRight().x()*0.5, iRect.topLeft().y()*0.5 + iRect.bottomRight().y()*0.5),
                                                        15,
                                                        QPointF(iRect.topLeft().x()*0.5 + iRect.bottomRight().x()*0.5, iRect.topLeft().y()*0.5 + iRect.bottomRight().y()*0.5));
                 indicatorColorGradient.setColorAt(0, QColor(40,65,90));
                 indicatorColorGradient.setColorAt(0.9, QColor(115,120,140));
                 indicatorColorGradient.setColorAt(1, QColor(240,255,255));
+#else
+                // 方框内打对勾，而不是使用圆形渐变
+                // 将整个方框的长和宽分别六等分，对勾的下边缘线条所在位置为(1,3) -> (2,5) -> (5,1)，按设定的宽度向上拓宽一个宽度（x轴水平向右，y轴竖直向下）
+//                QRect checkRect = QRect(iRect.topLeft().x()*0.5 + iRect.bottomRight().x()*0.5, iRect.topLeft().y()*0.5 + iRect.bottomRight().y()*0.5, 15, 15);
+                // NOTE: 我也不知道为什么要用这个比例，根据QRect(0,0 16x16)
+                qreal w6 = iRect.width()/5;
+                qreal h6 = iRect.height()/5;
+                qreal downLeftX = iRect.bottomLeft().x()*0.5;
+                qreal downLeftY = iRect.topLeft().y();
+
+                // 用drowPolygon沿着下边缘画
+                QPointF check[6] = {
+                    // 下边缘从左到右三个点
+                    QPointF(downLeftX+w6, downLeftY+h6*4), QPointF(downLeftX+w6*3, downLeftY+h6*6), QPointF(downLeftX+w6*6, downLeftY+h6*3),
+                    // 上边缘从左到右三个点，多向上一个CHECKBOX_CHECK_WIDTH
+                    QPointF(downLeftX+w6*6, downLeftY+h6*3-CHECKBOX_CHECK_WIDTH),  QPointF(downLeftX+w6*3, downLeftY+h6*6-CHECKBOX_CHECK_WIDTH), QPointF(downLeftX+w6, downLeftY+h6*4-CHECKBOX_CHECK_WIDTH)
+                };
+#endif
+
                 painter->save();
                 painter->setPen(QColor(115,120,140));
+#ifdef CHECKBOX_USE_RG
                 painter->setBrush(QBrush(indicatorColorGradient));
+#else
+                painter->setPen(QColor(115,120,140));
+                painter->setBrush(QBrush(QColor(240,255,255)));
                 painter->drawRect(iRect);
+                painter->setBrush(QColor(115,120,140));
+                painter->drawPolygon(check, 6);
+#endif
+//                painter->drawRect(iRect);
                 painter->restore();
             }
             else{
@@ -474,26 +516,18 @@ void RadioButtonStyle::drawPrimitive(QStyle::PrimitiveElement element, const QSt
     if(element == PE_IndicatorRadioButton){
         if(const QStyleOptionButton *rb = qstyleoption_cast<const QStyleOptionButton *>(option)){
             QRect rRect = rb->rect;
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->save();
+            painter->setPen(QColor(115,120,140));
+            painter->setBrush(QBrush(QColor(240,255,255)));
+            painter->drawRoundedRect(rRect, rRect.width()*0.5, rRect.height()*0.5);
+            painter->restore();
+            // QCheckBox 选中后的点
             if(rb->state & State_On){
-                // 圆形渐变
-                painter->setRenderHint(QPainter::Antialiasing);
-                QRadialGradient indicatorColorGradient(QPointF(rRect.topLeft().x()*0.5 + rRect.bottomRight().x()*0.5, rRect.topLeft().y()*0.5 + rRect.bottomRight().y()*0.5),
-                                                       15,
-                                                       QPointF(rRect.topLeft().x()*0.5 + rRect.bottomRight().x()*0.5, rRect.topLeft().y()*0.5 + rRect.bottomRight().y()*0.5));
-                indicatorColorGradient.setColorAt(0, QColor(40,65,90));
-                indicatorColorGradient.setColorAt(0.9, QColor(115,120,140));
-                indicatorColorGradient.setColorAt(1, QColor(240,255,255));
                 painter->save();
                 painter->setPen(QColor(115,120,140));
-                painter->setBrush(QBrush(indicatorColorGradient));
-                painter->drawRoundedRect(rRect, rRect.width()*0.5, rRect.height()*0.5);
-                painter->restore();
-            }
-            else{
-                painter->save();
-                painter->setPen(QColor(115,120,140));
-                painter->setBrush(QBrush(QColor(240,255,255)));
-                painter->drawRoundedRect(rRect, rRect.width()*0.5, rRect.height()*0.5);
+                painter->setBrush(QColor(55,85,100));
+                painter->drawEllipse(rRect.adjusted(rRect.width()*0.25, rRect.height()*0.25, -rRect.width()*0.25, -rRect.height()*0.25));
                 painter->restore();
             }
         }

@@ -13,14 +13,15 @@ class InputKeyUi : public QDialog
     Q_OBJECT
 
 public:
-    explicit InputKeyUi(QWidget *parent = nullptr, quint32 id = 0, KeyMap *keyMap = nullptr);
+    explicit InputKeyUi(QWidget *parent = nullptr, quint32 id = 0, KeyMap *keyMap = nullptr, QList<Estring> discIndex = QList<Estring>());
     ~InputKeyUi();
+
 protected:
     void keyPressEvent(QKeyEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
 
 signals:
-    void inputFinish(bool);
+    void inputFinish(bool result, int existPos);
 
 private slots:
     void on_inputKey_saveB_clicked();
@@ -30,11 +31,14 @@ private slots:
 private:
     void initUi();
     bool checkInput();
+    bool checkExistence();
 
     quint32 tid;
     KeyMap *m_keyMap;
+    QList<Estring> m_exsitsKeys;
     Ui::InputKeyUi *ui;
     bool showing = false;
+    int existPos = -1;
 };
 
 #endif // INPUTKEYUI_H
