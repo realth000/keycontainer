@@ -15,7 +15,7 @@ QLabel#about_versionL{font:15px;font-weight:bold}
 QLabel#about_timeL{font:15px;}
 QLineEdit#logLE{color:rgb(230,230,230);border:none;background-color:rgb(30,30,30);font:14px}
 QLineEdit{color:rgb(240,255,255);background:%3; border:1px solid %2;selection-background-color:rgb(93,94,95)}
-QMenu{background:%3; border:2px solid %2;selection-background-color:rgb(93,94,95)}
+QMenu{color:rgb(240,255,255);background:%3; border:1px solid %2;selection-background-color:rgb(105,145,145)}
 QMenu::separator{height:0px; border:1px solid %2}
 QTextEdit{background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));
 border:1px solid rgb(55,85,100);selection-color:rgb(240,255,255);selection-background-color:rgb(93,94,95)}
