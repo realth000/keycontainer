@@ -10,7 +10,7 @@
 
 #define ABOUT_VERSION APP_VERSION
 //#define ABOUT_TIME  QDateTime::currentDateTime().toString("yyyy.MM.dd")
-#define ABOUT_TIME  "2021.4.21"
+#define ABOUT_TIME  "2021.4.22"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 

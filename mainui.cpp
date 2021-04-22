@@ -623,7 +623,6 @@ QWidget* MainUi::addCheckBox()
 
 void MainUi::keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight)
 {
-
     ui->keyTW->insertRow(rowIndex);
     ui->keyTW->setCellWidget(rowIndex, 0, addCheckBox());
     QTableWidgetItem *idItem = new QTableWidgetItem(QString::number(rowIndex));
@@ -640,7 +639,6 @@ void MainUi::keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estrin
         ui->keyTW->setItem(rowIndex, 3, new QTableWidgetItem(pwdCharacterString));
         ui->keyTW->setItem(rowIndex, 4, new QTableWidgetItem(pwdCharacterString));
     }
-
     ui->keyTW->setRowHeight(rowIndex, rowHeight);
 }
 
@@ -690,6 +688,7 @@ void MainUi::showKeyTableKeys()
             ui->keyTW->item(i,4)->setText(keyMap.value(i1->text().toInt()).password.getVal());
 //            ui->keyTW->setItem(i, 3, new QTableWidgetItem(decrypt(keyMap.value(i1->text().toInt()).account)));
         }
+        keysShowsNumber = keyTableRowCount*2;
         is_show_pwd = true;
         ui->showKeyBtn->setText("隐藏密码");
         log("显示密码");
@@ -699,6 +698,7 @@ void MainUi::showKeyTableKeys()
             ui->keyTW->item(i,3)->setText(pwdCharacterString);
             ui->keyTW->item(i,4)->setText(pwdCharacterString);
         }
+        keysShowsNumber =0;
         is_show_pwd = false;
         ui->showKeyBtn->setText("显示密码");
         log("隐藏密码");
@@ -943,33 +943,33 @@ void MainUi::writeCheckFile(QString checkPath)
 
 void MainUi::showAcPw()
 {
-    if(isAcountShowing || isKeyShowing){
-        ui->keyTW->item(rightClickSelectedItemRow, 3)->setText(pwdCharacterString);
-        ui->keyTW->item(rightClickSelectedItemRow, 4)->setText(pwdCharacterString);
+    showAc();
+    showPw();
+    if((isAcountShowing || isKeyShowing) && keysShowsNumber<=0){
+        is_show_pwd = false;
+        ui->showKeyBtn->setText("显示密码");
     }
     else{
-        ui->keyTW->item(rightClickSelectedItemRow, 3)->setText(keyMap.value(rightClickSelectedItemRow).account.getVal());
-        ui->keyTW->item(rightClickSelectedItemRow, 4)->setText(keyMap.value(rightClickSelectedItemRow).password.getVal());
+        is_show_pwd = true;
+        ui->showKeyBtn->setText("隐藏密码");
     }
-//    delete ui->keyTW->takeItem(rightClickSelectedItemRow,3);
-//    delete ui->keyTW->takeItem(rightClickSelectedItemRow,4);
-//    if(isAcountShowing || isKeyShowing){
-//        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(pwdCharacterString));
-//        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(pwdCharacterString));
-//    }
-//    else{
-//        ui->keyTW->setItem(rightClickSelectedItemRow, 3, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).account.getVal()));
-//        ui->keyTW->setItem(rightClickSelectedItemRow, 4, new QTableWidgetItem(keyMap.value(rightClickSelectedItemRow).password.getVal()));
-//    }
 }
 
 void MainUi::showAc()
 {
     if(isAcountShowing){
         ui->keyTW->item(rightClickSelectedItemRow, 3)->setText(pwdCharacterString);
+        keysShowsNumber--;
+        if(keysShowsNumber<=0){
+            is_show_pwd = false;
+            ui->showKeyBtn->setText("显示密码");
+        }
     }
     else{
         ui->keyTW->item(rightClickSelectedItemRow, 3)->setText(keyMap.value(rightClickSelectedItemRow).account.getVal());
+        keysShowsNumber++;
+        is_show_pwd = true;
+        ui->showKeyBtn->setText("隐藏密码");
     }
 
 }
@@ -978,16 +978,23 @@ void MainUi::showPw()
 {
     if(isKeyShowing){
         ui->keyTW->item(rightClickSelectedItemRow, 4)->setText(pwdCharacterString);
+        keysShowsNumber--;
+        if(keysShowsNumber<=0){
+            is_show_pwd = false;
+            ui->showKeyBtn->setText("显示密码");
+        }
     }
     else{
         ui->keyTW->item(rightClickSelectedItemRow, 4)->setText(keyMap.value(rightClickSelectedItemRow).password.getVal());
+        keysShowsNumber++;
+        is_show_pwd = true;
+        ui->showKeyBtn->setText("隐藏密码");
     }
 
 }
 
 void MainUi::deleteSingleKey()
 {
-    //            qDebug() << "delete" <<i;
     delete checkBoxItem[rightClickSelectedItemRow];
     checkBoxItem.removeAt(rightClickSelectedItemRow);
     discQuickIndex.removeAt(rightClickSelectedItemRow);
@@ -1074,11 +1081,6 @@ void MainUi::showKeyTableMenu(QPoint)
     menu->addSeparator();
     menu->addAction(pnew0);
     menu->move (cursor().pos());
-    menu->setStyleSheet("\
-        QMenu{color:rgb(240,255,255);background-color:rgb(64,66,68);border:1px solid rgb(140,155,155);}\
-        QMenu::item{height:23px;}\
-        QMenu::Separator{height:0px;border: 1px solid rgb(55,85,100);} \
-        QMenu:selected{background-color:rgb(51,51,51);}");
     // 及时删除QMenu防止内存泄露
     connect(menu, &QMenu::aboutToHide, &QMenu::deleteLater);
     menu->show();
@@ -1089,7 +1091,6 @@ void MainUi::selectCheckBox(int row, int column)
     Q_UNUSED(column);
     checkBoxItem[row]->isChecked() ? checkBoxItem[row]->setChecked(false) : checkBoxItem[row]->setChecked(true);
 }
-
 
 void MainUi::on_showKeyBtn_clicked()
 {

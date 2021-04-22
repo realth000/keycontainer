@@ -125,6 +125,7 @@ private:
     bool findDirection = true; // =true，快捷键F3控制向下搜索，=false，快捷键F3控制向上搜索
     QString findText = "";
     bool enableKeyTWContextMenuSearch = false; // 当要搜索的文本为空时，禁用表格右键菜单中的搜索
+    int keysShowsNumber = 0; // 记录账户\密码显示的数量，对应控制显示\隐藏密码按钮
 
 };
 #endif // MAINUI_H
