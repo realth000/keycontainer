@@ -5,7 +5,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++17 no_batch
 QMAKE_CXXFLAGS += /MP
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 2.2.12
+VERSION = 2.2.13
 
 win32 {
     RC_ICONS = "Key Container.ico"
@@ -32,6 +32,7 @@ DEFINES += QT_DEPRECATED_WARNINGS APP_VERSION=\\\"$$VERSION\\\"
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ui/animationrefresh.cpp \
     commoninclude.cpp \
     debugshowoptions.cpp \
     encryption/encrypted.cpp \
@@ -52,6 +53,7 @@ SOURCES += \
     uistyle/proxystyle.cpp
 
 HEADERS += \
+    ui/animationrefresh.h \
     commoninclude.h \
     debugshowoptions.h \
     encryption/encrypted.h \

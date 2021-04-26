@@ -719,7 +719,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="checkKeyMode_defaultBG"/>
   <buttongroup name="checkKeyModeBG"/>
+  <buttongroup name="checkKeyMode_defaultBG"/>
  </buttongroups>
 </ui>
