@@ -223,7 +223,6 @@ void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOp
                 painter->setBrush(QColor(PUSHBUTTON_DISABLE_COLOR));
                 painter->drawRect(labelRect);
                 painter->restore();
-
                 // disabled 文字颜色
                 painter->save();
 #ifdef PUSHBUTTON_TEXT_BOLD

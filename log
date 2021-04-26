@@ -1,16 +1,8 @@
-﻿搜索：
-1. 大小写 2.2.11
-2. 全词匹配 2.2.11
-3. 互斥： 全词 <-> 正则(ProxyStyle灰色)
+﻿显示\隐藏账户和密码时错误操作
+输错密码时暂时冻结防爆破
+刷新动画
 
-
-QRadioButton未选中时的抗锯齿
-不搜索表格第一项的问题
-选中项后依然从第一行开始搜索的问题
-MessageBoxEx命名冲突问题
-处理说明相同的密码
-密码隐藏时计数崩溃的问题
-
+60x60 x=237 y=237
 delete from stylesheet.qss:
 QHeaderWidget{border:none;color:rgb(240,255,255);background-color:rgb(64,66,68)}
 QHeaderWidget::section:horizontal{border-top:none;border-left:none;border-right:1px solid %2;border-bottom:1px solid %3;

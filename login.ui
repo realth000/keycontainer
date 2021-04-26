@@ -82,7 +82,7 @@
    <property name="geometry">
     <rect>
      <x>100</x>
-     <y>350</y>
+     <y>320</y>
      <width>101</width>
      <height>21</height>
     </rect>
@@ -110,12 +110,39 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
+  <widget class="AnimationRefresh" name="refreshAR">
+   <property name="geometry">
+    <rect>
+     <x>248</x>
+     <y>247</y>
+     <width>40</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+  </widget>
+  <zorder>refreshAR</zorder>
+  <zorder>titleBar</zorder>
+  <zorder>backgroundLabel</zorder>
+  <zorder>label</zorder>
+  <zorder>lineEdit</zorder>
+  <zorder>logInB</zorder>
+  <zorder>warnL</zorder>
+  <zorder>capsLockHintL</zorder>
  </widget>
  <customwidgets>
   <customwidget>
    <class>TitleBar</class>
    <extends>QGroupBox</extends>
    <header location="global">ui/titlebar.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>AnimationRefresh</class>
+   <extends>QGroupBox</extends>
+   <header location="global">ui/animationrefresh.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

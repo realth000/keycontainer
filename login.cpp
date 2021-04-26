@@ -35,6 +35,7 @@ LogIn::LogIn(QWidget *parent) :
 
     pwPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec");
     readPwd();
+    connect(ui->refreshAR, &AnimationRefresh::stopped, this, [this](){ui->logInB->setVisible(true);ui->logInB->setEnabled(true);});
 }
 
 LogIn::~LogIn()
@@ -85,6 +86,10 @@ void LogIn::keyPressEvent(QKeyEvent *e)
     }
     if((e->modifiers() == Qt::KeypadModifier && e->key() == Qt::Key_Enter)
             || (e->modifiers() == Qt::NoModifier && e->key() == Qt::Key_Return)){
+        if(!ui->logInB->isEnabled()){
+            e->ignore();
+            return;
+        }
         on_logInB_clicked();
         e->accept();
         return;
@@ -98,7 +103,7 @@ void LogIn::initUi()
     this->setFixedSize(this->width(), this->height());
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_login.qss").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
-                                 "alternate-background-color:rgb(55,55,55)"));
+                                 "alternate-background-color:rgb(55,55,55)").arg(PUSHBUTTON_DISABLE_COLOR));
     // 标题栏样式
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
@@ -197,5 +202,8 @@ void LogIn::on_logInB_clicked()
     }
     else{
         ui->warnL->setVisible(true);
+        ui->logInB->setVisible(false);
+        ui->logInB->setEnabled(false);
+        ui->refreshAR->start(2591);
     }
 }

@@ -6,6 +6,7 @@
 #include <QKeyEvent>
 #include "encryption/encrypted.h"
 #include "ui/messageboxexx.h"
+#include "ui/animationrefresh.h"
 
 #if _MSC_VER >= 1600
 #pragma execution_character_set("utf-8")
@@ -24,6 +25,7 @@ public:
     ~LogIn();
     bool getContinueStart() const;
     void setContinueStart(bool yon);
+
 signals:
     void finish(bool r, Estring truePwdHash);
 

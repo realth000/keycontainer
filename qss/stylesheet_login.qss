@@ -9,6 +9,7 @@ QGroupBox#securityGB{background-color:rgb(40,40,40)}
 QPushButton{background:transparent;border:1px solid %2;color:rgb(240,255,255)}
 QPushButton:hover{background:rgb(64,64,61)}
 QPushButton:pressed{background:rgb(55,55,55)}
+QPushButton:disabled{background:%4;}
 QLabel{color:rgb(240,255,255)}
 QLabel#warnL{color:rgb(240,80,70)}
 QLabel#capsLockHintL{color:rgb(240,80,70)}
