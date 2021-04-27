@@ -8,6 +8,7 @@
 #include <QCryptographicHash>
 #include <QDir>
 #include <QDebug>
+#include <QRandomGenerator>
 #include "debugshowoptions.h"
 
 //83 69 91
@@ -204,6 +205,7 @@ void LogIn::on_logInB_clicked()
         ui->warnL->setVisible(true);
         ui->logInB->setVisible(false);
         ui->logInB->setEnabled(false);
-        ui->refreshAR->start(2591);
+        // TODO: 随机的冻结时间，时间Encrypt
+        ui->refreshAR->start(Euint_16(QRandomGenerator::securelySeeded().bounded(2010, 2324)).getVal());
     }
 }

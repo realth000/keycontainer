@@ -271,7 +271,7 @@
       </rect>
      </property>
      <property name="text">
-      <string> 保存设置</string>
+      <string>保存设置</string>
      </property>
     </widget>
     <widget class="QPushButton" name="restartProgBtn">
@@ -719,7 +719,7 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="checkKeyModeBG"/>
   <buttongroup name="checkKeyMode_defaultBG"/>
+  <buttongroup name="checkKeyModeBG"/>
  </buttongroups>
 </ui>

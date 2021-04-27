@@ -943,12 +943,19 @@ void MainUi::writeCheckFile(QString checkPath)
 
 void MainUi::showAcPw()
 {
-    if(isAcountShowing){
-        showAc();
+    if(isAcountShowing || isKeyShowing){
+        if(isAcountShowing){
+            showAc();
+        }
+        if(isKeyShowing){
+            showPw();
+        }
     }
-    if(isKeyShowing){
+    else{
+        showAc();
         showPw();
     }
+
     if(keysShowsNumber<=0){
         is_show_pwd = false;
         ui->showKeyBtn->setText("显示密码");
