@@ -11,7 +11,7 @@
 #endif
 #ifdef Q_OS_WINDOWS
 #include <windows.h>
-#else
+#elif defined(Q_OS_LINUX)
 #include <X11/XKBlib.h>
 #undef KeyPress
 #undef KeyRelease
@@ -40,7 +40,7 @@ void InputInitKeyUi::keyPressEvent(QKeyEvent *e)
         GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
         e->accept();
         return;
-#else // X11 version (Linux/Unix/Mac OS X/etc...)
+#elif defined(Q_OS_LINUX) // X11 version (Linux/Unix/Mac OS X/etc...)
     Display *d = XOpenDisplay((char*)0);
     bool caps_state = false;
     if (d) {
@@ -116,7 +116,7 @@ void InputInitKeyUi::initUi()
 
 #ifdef Q_OS_WINDOWS
         GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
-#else // X11 version (Linux/Unix/Mac OS X/etc...)
+#elif defined(Q_OS_LINUX) // X11 version (Linux/Unix/Mac OS X/etc...)
     Display *d = XOpenDisplay((char*)0);
     bool caps_state = false;
     if (d) {

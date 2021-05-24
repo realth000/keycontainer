@@ -471,15 +471,21 @@ void CheckBoxStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyle
                 // NOTE: 我也不知道为什么要用这个比例，根据QRect(0,0 16x16)
                 qreal w6 = iRect.width()/5;
                 qreal h6 = iRect.height()/5;
-                qreal downLeftX = iRect.bottomLeft().x()*0.5;
+//                qreal downLeftX = iRect.bottomLeft().x()*0.5;
                 qreal downLeftY = iRect.topLeft().y();
 
                 // 用drowPolygon沿着下边缘画
+//                QPointF check[6] = {
+//                    // 下边缘从左到右三个点
+//                    QPointF(downLeftX+w6, downLeftY+h6*4), QPointF(downLeftX+w6*3, downLeftY+h6*6), QPointF(downLeftX+w6*6, downLeftY+h6*3),
+                //                    // 上边缘从左到右三个点，多向上一个CHECKBOX_CHECK_WIDTH
+                //                    QPointF(downLeftX+w6*6, downLeftY+h6*3-CHECKBOX_CHECK_WIDTH),  QPointF(downLeftX+w6*3, downLeftY+h6*6-CHECKBOX_CHECK_WIDTH), QPointF(downLeftX+w6, downLeftY+h6*4-CHECKBOX_CHECK_WIDTH)
+                //                };
                 QPointF check[6] = {
                     // 下边缘从左到右三个点
-                    QPointF(downLeftX+w6, downLeftY+h6*4), QPointF(downLeftX+w6*3, downLeftY+h6*6), QPointF(downLeftX+w6*6, downLeftY+h6*3),
-                    // 上边缘从左到右三个点，多向上一个CHECKBOX_CHECK_WIDTH
-                    QPointF(downLeftX+w6*6, downLeftY+h6*3-CHECKBOX_CHECK_WIDTH),  QPointF(downLeftX+w6*3, downLeftY+h6*6-CHECKBOX_CHECK_WIDTH), QPointF(downLeftX+w6, downLeftY+h6*4-CHECKBOX_CHECK_WIDTH)
+                    QPointF(0, downLeftY+h6*4), QPointF(w6*2, downLeftY+h6*5), QPointF(w6*5, downLeftY+h6*3),
+                    // 上边缘从右到左三个点，多向上一个CHECKBOX_CHECK_WIDTH
+                    QPointF(w6*5, downLeftY+h6),  QPointF(w6*2, downLeftY+h6*3), QPointF(0, downLeftY+h6*2)
                 };
 #endif
 

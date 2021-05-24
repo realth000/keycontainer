@@ -7,3 +7,16 @@ delete from stylesheet.qss:
 QHeaderWidget{border:none;color:rgb(240,255,255);background-color:rgb(64,66,68)}
 QHeaderWidget::section:horizontal{border-top:none;border-left:none;border-right:1px solid %2;border-bottom:1px solid %3;
 color:rgb(230,230,230);background-color:rgb(45,45,45);}
+
+-- %%INSERT_APP_NAME%% --
+
+100%  行高35
+125%  行高40
+
+
+---------
+FIXED:
+1. 修复备份时路径错误的问题
+2. 修复不读取自定义文件名的问题
+3. 适配win10的100%与125%缩放
+4. 自动更新密钥，保存时自动备份
