@@ -3,9 +3,9 @@ QT       += core gui
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
-QMAKE_CXXFLAGS += /MP
+#QMAKE_CXXFLAGS += /MP
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 2.2.14
+VERSION = 2.2.15
 
 win32 {
     RC_ICONS = "Key Container.ico"
@@ -14,7 +14,7 @@ win32 {
 }
 unix {
     RC_ICONS = "KeyContainer.ico"
-    TARGET = "KeyContainer"
+    TARGET = "KeyContainer_unix"
 }
 
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
@@ -82,7 +82,8 @@ FORMS += \
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
-else: unix:!android: target.path = /opt/$${TARGET}/bin
+#else: unix:!android: target.path = /opt/$${TARGET}/bin
+else: unix: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
@@ -90,3 +91,4 @@ RESOURCES += \
 
 DISTFILES += \
     log
+

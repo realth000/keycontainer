@@ -6,6 +6,7 @@
 #include <QProcess>
 #include <QString>
 #include <QFont>
+#include "debugshowoptions.h"
 
 #ifdef Q_OS_WINDOWS
 #include <windows.h>
@@ -19,6 +20,7 @@
 
 int main(int argc, char *argv[])
 {
+    debugShowOptions dso;
 //    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
 //    QApplication::setAttribute(Qt::AA_Use96Dpi);
     // check if running
@@ -60,7 +62,7 @@ int main(int argc, char *argv[])
             return 0;
         }
     QApplication a(argc, argv);
-#elif defined(Q_OS_LINUX)  && !defined(Q_OS_ANDROID)
+#elif defined(Q_OS_LINUX)
      QProcess p;
     // 特殊符号，start()会有\n，execute()的\n会解释为换行，execute()的输出直接输出到程序控制台，没法捕获
     p.start("pgrep " + QString(TITLEBAR_TITLETEXT));
@@ -78,12 +80,6 @@ int main(int argc, char *argv[])
         q.execute("/bin/bash", t);
         return 0;
     }
-#elif defined(Q_OS_ANDROID)
-    // 自适应高DPI
-#if (QT_VERSION >= QT_VERSION_CHECK(5,9,0))
-    QApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QApplication a(argc, argv);
-#endif
 #else
     QApplication a(argc, argv);
     MessageBoxExX t;
@@ -97,6 +93,11 @@ int main(int argc, char *argv[])
     QCoreApplication::setOrganizationName("海淀区干饭大队");
     QCoreApplication::setApplicationVersion(ABOUT_VERSION);
 
+//    qDebug() << "applicationDirPath" << QApplication::applicationDirPath();
+//    qDebug() << "applicationFilePath" << QApplication::applicationFilePath();
+    MessageBoxExX w;
+//    qDebug() << QApplication::appli();
+//    return 0;
     MainUi MU;
     if(!MU.loginCorrent){
         return 0;

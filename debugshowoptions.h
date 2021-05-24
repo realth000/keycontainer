@@ -1,8 +1,9 @@
 ﻿#ifndef DEBUGSHOWOPTIONS_H
 #define DEBUGSHOWOPTIONS_H
-
+#include <QDebug>
 
 //#define DEBUG_SHOW_KEYS
+//#define DEBUG_SKIP_LOGIN
 
 
 

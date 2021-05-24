@@ -34,8 +34,8 @@ MainUi::MainUi(QWidget *parent)
     : QWidget(parent), ui(new Ui::MainUi)
 {
     workPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
-//    qDebug()<< "work path:"<< workPath;
 
+#ifndef DEBUG_SKIP_LOGIN
     QEventLoop loop;
     logIn = new LogIn();
     connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
@@ -55,6 +55,9 @@ MainUi::MainUi(QWidget *parent)
     if(!loginCorrent){
         return;
     }
+#else
+    this->loginCorrent = true;
+#endif
     ui->setupUi(this);
     initUi();
     initConfig();
@@ -574,8 +577,10 @@ void MainUi::initConfig()
     QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
     ui->savePathLE->setText(ini->value("/Path/SavePath").toString());
     kcdb->setSavePath(ui->savePathLE->text());
+    savePath = ui->savePathLE->text();
     ui->backupPathLE->setText(ini->value("/Path/BackupPath").toString());
     kcdb->setBackupPath(ui->backupPathLE->text());
+    backupPath = ui->backupPathLE->text();
     int selectMode = ini->value("/Setting/DefaultSelectMode").toUInt();
     switch(selectMode){
     case 0:
@@ -602,20 +607,23 @@ void MainUi::initConfig()
     log("读取配置");
 }
 
-QWidget* MainUi::addCheckBox()
+QWidget* MainUi::addCheckBox(int height)
 {
-    QCheckBox *check = new QCheckBox(this);
+    QCheckBox *check = new QCheckBox(ui->keyTW);
+//    check->setFixedSize(height, height);
+
 //    check->installEventFilter(this);
     check->setStyle(new CheckBoxStyle);
     checkBoxItem.append(check);
-    connect(check, SIGNAL(stateChanged(int)), this, SLOT(selectChecked(int)));
-    QVBoxLayout *vb = new QVBoxLayout();
-    vb->addStretch(1);
-    vb->addWidget(check);
-    QHBoxLayout *hb = new QHBoxLayout();
-    hb->addStretch(1);
-    hb->addLayout(vb);
-    hb->addStretch(1);
+    QHBoxLayout *hb = new QHBoxLayout(ui->keyTW);
+    hb->addWidget(check);
+//    hb->setMargin(0);
+    hb->setAlignment(Qt::AlignHCenter);
+    // 设置居中的关键 setContentsMargins，适应win10各缩放比例
+    hb->setContentsMargins(10, 0, 10, 0);
+
+//    connect(check, SIGNAL(stateChanged(int)), this, SLOT(selectChecked(int)));
+    connect(check, &QCheckBox::stateChanged, this, &MainUi::selectChecked);
     QWidget *resultQWidget = new QWidget();
     resultQWidget->setLayout(hb);
     return resultQWidget;
@@ -624,7 +632,7 @@ QWidget* MainUi::addCheckBox()
 void MainUi::keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight)
 {
     ui->keyTW->insertRow(rowIndex);
-    ui->keyTW->setCellWidget(rowIndex, 0, addCheckBox());
+    ui->keyTW->setCellWidget(rowIndex, 0, addCheckBox(rowHeight));
     QTableWidgetItem *idItem = new QTableWidgetItem(QString::number(rowIndex));
     idItem->setTextAlignment(Qt::AlignVCenter);
     ui->keyTW->setItem(rowIndex, 1, idItem);
@@ -1245,6 +1253,10 @@ void MainUi::on_saveKeyBtn_clicked()
     if(kcdb->writeKcdb(savePath)){
         writeCheckFile(savePath);
         log("数据保存完成");
+        bool autoBackupPathOld=autoBackupPath;
+        autoBackupPath=true;
+        on_backupKeyBtn_clicked();
+        autoBackupPath=autoBackupPathOld;
     }
     else{
         log("保存失败");
@@ -1259,19 +1271,25 @@ void MainUi::on_backupKeyBtn_clicked()
         return;
     }
     QString finalPath;
-    int result = mb.question("备份密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
-    if(result == MessageBoxExX::Yes){
-        QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", workPath, QFileDialog::ShowDirsOnly);
-        if(newPath.isEmpty()){
+    // 是否跳过选择备份目录
+    if(!autoBackupPath){
+        int result = mb.question("备份密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
+        if(result == MessageBoxExX::Yes){
+            QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", workPath, QFileDialog::ShowDirsOnly);
+            if(newPath.isEmpty()){
+                return;
+            }
+            finalPath = QDir::toNativeSeparators(newPath + "/pwbp.kcdb");
+        }
+        else if(result == MessageBoxExX::No){
+            finalPath = backupPath;
+        }
+        else{
             return;
         }
-        finalPath = QDir::toNativeSeparators(newPath + "/pwbp.kcdb");
-    }
-    else if(result == MessageBoxExX::No){
-        finalPath = savePath;
     }
     else{
-        return;
+        finalPath = backupPath;
     }
     kcdb->setBackupState(true);
     QFileInfo saveInfo(finalPath);

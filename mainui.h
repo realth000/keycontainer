@@ -80,7 +80,7 @@ private:
     void initKeyData();
     void initUi();
     void initConfig();
-    QWidget* addCheckBox();
+    QWidget* addCheckBox(int height);
     void keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight);
     void keyTW_deleteSeledtedKeys();
     void showKeyTableKeys();
@@ -126,6 +126,7 @@ private:
     QString findText = "";
     bool enableKeyTWContextMenuSearch = false; // 当要搜索的文本为空时，禁用表格右键菜单中的搜索
     int keysShowsNumber = 0; // 记录账户\密码显示的数量，对应控制显示\隐藏密码按钮
+    bool autoBackupPath=false; // 跳过选择备份目录的选项
 
 };
 #endif // MAINUI_H
