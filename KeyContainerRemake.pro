@@ -1,22 +1,28 @@
-QT       += core gui
+QT += core gui quick qml
+#Qt += core
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
 #QMAKE_CXXFLAGS += /MP
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 2.2.15
+VERSION = 2.2.16
 
 win32 {
+#    QT += gui
     RC_ICONS = "Key Container.ico"
     TARGET = "Key Container"
     LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
 }
 unix {
+#    QT += gui
     RC_ICONS = "KeyContainer.ico"
     TARGET = "KeyContainer_unix"
 }
 
+android {
+#    QT += quick qml
+}
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
 #LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
 
@@ -30,6 +36,12 @@ DEFINES += QT_DEPRECATED_WARNINGS APP_VERSION=\\\"$$VERSION\\\"
 # In order to do so, uncomment the following line.
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
+
+# Additional import path used to resolve QML modules in Qt Creator's code model
+QML_IMPORT_PATH =
+
+# Additional import path used to resolve QML modules just for Qt Quick Designer
+QML_DESIGNER_IMPORT_PATH =
 
 SOURCES += \
     ui/animationrefresh.cpp \
@@ -83,12 +95,19 @@ FORMS += \
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
-else: unix: target.path = /opt/$${TARGET}/bin
+else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    qmlresource.qrc \
     resource.qrc
 
 DISTFILES += \
+    android/AndroidManifest.xml \
     log
+
+contains(ANDROID_TARGET_ARCH,arm64-v8a) {
+    ANDROID_PACKAGE_SOURCE_DIR = \
+        $$PWD/android
+}
 

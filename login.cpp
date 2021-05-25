@@ -18,7 +18,7 @@
 
 #ifdef Q_OS_WINDOWS
 #include <windows.h>
-#elif defined(Q_OS_LINUX)
+#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 #include <X11/XKBlib.h>
 #undef KeyPress
 #undef KeyRelease
@@ -72,7 +72,7 @@ void LogIn::keyPressEvent(QKeyEvent *e)
         GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
         e->accept();
         return;
-#elif defined(Q_OS_LINUX) // X11 version (Linux/Unix/Mac OS X/etc...)
+#elif defined(Q_OS_LINUX)  && !defined(Q_OS_ANDROID)// X11 version (Linux/Unix/Mac OS X/etc...)
     Display *d = XOpenDisplay((char*)0);
     bool caps_state = false;
     if (d) {
@@ -123,7 +123,7 @@ void LogIn::initUi()
 
 #ifdef Q_OS_WINDOWS
         GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
-#elif defined(Q_OS_LINUX) // X11 version (Linux/Unix/Mac OS X/etc...)
+#elif defined(Q_OS_LINUX)  && !defined(Q_OS_ANDROID)// X11 version (Linux/Unix/Mac OS X/etc...)
     Display *d = XOpenDisplay((char*)0);
     bool caps_state = false;
     if (d) {

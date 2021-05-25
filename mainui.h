@@ -75,6 +75,7 @@ private slots:
     void countAll();
     void on_importKeysBtn_clicked();
     void on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
+    void on_autoBackupPathChB_stateChanged(int arg1);
 
 private:
     void initKeyData();

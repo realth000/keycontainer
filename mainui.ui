@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -437,7 +437,7 @@
        <x>10</x>
        <y>210</y>
        <width>181</width>
-       <height>201</height>
+       <height>251</height>
       </rect>
      </property>
      <property name="title">
@@ -503,6 +503,20 @@
         <string notr="true">checkKeyMode_defaultBG</string>
        </attribute>
       </widget>
+     </widget>
+     <widget class="QCheckBox" name="autoBackupPathChB">
+      <property name="geometry">
+       <rect>
+        <x>30</x>
+        <y>170</y>
+        <width>131</width>
+        <height>51</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>备份密码时跳过
+选择路径</string>
+      </property>
      </widget>
     </widget>
    </widget>
