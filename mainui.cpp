@@ -498,6 +498,7 @@ void MainUi::initUi()
     ui->key_doubleClick_defaultRB->setStyle(rbs);
 
     ui->autoChangeAESKeyChB->setStyle(new CheckBoxStyle);
+    ui->autoBackupPathChB->setStyle(new CheckBoxStyle);
 
     QPixmap* about_logo_pix = new QPixmap(":/src/Key Container.jpeg");
     about_logo_pix->scaled(ui->about_logoL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -581,7 +582,7 @@ void MainUi::initConfig()
     ui->backupPathLE->setText(ini->value("/Path/BackupPath").toString());
     kcdb->setBackupPath(ui->backupPathLE->text());
     backupPath = ui->backupPathLE->text();
-    int selectMode = ini->value("/Setting/DefaultSelectMode").toUInt();
+    int selectMode = ini->value("/Common/DefaultSelectMode").toUInt();
     switch(selectMode){
     case 0:
         ui->key_checkRB->setChecked(true);
@@ -601,8 +602,10 @@ void MainUi::initConfig()
         ui->key_checkRB->setChecked(true);
         ui->key_check_defaultRB->setChecked(true);
     }
-    autoChangeAES = ini->value("/Setting/AutoChangeAESKey").toBool();
+    autoChangeAES = ini->value("/Security/AutoChangeAESKey").toBool();
     ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
+    autoBackupPath = ini->value("/Common/AutoBackupPath").toBool();
+    ui->autoBackupPathChB->setChecked(autoBackupPath);
     delete ini;
     log("读取配置");
 }
@@ -1185,15 +1188,16 @@ void MainUi::on_saveConfigBtn_clicked()
     kcdb->setSavePath(ui->savePathLE->text());
     kcdb->setBackupPath(ui->backupPathLE->text());
     if(ui->key_check_defaultRB->isChecked()){
-        ini->setValue("/Setting/DefaultSelectMode", 0);
+        ini->setValue("/Common/DefaultSelectMode", 0);
     }
     else if(ui->key_click_defaultRB->isChecked()){
-        ini->setValue("/Setting/DefaultSelectMode", 1);
+        ini->setValue("/Common/DefaultSelectMode", 1);
     }
     else{
-        ini->setValue("/Setting/DefaultSelectMode", 2);
+        ini->setValue("/Common/DefaultSelectMode", 2);
     }
-    ini->setValue("/Setting/AutoChangeAESKey", autoChangeAES);
+    ini->setValue("/Security/AutoChangeAESKey", autoChangeAES);
+    ini->setValue("/Common/AutoBackupPath", ui->autoBackupPathChB->isChecked());
     delete ini;
     log("已保存设置");
 }
@@ -1632,4 +1636,10 @@ void MainUi::on_keyTW_currentCellChanged(int currentRow, int currentColumn, int 
     Q_UNUSED(previousRow);
     Q_UNUSED(previousColumn);
     keyTableFindPos = currentRow;
+}
+
+
+void MainUi::on_autoBackupPathChB_stateChanged(int arg1)
+{
+    autoBackupPath = static_cast<bool>(arg1);
 }

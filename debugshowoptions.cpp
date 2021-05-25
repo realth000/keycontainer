@@ -9,4 +9,8 @@ debugShowOptions::debugShowOptions()
 #ifdef DEBUG_SKIP_LOGIN
     qDebug() << "DebugShowOptions: DEBUG_SKIP_LOGIN enabled";
 #endif
+
+#ifdef DEBUG_QML_ON_WINDOWS
+    qDebug() << "DebugShowOptions: DEBUG_QML_ON_WINDOWS enabled";
+#endif
 }

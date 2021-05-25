@@ -15,8 +15,15 @@ color:rgb(230,230,230);background-color:rgb(45,45,45);}
 
 
 ---------
-FIXED:
-1. 修复备份时路径错误的问题
-2. 修复不读取自定义文件名的问题
-3. 适配win10的100%与125%缩放
-4. 自动更新密钥，保存时自动备份
+
+TODO：
+1. 禁止应用内截屏以及应用预览
+
+ELSE:
+1. 渐变映射上下限为ButtonExImage#4b6876、TabButtonEx#6d799c
+2. Version: 164000000 | _version * 10 + _patchVersion;
+    164000000 | 10000*10 + 2 = 1 6410 0000 + 2 = 164100002
+
+测试结果：
+1. 更换dat.ec，不更换login.ec，无法读取数据
+2. 更换login.ec，不更换dat.ec，可以读取数据
