@@ -23,6 +23,8 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
+#include "cml/qmlimporter.h"
+#include <QQmlContext>
 #endif
 
 int main(int argc, char *argv[])
@@ -85,6 +87,7 @@ int main(int argc, char *argv[])
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
     QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
     QGuiApplication app(argc, argv);
+    qmlRegisterType<QmlImporter>("TH.QmlImporter", 1, 0, "QmlImporter");
     QQmlApplicationEngine engine;
     const QUrl url(QStringLiteral("qrc:/qml/MainQML.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,

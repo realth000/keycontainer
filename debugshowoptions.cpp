@@ -13,4 +13,8 @@ debugShowOptions::debugShowOptions()
 #ifdef DEBUG_QML_ON_WINDOWS
     qDebug() << "DebugShowOptions: DEBUG_QML_ON_WINDOWS enabled";
 #endif
+
+#ifdef DEBUG_QML_SHOW_INFO
+    qDebug() << "DebugShowOptions: DEBUG_QML_SHOW_INFO enabled";
+#endif
 }

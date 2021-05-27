@@ -39,7 +39,6 @@ Type EncryptedClass<Type>::EncryptCheck(Type check)
 template<typename Type>
 Type EncryptedClass<Type>::Decrypt(Type val, Type check) const
 {
-//    qDebug()<< "ttttttttttttttttttttttt" << check << key_check_64;
     if constexpr(is_same<Type, QString>::value){
         Type tv, tc;
         tv = QXorKeyVal(val);
@@ -48,7 +47,6 @@ Type EncryptedClass<Type>::Decrypt(Type val, Type check) const
             return tc;
         }
         else{
-//            qDebug() << tv <<"   s   "<< tc;
             throw MemoryCheatException();
         }
     }
@@ -60,8 +58,6 @@ Type EncryptedClass<Type>::Decrypt(Type val, Type check) const
 template<typename Type>
 void EncryptedClass<Type>::initKey(int initType)
 {
-    // when qsrand() and qrand() are depred, use QRandomGenerator
-    // TODO: Test QRandomGenerator on GCC + Qt5.12.10. If work, totally use QRandomGenerator instead.
 #if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
     switch (initType) {
 

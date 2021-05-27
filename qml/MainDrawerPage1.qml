@@ -62,7 +62,7 @@ Item {
                 height: mainTabBar.height
                 texts: "管理"
                 iconChecked: "qrc:/androidsrc/manage_reverse.png"
-                iconUnchecked: "qrc:/src/manage.png"
+                iconUnchecked: "qrc:/androidsrc/manage.png"
             }
             TabButtonEx {
                 id: tabButton2
