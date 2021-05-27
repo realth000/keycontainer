@@ -42,10 +42,20 @@ private:
     QByteArray hashKey;
 
 };
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+class Kcdb_io: public QObject
+{
+    Q_OBJECT
+#else
 class Kcdb_io
 {
+#endif
 public:
     Kcdb_io();
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+signals:
+    void qml_msg_info(QString msg);
+#endif
 
 protected:
     void output(QDataStream &outStream, Estring data, AesClass *code);
@@ -64,7 +74,10 @@ private:
 //    QDataStream inStream;
 //    QDataStream outStream;
 //    bool backupState = false;
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+#else
     MessageBoxExX t;
+#endif
 
 };
 
@@ -89,8 +102,14 @@ private:
 
 };
 
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+class Kcdb : public Kcdb_io
+{
+    Q_OBJECT
+#else
 class Kcdb : public Kcdb_io, QWidget
 {
+#endif
 public:
     explicit Kcdb(QString workPath);
     void changeBackupState(bool state);
@@ -110,6 +129,10 @@ public:
     void setBackupPath(QString path);
     QFile inFile;
     QFile outFile;
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+signals:
+    void qml_msg_info(QString msg);
+#endif
 
 private:
     Kcdb_io ko;
@@ -129,7 +152,10 @@ private:
     QMap<QString, GroupKey> groupKeyList;
     QMutableMapIterator<QString, GroupKey> gkptr = groupKeyList;
 //    QMutableMapIterator<int, maintainKey>kcdb::mtkptr = maintainKey::mtKeyList;
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+#else
     MessageBoxExX t;
+#endif
 
 };
 

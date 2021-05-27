@@ -2,6 +2,11 @@
 #define TEST_H
 #include <QtGlobal>
 #include <QString>
+#include "debugshowoptions.h"
+
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+#include <QMetaType>
+#endif
 
 class MemoryCheatException
 {
@@ -89,5 +94,7 @@ private:
     QString val;
     QString check;
 };
+
+
 
 #endif // TEST_H

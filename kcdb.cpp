@@ -5,7 +5,10 @@
 #include <QDir>
 #include <QDebug>
 #include "debugshowoptions.h"
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+#else
 #include "qssinstaller.h"
+#endif
 
 
 #if _MSC_VER >= 1600
@@ -143,16 +146,38 @@ QList<QList<QStringList> > Kcdb_io::inKcdb(QDataStream &inStream, AesClass *code
     inStream.setVersion(QDataStream::Qt_5_12);
     quint8 head =  readKcdbHead(inStream, code);
     quint8 EOF_ = 0xff;
-    if(head == BEGIN_OF_GROUPLEY){EOF_ =NEXT_IS_GROUPKEY;}
-    else if(head == BEGIN_OF_MTKEY){EOF_ = NEXT_IS_MAINTAINKEY;}
-    else{t.information("数据损坏", "密码文件损坏。");throw new EOF_Fail_Expection;}
+    if(head == BEGIN_OF_GROUPLEY){
+        EOF_ =NEXT_IS_GROUPKEY;
+    }
+    else if(head == BEGIN_OF_MTKEY){
+        EOF_ = NEXT_IS_MAINTAINKEY;
+    }
+    else{
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+        emit qml_msg_info("数据损坏,密码文件损坏。");
+#else
+        t.information("数据损坏","密码文件损坏。");
+#endif
+        throw new EOF_Fail_Expection;
+    }
     QList<QStringList> readGroupKeyList;
     QList<QStringList> readMaintainKeyList;
     while (EOF_ != END_OF_KCDB)
     {
-        if(EOF_ == NEXT_IS_GROUPKEY){ readGroupKeyList << readKeys(inStream, code);}
-        else if(EOF_ == NEXT_IS_MAINTAINKEY){ readMaintainKeyList << readKeys(inStream, code);}
-        else{t.information("数据损坏", "无法读取密码，请清除密码数据。");throw new EOF_Fail_Expection;}
+        if(EOF_ == NEXT_IS_GROUPKEY){
+            readGroupKeyList << readKeys(inStream, code);
+        }
+        else if(EOF_ == NEXT_IS_MAINTAINKEY){
+            readMaintainKeyList << readKeys(inStream, code);
+        }
+        else{
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+        emit qml_msg_info("数据损坏,无法读取密码，请清除密码数据。");
+#else
+        t.information("数据损坏","无法读取密码，请清除密码数据。");
+#endif
+        throw new EOF_Fail_Expection;
+        }
         input(inStream, EOF_, code);
     }
     QList<QList<QStringList>> readResult;
@@ -207,6 +232,9 @@ Kcdb::Kcdb(QString workPath)
     this->savePath = QDir::toNativeSeparators(this->workPath + savePath);
     this->backupPath = QDir::toNativeSeparators(this->workPath + backupPath);
     this->aesPath = QDir::toNativeSeparators(this->workPath + aesPath);
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+    connect(&ko, &Kcdb_io::qml_msg_info, this, &Kcdb::qml_msg_info);
+#endif
 }
 
 void Kcdb::changeBackupState(bool state)
@@ -231,10 +259,14 @@ bool Kcdb::readKcdb(QString dbPath)
     if(dbPath.isEmpty()){
         inFile.setFileName(savePath);
         if(!inFile.exists()){
-            t.information("数据库不存在", "切换读取备份数据。");
+            emit qml_msg_info("数据库不存在,切换读取备份数据: " + inFile.fileName());
             inFile.setFileName(backupPath);
             if(!inFile.exists()){
-                t.information("找不到数据库", "找不到数据库及数据库备份，无法读取密码。");
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+                emit qml_msg_info("找不到数据库,找不到数据库及数据库备份，无法读取密码。");
+#else
+                t.information("找不到数据库","找不到数据库及数据库备份，无法读取密码。");
+#endif
                 return false;
             }
         }
@@ -244,7 +276,11 @@ bool Kcdb::readKcdb(QString dbPath)
     else{
         inFile.setFileName(dbPath);
         if(!inFile.exists()){
-            t.information("数据库不存在", "切换读取备份数据。");
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+            emit qml_msg_info("找不到数据库,找不到数据库及数据库备份，无法读取密码。");
+#else
+            t.information("找不到数据库","找不到数据库及数据库备份，无法读取密码。");
+#endif
             return false;
         }
         aesPath = QDir::toNativeSeparators(QFileInfo(inFile).path().replace("\\", "/") + "/dat.ec");
@@ -272,12 +308,20 @@ bool Kcdb::readKcdb(QString dbPath)
             delete de;
         }
         else{
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+            emit qml_msg_info("无法读取数据库密码,密码文件可能被其他程序占用。");
+#else
             t.information("无法读取数据库密码", "密码文件可能被其他程序占用。");
+#endif
             return false;
         }
     }
     else{
-        t.information("无法读取数据库密码", "密码丢失。");
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+            emit qml_msg_info("无法读取数据库密码,密码丢失。");
+#else
+            t.information("无法读取数据库密码", "密码丢失。");
+#endif
         return false;
     }
     AesClass *code = new AesClass;

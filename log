@@ -1,20 +1,26 @@
-﻿显示\隐藏账户和密码时错误操作
-输错密码时暂时冻结防爆破
-刷新动画
-
-60x60 x=237 y=237
-delete from stylesheet.qss:
-QHeaderWidget{border:none;color:rgb(240,255,255);background-color:rgb(64,66,68)}
-QHeaderWidget::section:horizontal{border-top:none;border-left:none;border-right:1px solid %2;border-bottom:1px solid %3;
-color:rgb(230,230,230);background-color:rgb(45,45,45);}
-
--- %%INSERT_APP_NAME%% --
+﻿-- %%INSERT_APP_NAME%% --
 
 100%  行高35
 125%  行高40
 
 
 ---------
+20210527:
+1. 根据MainUi编写QmlImporter
+    最终目标是替换之；
+    目前目标是完成显示数据库密码；
+    当前完成情况是完成了在qml中加载QmlImporter，对象的初始化（在onComplete）；
+2. 为了能在qml中加载QmlImporter，将Kcdb和Kcdb_io中的QWidget MessageBoxExX用号qml_msg_info替换
+    等QmlImporter往qml送信号的流程建立后直接形成通路。
+    目前暂时用console.debug连接上。
+3. 暂定向qml传keys时使用json。
+    目前完成将keyMap解析为json并发送给qml，已确认qml中可以正确解析出keys。
+    下一步：将json添加到listview中。
+4. 安卓存储权限比较难弄。
+
+---------
+FIXME:
+1. 管理TabButtonEx 未选中时icon为黑色（已修复）
 
 TODO：
 1. 禁止应用内截屏以及应用预览
@@ -27,3 +33,25 @@ ELSE:
 测试结果：
 1. 更换dat.ec，不更换login.ec，无法读取数据
 2. 更换login.ec，不更换dat.ec，可以读取数据
+
+
+
+qml调C++：
+-----------------------
+由于在android上似乎搜不到string，故先不加密做出来再说
+-----------------------
+需要做的事情：
+有一个string，要按照Encrypt的类型传给C，C根据操作数类型和操作的数据对操作数进行操作。
+16、32、64、string要做的事情其实都一样，所以直接用一个类来做这件事。
+
+需要的参数：
+1. 区分这个string到底是16、32、64还是string。
+2. 操作类型，R、W。
+3. 操作的数据，有没有，有的话有几个，什么类型的。
+4. 返回值，有没有返回值，返回值是什么类型。按说这里应该都按string返回，因为qml没有64位数的支持
+
+调用的时候通过什么？
+一个暴露的函数接口即可。
+
+调用的时候是使用信号槽吗？
+应该不是，以属性的方式调用比较方便，不涉及连接，效率应该也高。但问题是，属性应该没有返回值，也就只能W，不能R。

@@ -4,7 +4,8 @@
 
 //#define DEBUG_SHOW_KEYS
 //#define DEBUG_SKIP_LOGIN
-//#define DEBUG_QML_ON_WINDOWS
+#define DEBUG_QML_ON_WINDOWS
+#define DEBUG_QML_SHOW_INFO
 
 
 

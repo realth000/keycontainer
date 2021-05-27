@@ -34,8 +34,7 @@ MainUi::MainUi(QWidget *parent)
     : QWidget(parent), ui(new Ui::MainUi)
 {
     workPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
-
-#ifndef DEBUG_SKIP_LOGIN
+#   ifndef DEBUG_SKIP_LOGIN
     QEventLoop loop;
     logIn = new LogIn();
     connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
@@ -55,25 +54,21 @@ MainUi::MainUi(QWidget *parent)
     if(!loginCorrent){
         return;
     }
-#else
+#   else
     this->loginCorrent = true;
-#endif
+#   endif
     ui->setupUi(this);
     initUi();
     initConfig();
     initKeyData();
-
-    // 安装filter
     QApplication::instance()->installEventFilter(this);
-//    ui->keyTW->installEventFilter(this);
-//    qDebug() << "new << keyTWCurrentRow_init" << ui->keyTW->selectedItems()[0]->row() << QApplication::focusWidget() <<QApplication::focusObject();
 }
 
 MainUi::~MainUi()
 {
+    QApplication::instance()->removeEventFilter(this);
     // TODO: 为什么*ui不需要初始化，且即使初始化为nullptr在此也不是nullptr？
     // 可能ui的parent是
-    QApplication::instance()->removeEventFilter(this);;
     if(ui==nullptr){qDebug() << "nullptr *ui";}
     delete ui;
     delete kcdb;
@@ -206,17 +201,6 @@ void MainUi::keyPressEvent(QKeyEvent *e)
     e->ignore();
 }
 
-//void MainUi::keyReleaseEvent(QKeyEvent *e)
-//{
-//     qDebug() << "MainUi: keyReleaseEvent" << e->modifiers() << e->key();
-//     if(e->modifiers() == Qt::NoModifier && (e->key() == Qt::Key_Left || e->key() == Qt::Key_Right)){
-//         qDebug() << "accept";
-//         e->accept();
-//         return;
-//     }
-//     e->ignore();
-//}
-
 void MainUi::initKeyData()
 {
     if(!(QFileInfo(savePath)).exists()){
@@ -235,7 +219,6 @@ void MainUi::initKeyData()
     }
     ui->keyTW->setEnabled(true);
     keyTableFindPos = -1;
-
 }
 
 void MainUi::initUi()

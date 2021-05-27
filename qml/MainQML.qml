@@ -5,6 +5,8 @@ import QtQuick.Controls 2.5
 import QtQuick.Controls.Styles 1.4
 import QtQuick.Layouts 1.12
 import "QuickItem"
+import TH.QmlImporter 1.0
+import QtQml 2.12
 
 //import "QuickItem"
 ApplicationWindow  {
@@ -39,6 +41,7 @@ ApplicationWindow  {
 //        id: titleBar
 //        height: 30
 //    }
+
     StackLayout{
         id: swe
         currentIndex: mainDrawer.currentIndex
@@ -196,9 +199,27 @@ ApplicationWindow  {
                 }
             }
        }
+
         ButtonGroup{
             id: mainDrawerBG
             buttons: mainDrawerBEs.children
         }
+
     }
+
+    QmlImporter{
+        id: mainQmlImporter
+        onQml_msg_info: {
+            console.debug(msg)
+        }
+        onSendKeys: {
+            var obj = JSON.parse(keysJsonString)
+            console.debug(obj.time)
+        }
+    }
+
+    Component.onCompleted: {
+        mainQmlImporter.initImporter()
+    }
+
 }

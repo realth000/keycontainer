@@ -1,16 +1,16 @@
-QT += core gui quick qml
-#Qt += core
+#QT += core gui quick qml
+QT += core quick qml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
 #QMAKE_CXXFLAGS += /MP
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 2.2.16
+VERSION = 2.2.16.1
 
 win32 {
 #    QT += gui
-    RC_ICONS = "Key Container.ico"
+#    RC_ICONS = "Key Container.ico"
     TARGET = "Key Container"
     LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
 }
@@ -44,6 +44,8 @@ QML_IMPORT_PATH =
 QML_DESIGNER_IMPORT_PATH =
 
 SOURCES += \
+    cml/keymapjsonengine.cpp \
+    cml/qmlimporter.cpp \
     ui/animationrefresh.cpp \
     commoninclude.cpp \
     debugshowoptions.cpp \
@@ -65,6 +67,8 @@ SOURCES += \
     uistyle/proxystyle.cpp
 
 HEADERS += \
+    cml/keymapjsonengine.h \
+    cml/qmlimporter.h \
     ui/animationrefresh.h \
     commoninclude.h \
     debugshowoptions.h \

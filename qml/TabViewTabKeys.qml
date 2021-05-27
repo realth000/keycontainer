@@ -6,7 +6,7 @@ import QtQml.Models 2.12
 import "QuickItem"
 
 Item {
-    property string hides: "***********"
+    property string hides: "❄❄❄❄❄❄❄"
     property color bgColor: "transparent"
     property int toolNum: 4
     //背景
