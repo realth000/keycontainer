@@ -14,10 +14,6 @@ ApplicationWindow  {
     visible: true
     width: usingWidth
     height: usingHeight
-//    minimumWidth: usingWidth
-//    minimumHeight: usingHeight
-//    maximumWidth: usingWidth
-//    maximumHeight: usingHeight
 //    flags: Qt.Window | Qt.FramelessWindowHint
 
     // 背景默认颜色
@@ -36,7 +32,7 @@ ApplicationWindow  {
     property int usingWidth: 354
     property int usingHeight: 700
 
-
+    signal keysString(string keys)
 //    header: TitleBar{
 //        id: titleBar
 //        height: 30
@@ -199,27 +195,24 @@ ApplicationWindow  {
                 }
             }
        }
-
         ButtonGroup{
             id: mainDrawerBG
             buttons: mainDrawerBEs.children
         }
-
     }
 
     QmlImporter{
         id: mainQmlImporter
         onQml_msg_info: {
-            console.debug(msg)
+            console.log(msg)
         }
         onSendKeys: {
-            var obj = JSON.parse(keysJsonString)
-            console.debug(obj.time)
+            var obj = JSON.parse(keysJsonString);
+            p1.syncKeysFromJson(obj);
         }
     }
 
     Component.onCompleted: {
-        mainQmlImporter.initImporter()
+        mainQmlImporter.initImporter();
     }
-
 }

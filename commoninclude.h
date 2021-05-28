@@ -74,7 +74,7 @@
 #define PADDING_LEFT  4
 #define PADDING_DOWN  4
 
-#define KEYMAP_JSON_ENGINE_VERSION 1.0
+#define KEYMAP_JSON_ENGINE_VERSION "1.0"
 
 namespace CI{
     class KeyMap;

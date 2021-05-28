@@ -21,7 +21,7 @@ QString KeyMapJsonEngine::keyMapToJson(QMap<int, KeyMap> keyMap)
     QJsonObject keyMapJsonObj;
     QJsonObject keyMapDataJsonObj;
     keyMapJsonObj.insert("time", QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
-    keyMapJsonObj.insert("key_count", keyMap.count());
+    keyMapJsonObj.insert("keys_count", keyMap.count());
     keyMapJsonObj.insert("jsonengine_version", KEYMAP_JSON_ENGINE_VERSION);
     keyMapJsonObj.insert("keycontainer_version", ABOUT_VERSION);
     keyMapJsonObj.insert("keycontainer_platform", ABOUT_PLANTFORM);
@@ -43,7 +43,7 @@ QString KeyMapJsonEngine::keyMapToJson(QMap<int, KeyMap> keyMap)
 
         iter++;
     }
-    keyMapJsonObj.insert("key_data", keyMapDataJsonObj);
+    keyMapJsonObj.insert("keys_data", keyMapDataJsonObj);
     keyMapJsonDoc.setObject(keyMapJsonObj);
     QString result;
     result = keyMapJsonDoc.toJson();

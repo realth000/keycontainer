@@ -6,7 +6,8 @@ import QtQml.Models 2.12
 import "QuickItem"
 
 Item {
-    property string hides: "❄❄❄❄❄❄❄"
+    id: mainTabKeys
+    property string hides: "*******"
     property color bgColor: "transparent"
     property int toolNum: 4
     //背景
@@ -105,7 +106,6 @@ Item {
         ListView {
             id: keysView
             anchors.fill: parent
-            spacing: 10
             model: KeyModel {}
             delegate: keyDelegate
             highlight: Rectangle {
@@ -246,5 +246,19 @@ Item {
                 }
             }
          }
+    }
+    function adaptKeyBeforeSync(key){
+         return JSON.parse(JSON.stringify(key).replace(/}$/g, ",\"keyChecked\":false,\"showAccount\":false,\"showPassword\":false}"));
+    }
+
+    function syncKeysFromJson(keys){
+        console.log(keys.time, keys.keys_count);
+        var mod = keysView.model;
+        var keys_data = keys.keys_data;
+        var keys_count = keys.keys_count;
+
+        for(var i=0; i<keys_count; i++){
+            mod.append(adaptKeyBeforeSync(keys_data[i]));
+        }
     }
 }
