@@ -19,6 +19,17 @@
 4. 安卓存储权限比较难弄。
 
 ---------
+20210528:
+1. 暂定向qml传keys时使用json
+    目前完成将keyMap解析为json并发送给qml，已确认qml中可以正确解析出keys。
+    已经将json添加到listview中。
+2. 添加权限后可以读取配置及密码数据，但是路径为/data/app/~~AOZuHoQiZqKcNtfZ31l2Lg==/com.th000.keycontainer-FdRExhrAAcMSiqVgoU8_UA==/lib/arm64/pw.kcdb
+    暂时实现获得存储权限(Target API:29\Android11)；
+    manifest中添加：READ_EXTERNAL_STORAGE、WRITE_EXTERNAL_STORAGE、MANAGE_EXTERNAL_STORAGE，android:requestLegacyExternalStorage="true"。
+    API最高为29。设置Target API为30后在安卓11上基本报废，不知道是Qt的manifest中的API not set的原因还是android:requestLegacyExternalStorage="true"失效的原因。
+    目前程序目录设置为/storage/emulated/0/KeyContainer。
+
+---------
 FIXME:
 1. 管理TabButtonEx 未选中时icon为黑色（已修复）
 

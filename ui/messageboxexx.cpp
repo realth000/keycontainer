@@ -4,10 +4,6 @@
 #include "commoninclude.h"
 #include "qssinstaller.h"
 
-#if _MSC_VER >= 1600
-#pragma execution_character_set("utf-8")
-#endif
-
 MessageBoxExX::MessageBoxExX(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MessageBoxExX)

@@ -4,9 +4,10 @@
 #include <QFileInfo>
 #include <QSettings>
 #include <QCryptographicHash>
+#include <QUrl>
 
-#if _MSC_VER >= 1600
-#pragma execution_character_set("utf-8")
+#ifdef Q_OS_ANDROID
+#include <QtAndroid>
 #endif
 
 QmlImporter::QmlImporter(QObject *parent) : QObject(parent)
@@ -19,10 +20,39 @@ void QmlImporter::initImporter()
 #ifdef DEBUG_QML_SHOW_INFO
     qDebug() <<"start QmlImporter";
 #endif
+#ifdef Q_OS_ANDROID
+    initPermission();
+    QUrl uuu("file:///storage/emulated/0/KeyContainer");
+    workPath = uuu.toLocalFile();
+    QDir workDir(workPath);
+    if(!workDir.exists()){
+        qml_msg_info("mkdir1: "+QString::number(workDir.mkpath(workPath)));
+    }
+    qml_msg_info("exists?: "+QString::number(workDir.exists(workPath)));
+#else
     workPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
+#endif
     initConfig();
     initKeyData();
 }
+
+#ifdef Q_OS_ANDROID
+void QmlImporter::initPermission()
+{
+    QtAndroid::PermissionResult r = QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE");
+    if(r == QtAndroid::PermissionResult::Denied) {
+       QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.READ_EXTERNAL_STORAGE");
+    }
+    r = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+    if(r == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.WRITE_EXTERNAL_STORAGE");
+    }
+    r = QtAndroid::checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE");
+    if(r == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.MANAGE_EXTERNAL_STORAGE");
+    }
+}
+#endif
 
 void QmlImporter::initConfig()
 {
@@ -32,7 +62,9 @@ void QmlImporter::initConfig()
     savePath = QDir::toNativeSeparators(workPath + savePath);
     backupPath = QDir::toNativeSeparators(workPath + backupPath);
     kcdb = new Kcdb(workPath);
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
     connect(kcdb, &Kcdb::qml_msg_info, this, &QmlImporter::qml_msg_info);
+#endif
     if(!QFileInfo(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini")).exists()){
         emit qml_msg_info("未找到配置文件");
         return;

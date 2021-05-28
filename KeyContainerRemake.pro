@@ -1,27 +1,173 @@
-#QT += core gui quick qml
-QT += core quick qml
-
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
-#QMAKE_CXXFLAGS += /MP
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 2.2.16.1
+VERSION = 2.2.16.2
 
 win32 {
-#    QT += gui
-#    RC_ICONS = "Key Container.ico"
+    QT += core gui
+    RC_ICONS = "Key Container.ico"
     TARGET = "Key Container"
     LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
+    SOURCES += \
+        cml/keymapjsonengine.cpp \
+        ui/animationrefresh.cpp \
+        commoninclude.cpp \
+        debugshowoptions.cpp \
+        encryption/encrypted.cpp \
+        encryption/qaesencryption.cpp \
+        findkeyui.cpp \
+        globalshortcut/globalshortcut.cpp \
+        inputinitkeyui.cpp \
+        inputkeyui.cpp \
+        kcdb.cpp \
+        login.cpp \
+        main.cpp \
+        mainui.cpp \
+        qssinstaller.cpp \
+        ui/messageboxexx.cpp \
+        ui/qlineeditpro.cpp \
+        ui/tablewidgetex.cpp \
+        ui/titlebar.cpp \
+        uistyle/proxystyle.cpp
+
+    HEADERS += \
+        cml/keymapjsonengine.h \
+        ui/animationrefresh.h \
+        commoninclude.h \
+        debugshowoptions.h \
+        encryption/encrypted.h \
+        encryption/qaesencryption.h \
+        findkeyui.h \
+        globalshortcut/globalshortcut.h \
+        inputinitkeyui.h \
+        inputkeyui.h \
+        kcdb.h \
+        login.h \
+        mainui.h \
+        qssinstaller.h \
+        ui/messageboxexx.h \
+        ui/qlineeditpro.h \
+        ui/tablewidgetex.h \
+        ui/titlebar.h \
+        uistyle/proxystyle.h
+
+    FORMS += \
+        findkeyui.ui \
+        inputinitkeyui.ui \
+        inputkeyui.ui \
+        login.ui \
+        mainui.ui \
+        ui/messageboxexx.ui
+
+    RESOURCES += \
+        resource.qrc
 }
-unix {
-#    QT += gui
+
+# 此处控制在windows下编译qml版还是win版
+# 被注释时编译win版
+# 未注释时编译qml版
+win32{
+    QT += quick qml
+    QT -= gui
+    SOURCES += \
+        cml/qmlimporter.cpp
+
+    HEADERS += \
+        cml/qmlimporter.h
+
+    RESOURCES += \
+        qmlresource.qrc
+
+    DEFINES += ENABLE_QML
+}
+
+win32-msvc* {
+  QMAKE_CXXFLAGS += /utf-8
+  QMAKE_CXXFLAGS += /MP
+}
+
+unix:!android {
+    QT += core gui quick qml
     RC_ICONS = "KeyContainer.ico"
-    TARGET = "KeyContainer_unix"
+    TARGET = "KeyContainer"
+    SOURCES += \
+        cml/keymapjsonengine.cpp \
+        ui/animationrefresh.cpp \
+        commoninclude.cpp \
+        debugshowoptions.cpp \
+        encryption/encrypted.cpp \
+        encryption/qaesencryption.cpp \
+        findkeyui.cpp \
+        globalshortcut/globalshortcut.cpp \
+        inputinitkeyui.cpp \
+        inputkeyui.cpp \
+        kcdb.cpp \
+        login.cpp \
+        main.cpp \
+        mainui.cpp \
+        qssinstaller.cpp \
+        ui/messageboxexx.cpp \
+        ui/qlineeditpro.cpp \
+        ui/tablewidgetex.cpp \
+        ui/titlebar.cpp \
+        uistyle/proxystyle.cpp
+
+    HEADERS += \
+        cml/keymapjsonengine.h \
+        ui/animationrefresh.h \
+        commoninclude.h \
+        debugshowoptions.h \
+        encryption/encrypted.h \
+        encryption/qaesencryption.h \
+        findkeyui.h \
+        globalshortcut/globalshortcut.h \
+        inputinitkeyui.h \
+        inputkeyui.h \
+        kcdb.h \
+        login.h \
+        mainui.h \
+        qssinstaller.h \
+        ui/messageboxexx.h \
+        ui/qlineeditpro.h \
+        ui/tablewidgetex.h \
+        ui/titlebar.h \
+        uistyle/proxystyle.h
+
+    FORMS += \
+        findkeyui.ui \
+        inputinitkeyui.ui \
+        inputkeyui.ui \
+        login.ui \
+        mainui.ui \
+        ui/messageboxexx.ui
+    RESOURCES += \
+        resource.qrc
 }
 
 android {
-#    QT += quick qml
+    QT += core quick qml androidextras
+    SOURCES += \
+    cml/keymapjsonengine.cpp \
+    cml/qmlimporter.cpp \
+    commoninclude.cpp \
+    debugshowoptions.cpp \
+    encryption/encrypted.cpp \
+    encryption/qaesencryption.cpp \
+    main.cpp \
+    kcdb.cpp
+
+    HEADERS += \
+    cml/keymapjsonengine.h \
+    cml/qmlimporter.h \
+    commoninclude.h \
+    debugshowoptions.h \
+    encryption/encrypted.h \
+    encryption/qaesencryption.h \
+    kcdb.h
+
+    RESOURCES += \
+        qmlresource.qrc \
 }
 #LIBS +=  D:\WindowsKits\Lib\10.0.18362.0\um\x64\WS2_32.lib
 #LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
@@ -43,68 +189,11 @@ QML_IMPORT_PATH =
 # Additional import path used to resolve QML modules just for Qt Quick Designer
 QML_DESIGNER_IMPORT_PATH =
 
-SOURCES += \
-    cml/keymapjsonengine.cpp \
-    cml/qmlimporter.cpp \
-    ui/animationrefresh.cpp \
-    commoninclude.cpp \
-    debugshowoptions.cpp \
-    encryption/encrypted.cpp \
-    encryption/qaesencryption.cpp \
-    findkeyui.cpp \
-    globalshortcut/globalshortcut.cpp \
-    inputinitkeyui.cpp \
-    inputkeyui.cpp \
-    kcdb.cpp \
-    login.cpp \
-    main.cpp \
-    mainui.cpp \
-    qssinstaller.cpp \
-    ui/messageboxexx.cpp \
-    ui/qlineeditpro.cpp \
-    ui/tablewidgetex.cpp \
-    ui/titlebar.cpp \
-    uistyle/proxystyle.cpp
-
-HEADERS += \
-    cml/keymapjsonengine.h \
-    cml/qmlimporter.h \
-    ui/animationrefresh.h \
-    commoninclude.h \
-    debugshowoptions.h \
-    encryption/encrypted.h \
-    encryption/qaesencryption.h \
-    findkeyui.h \
-    globalshortcut/globalshortcut.h \
-    inputinitkeyui.h \
-    inputkeyui.h \
-    kcdb.h \
-    login.h \
-    mainui.h \
-    qssinstaller.h \
-    ui/messageboxexx.h \
-    ui/qlineeditpro.h \
-    ui/tablewidgetex.h \
-    ui/titlebar.h \
-    uistyle/proxystyle.h
-
-FORMS += \
-    findkeyui.ui \
-    inputinitkeyui.ui \
-    inputkeyui.ui \
-    login.ui \
-    mainui.ui \
-    ui/messageboxexx.ui
-
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 #else: unix:!android: target.path = /opt/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
-
-RESOURCES += \
-    qmlresource.qrc \
-    resource.qrc
 
 DISTFILES += \
     android/AndroidManifest.xml \

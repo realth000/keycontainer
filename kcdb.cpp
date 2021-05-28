@@ -10,11 +10,6 @@
 #include "qssinstaller.h"
 #endif
 
-
-#if _MSC_VER >= 1600
-#pragma execution_character_set("utf-8")
-#endif
-
 void AesClass::initTestCase(QString key_in)
 {
     quint8 iv_16[16] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f};
@@ -259,7 +254,11 @@ bool Kcdb::readKcdb(QString dbPath)
     if(dbPath.isEmpty()){
         inFile.setFileName(savePath);
         if(!inFile.exists()){
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
             emit qml_msg_info("数据库不存在,切换读取备份数据: " + inFile.fileName());
+#else
+            t.information("数据库不存在","切换读取备份数据");
+#endif
             inFile.setFileName(backupPath);
             if(!inFile.exists()){
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)

@@ -5,10 +5,6 @@
 #include "kcdb.h"
 #include "keymapjsonengine.h"
 
-#if _MSC_VER >= 1600
-#pragma execution_character_set("utf-8")
-#endif
-
 class QmlImporter : public QObject
 {
     Q_OBJECT
@@ -31,6 +27,9 @@ private:
     QMap<int, KeyMap> keyMap;
     QString msg;
 
+#ifdef Q_OS_ANDROID
+    void initPermission();
+#endif
     void initConfig();
     void initKeyData();
     bool checkDb(QString dbPath = "");

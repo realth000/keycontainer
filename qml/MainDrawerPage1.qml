@@ -40,8 +40,8 @@ Item {
                  id: homeTab
                  bgColor:"#333333"
              }
-             TabViewTab2 {
-                id: discoverTab
+             TabViewTabAddKey {
+                id: addTab
                 bgColor:"#333333"
              }
              TabViewTab3 {
@@ -83,6 +83,10 @@ Item {
             }
 
         }
+
+    }
+    function syncKeysFromJson(keys){
+        homeTab.syncKeysFromJson(keys);
     }
 
 }
