@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.12
 import "QuickItem"
 
 Item {
+    property alias viewer: homeTab.viewer
+    property QtObject root
     id: self
     ColumnLayout{
         id: mainColLayout
@@ -39,10 +41,12 @@ Item {
              TabViewTabKeys{
                  id: homeTab
                  bgColor:"#333333"
+                 root: self.root
              }
              TabViewTabAddKey {
                 id: addTab
                 bgColor:"#333333"
+                root: self.root
              }
              TabViewTab3 {
                  id: activityTab
@@ -85,6 +89,7 @@ Item {
         }
 
     }
+
     function syncKeysFromJson(keys){
         homeTab.syncKeysFromJson(keys);
     }

@@ -6,10 +6,12 @@ import QtQml.Models 2.12
 import "QuickItem"
 
 Item {
-    id: mainTabKeys
+    property QtObject root
+    property alias viewer: keysView
     property string hides: "*******"
     property color bgColor: "transparent"
     property int toolNum: 4
+    id: mainTabKeys
     //背景
     Rectangle{
         width: parent.width
@@ -33,6 +35,7 @@ Item {
             anchors.left: manaToolRect.left
             anchors.verticalCenter: manaToolRect.verticalCenter
             bgColor: "transparent"
+            bgSelectedColor: "transparent"
             checkable: true
             texts: showAccountAllBtnEx.checked ? "隐藏密码" : "显示密码"
             textsBold: true
@@ -118,6 +121,7 @@ Item {
             displayMarginBeginning:0
             // NOTE: 超出部分自动隐藏
             clip:true
+            spacing: 5
 
             Component {
                 id: keyDelegate
@@ -166,6 +170,7 @@ Item {
                                     font.pixelSize: 16
                                     color: keysView.currentIndex==index ? "#f0ffff" : "#f0ffff"
                                     clip: true
+                                    font.bold: true
                                 }
                                 Text {
                                     id: accountText
@@ -173,6 +178,7 @@ Item {
                                     font.pixelSize: 15
                                     color: keysView.currentIndex==index ? "#f0ffff" : "#f0ffff"
                                     clip: true
+                                    font.bold: true
                                 }
                                 Text {
                                     id: passwordText
@@ -180,6 +186,7 @@ Item {
                                     font.pixelSize: 15
                                     color: keysView.currentIndex==index ? "#f0ffff" : "#f0ffff"
                                     clip: true
+                                    font.bold: true
                                 }
                             }
                         }
