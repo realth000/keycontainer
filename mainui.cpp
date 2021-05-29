@@ -704,6 +704,8 @@ void MainUi::addKey()
         // 需要加入密码
         if(result){
             // 密码已经存在，更新旧密码
+            // TODO: 这里或许应该去掉的，qml版暂时没有在这里加更新旧密码的功能
+            // qml版的更改密码是另一个独立功能，widget版应该也加上
             if(existPos>=0){
                 keyMap[existPos].disc = k->disc;
                 keyMap[existPos].account = k->account;
@@ -719,6 +721,7 @@ void MainUi::addKey()
                 }
             }
             // 密码不存在，加入新密码
+            // TODO: 新密码固定加入最后一行，或许该考虑直接加到准确位置
             else{
                 keyTW_addNewRow(keyTableRowCount, k->disc, k->account, k->password, 35);
                 keyMap.insert(keyTableRowCount, KeyMap(keyTableRowCount, k->disc, k->account,k->password));

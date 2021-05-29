@@ -28,18 +28,21 @@
     manifest中添加：READ_EXTERNAL_STORAGE、WRITE_EXTERNAL_STORAGE、MANAGE_EXTERNAL_STORAGE，android:requestLegacyExternalStorage="true"。
     API最高为29。设置Target API为30后在安卓11上基本报废，不知道是Qt的manifest中的API not set的原因还是android:requestLegacyExternalStorage="true"失效的原因。
     目前程序目录设置为/storage/emulated/0/KeyContainer。
-
+---------
+20210530:
+1. 安卓平台config.ini路径错误（考虑下需不需要改，还是就放在/data/...下好）
+2. 禁止应用内截屏以及应用预览
+3. 添加密码功能
+4. 增加root及viewer方便透过作用域访问QmlImporter及ListView
 ---------
 FIXME:
-1. 管理TabButtonEx 未选中时icon为黑色（已修复）
 
 TODO：
-1. 禁止应用内截屏以及应用预览
 
 ELSE:
 1. 渐变映射上下限为ButtonExImage#4b6876、TabButtonEx#6d799c
 2. Version: 164000000 | _version * 10 + _patchVersion;
-    164000000 | 10000*10 + 2 = 1 6410 0000 + 2 = 164100002
+    164000000 | 10000*10 + 4 = 1 6410 0000 + 4 = 164100004
 
 测试结果：
 1. 更换dat.ec，不更换login.ec，无法读取数据

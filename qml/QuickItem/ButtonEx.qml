@@ -19,7 +19,7 @@ Button{
 //    property color textsCheckedColor: "#28292a"
     property color textsCheckedColor: "#f0ffff"
     property color textsUncheckedColor: "#4b6876"
-    property bool textsBold: false
+    property bool textsBold: true
     property string iconChecked
     property string iconUnchecked
     property int iconWidth: 30
@@ -28,8 +28,9 @@ Button{
     property int textPadding: 3
     property bool useTexts: true
     property int iconPos: 0
-    property int textsSize: 13
+    property int textsSize: 15
     property bool iconAntialiasing: false
+    property int horizontalOffset: 0
     checkable: true
 
     // 这个方框是辅助定位tabButton中图标和文字的，由于anchors的值只能定义为anchors的值，因此如果想把图标和
@@ -67,6 +68,7 @@ Button{
         border.width: 0
         anchors.horizontalCenter: iconPos==0 ? parent.horizontalCenter : parent.horizontalCenter
         anchors.verticalCenter: self.verticalCenter
+        anchors.horizontalCenterOffset: horizontalOffset
     }
 
     Image{

@@ -19,7 +19,7 @@
 
 // TODO: 密码验证， 格式，存储
 InputKeyUi::InputKeyUi(QWidget *parent, quint32 id, KeyMap *keyMap, QList<Estring> discIndex) :
-    QDialog(parent), tid(id), m_keyMap(keyMap), m_exsitsKeys(discIndex),
+    QDialog(parent), tid(id), m_keyMap(keyMap), m_existsKeys(discIndex),
     ui(new Ui::InputKeyUi)
 {
     ui->setupUi(this);
@@ -154,9 +154,9 @@ bool InputKeyUi::checkInput()
 
 bool InputKeyUi::checkExistence()
 {
-    int length = m_exsitsKeys.length();
+    int length = m_existsKeys.length();
     for(int i=0; i<length; i++){
-        if(m_exsitsKeys[i].getVal().compare(ui->inputKey_discLE->text()) == 0){
+        if(m_existsKeys[i].getVal().compare(ui->inputKey_discLE->text()) == 0){
             existPos = i;
             return true;
         }

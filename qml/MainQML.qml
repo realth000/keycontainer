@@ -8,13 +8,13 @@ import "QuickItem"
 import TH.QmlImporter 1.0
 import QtQml 2.12
 
-//import "QuickItem"
 ApplicationWindow  {
+    property alias importer: mainQmlImporter
+    property alias viewer: p1.viewer
     id: mainWindow
     visible: true
     width: usingWidth
     height: usingHeight
-//    flags: Qt.Window | Qt.FramelessWindowHint
 
     // 背景默认颜色
     property color backgroundColorBegin: "#232323"
@@ -33,10 +33,6 @@ ApplicationWindow  {
     property int usingHeight: 700
 
     signal keysString(string keys)
-//    header: TitleBar{
-//        id: titleBar
-//        height: 30
-//    }
 
     StackLayout{
         id: swe
@@ -48,6 +44,7 @@ ApplicationWindow  {
         }
         MainDrawerPage1{
             id: p1
+            root: mainWindow
         }
         Label{
             text: "\n\n\n\n      2"
@@ -67,15 +64,11 @@ ApplicationWindow  {
         }
     }
 
-
-
-
     Drawer{
-        // NOTE: 此处设置后为什么会盖住TabBar，以及到底有没有被titleBar盖住
         parent: p1.mainColLayout
         id: mainDrawer
         width: 0.66 * mainWindow.width
-        height: mainWindow.height/* - titleBar.height*/
+        height: mainWindow.height
         edge: Qt.LeftEdge
         // FIXME: 设置dragMargin将导致margin宽度的区域内drawer下层其他控件（一般视drawer在最顶层，因此指区域内所有其他控件）无法响应MouseEvent
         // 在Event机制中，似乎是drawer优先捕获事件，导致其他控件无法接受事件，无论这个事件是否是拖拽打开drawer
@@ -118,8 +111,6 @@ ApplicationWindow  {
                 bgColor: "#2d2f32"
                 iconPos: 1
                 texts: "   主页      "
-                textsSize: 15
-                textsBold:true
                 iconChecked: "qrc:/androidsrc/home_reverse.png"
                 iconUnchecked: "qrc:/androidsrc/home.png"
                 Layout.preferredWidth: parent.width
@@ -135,8 +126,6 @@ ApplicationWindow  {
                 bgColor: "#2d2f32"
                 iconPos: 1
                 texts: "   导出      "
-                textsSize: 15
-                textsBold:true
                 iconChecked: "qrc:/androidsrc/exportKey_reverse.png"
                 iconUnchecked: "qrc:/androidsrc/exportKey.png"
                 Layout.preferredWidth: parent.width
@@ -151,8 +140,6 @@ ApplicationWindow  {
                 bgColor: "#2d2f32"
                 iconPos: 1
                 texts: "   导入      "
-                textsSize: 15
-                textsBold:true
                 iconChecked: "qrc:/androidsrc/importKeys_reverse.png"
                 iconUnchecked: "qrc:/androidsrc/importKeys.png"
                 Layout.preferredWidth: parent.width
@@ -167,8 +154,6 @@ ApplicationWindow  {
                 bgColor: "#2d2f32"
                 iconPos: 1
                 texts: "   设置      "
-                textsSize: 15
-                textsBold:true
                 iconChecked: "qrc:/androidsrc/config_reverse.png"
                 iconUnchecked: "qrc:/androidsrc/config.png"
                 Layout.preferredWidth: parent.width
@@ -183,8 +168,6 @@ ApplicationWindow  {
                 bgColor: "#2d2f32"
                 iconPos: 1
                 texts: "   关于      "
-                textsSize: 15
-                textsBold:true
                 iconChecked: "qrc:/androidsrc/about_reverse.png"
                 iconUnchecked: "qrc:/androidsrc/about.png"
                 Layout.preferredWidth: parent.width

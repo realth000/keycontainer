@@ -10,7 +10,6 @@ class QmlImporter : public QObject
     Q_OBJECT
 public:
     explicit QmlImporter(QObject *parent = nullptr);
-//    Q_PROPERTY(QString msg NOTIFY msg)
 
 signals:
     void qml_msg_info(QString msg);
@@ -18,6 +17,10 @@ signals:
 
 public slots:
     void initImporter();
+    int checkExistence(QString disc, QString account, QString password);
+#ifdef Q_OS_ANDROID
+    void updateAndroidNotifier(QString msg);
+#endif
 
 private:
     QString workPath = "";
@@ -25,6 +28,7 @@ private:
     QString backupPath = "/pwbp.kcdb";
     Kcdb *kcdb = nullptr;
     QMap<int, KeyMap> keyMap;
+    QList<Estring> existsKeys;
     QString msg;
 
 #ifdef Q_OS_ANDROID

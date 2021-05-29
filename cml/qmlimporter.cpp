@@ -8,6 +8,7 @@
 
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
+#include <QAndroidJniObject>
 #endif
 
 QmlImporter::QmlImporter(QObject *parent) : QObject(parent)
@@ -35,6 +36,41 @@ void QmlImporter::initImporter()
     initConfig();
     initKeyData();
 }
+
+// TODO: 接收qml传来的账号密码用明文有点憨憨
+// 不过现在整个qml都是裸奔的也就不差这点了
+int QmlImporter::checkExistence(QString disc, QString account, QString password)
+{
+    if(existsKeys.count() == 0){
+        return 1;
+    }
+    // pos<0证明已经存在，pos>0是该插入的位置（第1个之前，第2个之前……第n个之前，第n个之后）
+    int pos = 0;
+    foreach(Estring e, existsKeys){
+        pos++;
+        // NOTE: widget版中如果是已有密码的情况，是可以选择更新旧密码的
+        if(e.getVal() == disc){
+            return -pos;
+        }
+        // NOTE: 反正现在新密码在前端是加在最后一行，return个pos其实没啥用
+        if(e.getVal() > disc){
+            keyMap.insert(keyMap.count(), KeyMap(keyMap.count(), Estring(disc), Estring(account), Estring(password)));
+            return pos;
+        }
+    }
+    return pos;
+}
+
+#ifdef Q_OS_ANDROID
+void QmlImporter::updateAndroidNotifier(QString msg)
+{
+    QAndroidJniObject javaNotification = QAndroidJniObject::fromString(msg);
+    QAndroidJniObject::callStaticMethod<void>("org/th000/keycontainer/application/SelfApplication",
+                                       "notify",
+                                       "(Ljava/lang/String;)V",
+                                       javaNotification.object<jstring>());
+}
+#endif
 
 #ifdef Q_OS_ANDROID
 void QmlImporter::initPermission()
@@ -65,11 +101,11 @@ void QmlImporter::initConfig()
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
     connect(kcdb, &Kcdb::qml_msg_info, this, &QmlImporter::qml_msg_info);
 #endif
-    if(!QFileInfo(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini")).exists()){
+    if(!QFileInfo(QDir::toNativeSeparators(workPath + "/config.ini")).exists()){
         emit qml_msg_info("未找到配置文件");
         return;
     }
-    QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
+    QSettings *ini = new QSettings(QDir::toNativeSeparators(workPath + "/config.ini"), QSettings::IniFormat);
     // TODO: 读取配置
     savePath = ini->value("/Path/SavePath").toString();
     kcdb->setSavePath(savePath);
@@ -90,7 +126,6 @@ void QmlImporter::initKeyData()
         return;
     }
     if(kcdb->readKcdb()){
-        // TODO: 将keys发送给qml
         syncKeyFromMap();
     }
     else{
@@ -186,12 +221,12 @@ void QmlImporter::syncKeyFromMap()
     QMap<QString, GroupKey>::const_iterator t = tmp.begin();
     int count=0;
     while (t != tmp.cend()) {
-        // TODO: sync KeyMap id and disc -> support both version of KeyContainer
-        KeyMap nKey(count, t.value().disc, t.value().account, t.value().key);
+         KeyMap nKey(count, t.value().disc, t.value().account, t.value().key);
         keyMap.insert(count, nKey);
+        existsKeys.append(t.value().disc);
         count++;
         t++;
     }
     emit sendKeys(KeyMapJsonEngine::keyMapToJson(keyMap));
-    qDebug() << "read .kcdb successed";
+    qDebug() << "read .kcdb successed:" << count << "keys";
 }

@@ -35,7 +35,7 @@ private:
 
     quint32 tid;
     KeyMap *m_keyMap;
-    QList<Estring> m_exsitsKeys;
+    QList<Estring> m_existsKeys;
     Ui::InputKeyUi *ui;
     bool showing = false;
     int existPos = -1;

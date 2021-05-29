@@ -10,7 +10,7 @@
 
 #define ABOUT_VERSION APP_VERSION
 //#define ABOUT_TIME  QDateTime::currentDateTime().toString("yyyy.MM.dd")
-#define ABOUT_TIME  "2021.5.28"
+#define ABOUT_TIME  "2021.5.30"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
@@ -45,6 +45,8 @@
 #   define ABOUT_PLANTFORM "For Windows"
 #   define TITLEBAR_TITLEICON ":/src/Key Container.ico"
 #   define TITLEBAR_TITLETEXT "Key Container"
+#elif defined (Q_OS_ANDROID)
+#   define ABOUT_PLANTFORM "For Android"
 #else
 #   define ABOUT_PLANTFORM "Unknown"
 #   define TITLEBAR_TITLEICON ":/src/KeyContainer.ico"

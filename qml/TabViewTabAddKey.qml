@@ -1,13 +1,17 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
+import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.12
 import "QuickItem"
 
 Item {
     id: addTabItem
-//    anchors.fill: parent
     property color bgColor: "transparent"
     property int widthMargin: addTabItem.width/10
     property int heightMargin: addTabItem.height/10
+    property bool showPassword: false
+    property QtObject root
+    signal checkInputExistence(string disc, string account, string password)
+    signal addNewKeyToView(string disc, string account, string password)
     Rectangle{
         width: parent.width
         height: parent.height
@@ -28,6 +32,7 @@ Item {
             anchors.left: addToolRect.left
             anchors.verticalCenter: addToolRect.verticalCenter
             bgColor: "transparent"
+            bgSelectedColor: "transparent"
             checkable: true
             texts: showAccountAllBtnEx.checked ? "隐藏密码" : "显示密码"
             textsBold: true
@@ -37,12 +42,7 @@ Item {
             iconWidth: 30
             iconHeight: 30
             onClicked: {
-                var state =showAccountAllBtnEx.checked
-                for(var i=0; i<keysView.model.count; i++){
-                    var obj =keysView.model.get(i)
-                    obj.showAccount = state
-                    obj.showPassword = state
-                }
+                showPassword=(showPassword ? false : true)
             }
         }
         ButtonEx{
@@ -51,6 +51,7 @@ Item {
             anchors.horizontalCenter: addToolRect.horizontalCenter
             anchors.verticalCenter: addToolRect.verticalCenter
             bgColor: "transparent"
+            bgSelectedColor: "transparent"
             checkable: true
             texts: self.checked ? "123" : "456"
             textsBold: true
@@ -60,11 +61,7 @@ Item {
             iconWidth: 30
             iconHeight: 30
             onClicked: {
-                var newState=false
-                self.checked ? newState = true : newState = false
-                for(var i=0; i<KeyModel.count; i++){
-                    KeyModel.get(i).showAccountBtnEx.checked=newState
-                }
+
             }
         }
         ButtonEx{
@@ -74,19 +71,14 @@ Item {
             anchors.verticalCenter: addToolRect.verticalCenter
             bgColor: "transparent"
             checkable: false
-            texts: "查询"
+            texts: "保存密码"
             textsBold: true
-            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
-            iconUnchecked: "qrc:/androidsrc/hideAccount.png"
+            iconUnchecked: "qrc:/androidsrc/key_checked.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
             onClicked: {
-                var newState=false
-                self.checked ? newState = true : newState = false
-                for(var i=0; i<KeyModel.length; i++){
-                    KeyModel.get(i).showAccountBtnEx.checked=newState
-                }
+                checkInput()
             }
         }
     }
@@ -97,121 +89,225 @@ Item {
        anchors.top: addToolRect.bottom
        anchors.bottom: parent.bottom
        color: "#282828"
-       GridLayout{
+       Rectangle{
+           property alias input1: discInput
+           id: rect1
+           width: Math.max(300, parent.width*0.5)
+           height: 30
+           anchors.horizontalCenter: parent.horizontalCenter
            anchors.top: parent.top
-//           anchors.topMargin: Math.min(10, parent.height*0.2)
-           anchors.bottom: parent.bottom
-           anchors.bottomMargin: parent.height*0.2
-           anchors.left: parent.left
-           anchors.leftMargin: Math.min(20, parent.width*0.1)
-           anchors.right: parent.right
-           anchors.rightMargin: Math.min(20, parent.width*0.1)
-           rows: 4
-           rowSpacing: 0
-           columns: 2
+           anchors.topMargin: 50
+           color: "transparent"
            ButtonEx{
-               Layout.preferredWidth: 70
-               Layout.preferredHeight: 40
-               Layout.row: 0
-               Layout.column: 0
+               id: b1
+               texts: "说明"
+               textsUncheckedColor: "#f0ffff"
+               iconPos: 1
+               bgColor: "transparent"
+               checkable: false
+               width: 70
+               height: 30
+               anchors.left: parent.left
+               anchors.verticalCenter: parent.verticalCenter
            }
 
            TextInputEx{
                id: discInput
-               Layout.preferredWidth: 300
-               Layout.preferredHeight: 40
-               Layout.row: 0
-               Layout.column: 1
-               Layout.alignment: Qt.AlignCenter
+               height: 30
+               anchors.left: b1.right
+               anchors.right: parent.right
+               anchors.verticalCenter: parent.verticalCenter
            }
+       }
+       Rectangle{
+           property alias input2: accountInput
+           id: rect2
+           width: Math.max(300, parent.width*0.5)
+           height: 30
+           anchors.horizontalCenter: parent.horizontalCenter
+           anchors.top: rect1.top
+           anchors.topMargin: 50
+           color: "transparent"
+           ButtonEx{
+               id: b2
+               texts: "账户"
+               textsUncheckedColor: "#f0ffff"
+               iconPos: 1
+               bgColor: "transparent"
+               checkable: false
+               width: 70
+               height: 30
+               anchors.left: parent.left
+               anchors.verticalCenter: parent.verticalCenter
+           }
+
            TextInputEx{
                id: accountInput
-               Layout.preferredWidth: discInput.width
-               Layout.preferredHeight: discInput.height
-               Layout.row: 1
-               Layout.column: 1
-               Layout.alignment: Qt.AlignCenter
-               width: discInput.width
-               height: discInput.height
+               height: 30
+               anchors.left: b2.right
+               anchors.right: parent.right
+               anchors.verticalCenter: parent.verticalCenter
            }
+       }
+       Rectangle{
+           property alias input3: passwordInput
+           id: rect3
+           width: Math.max(300, parent.width*0.5)
+           height: 30
+           anchors.horizontalCenter: parent.horizontalCenter
+           anchors.top: rect2.top
+           anchors.topMargin: 50
+           color: "transparent"
+           ButtonEx{
+               id: b3
+               texts: "密码"
+               textsUncheckedColor: "#f0ffff"
+               iconPos: 1
+               bgColor: "transparent"
+               checkable: false
+               width: 70
+               height: 30
+               anchors.left: parent.left
+               anchors.verticalCenter: parent.verticalCenter
+           }
+
            TextInputEx{
                id: passwordInput
-               Layout.preferredWidth: discInput.width
-               Layout.preferredHeight: discInput.height
-               Layout.row: 2
-               Layout.column: 1
-               Layout.alignment: Qt.AlignCenter
-               echoMode: TextInput.Password
+               height: 30
+               anchors.left: b3.right
+               anchors.right: parent.right
+               anchors.verticalCenter: parent.verticalCenter
+               echoMode: showPassword ? "Normal" : "Password"
            }
+       }
+       Rectangle{
+           property alias input4: passwordConfirmInput
+           id: rect4
+           width: Math.max(300, parent.width*0.5)
+           height: 30
+           anchors.horizontalCenter: parent.horizontalCenter
+           anchors.top: rect3.top
+           anchors.topMargin: 50
+           color: "transparent"
+           ButtonEx{
+               id: b4
+               texts: "确认密码"
+               textsUncheckedColor: "#f0ffff"
+               iconPos: 1
+               bgColor: "transparent"
+               checkable: false
+               width: 70
+               height: 30
+               anchors.right: passwordConfirmInput.left
+               anchors.verticalCenter: parent.verticalCenter
+               horizontalOffset:-15
+           }
+
            TextInputEx{
                id: passwordConfirmInput
-               Layout.preferredWidth: discInput.width
-               Layout.preferredHeight: discInput.height
-               Layout.row: 3
-               Layout.column: 1
-               Layout.alignment: Qt.AlignCenter
-               echoMode: TextInput.Password
+               height: 30
+               anchors.left: b4.right
+               anchors.right: parent.right
+               anchors.verticalCenter: parent.verticalCenter
+               echoMode: showPassword ? "Normal" : "Password"
            }
        }
-       /*
-       TextInput{
-           id: discInput
-           height: 30
-           anchors.left: addKeysRect.left
-           anchors.leftMargin: Math.max(widthMargin, 30)
-           anchors.right: addKeysRect.right
-           anchors.rightMargin: anchors.leftMargin
-           anchors.top: addKeysRect.top
-           anchors.topMargin: Math.min(heightMargin, 100)
-           Rectangle{
-               anchors.fill: parent
-               color:"red"
-           }
+       Label{
+           property string textsE : "sadas"
+            id: hintLabel
+            height: 30
+            anchors.left: rect4.left
+            anchors.right: rect4.right
+            anchors.top: rect4.top
+            anchors.topMargin: 50
+            color: "#f0ffff"
+            visible: false
+            Text{
+                text: parent.textsE
+                color: "#f0ffff"
+                anchors.horizontalCenter: parent.horizontalCenter
+                font.bold: true
+                font.pixelSize: 15
+            }
        }
-       TextInput{
-           id: accountInput
-           height: 30
-           anchors.left: discInput.left
-           anchors.leftMargin: discInput.leftMargin
-           anchors.right: discInput.right
-           anchors.top: discInput.bottom
-           anchors.topMargin: 40
-           Rectangle{
-               anchors.fill: parent
-               color:"blue"
-           }
-       }
-       TextInput{
-           id: passwordInput
-           height: 30
-           anchors.left: discInput.left
-           anchors.leftMargin: discInput.leftMargin
-           anchors.right: discInput.right
-           anchors.top: accountInput.bottom
-           anchors.topMargin: 40
-           echoMode: TextInput.Password
-           passwordCharacter: "❄❄❄❄❄❄❄"
-           Rectangle{
-               anchors.fill: parent
-               color:"green"
-           }
-       }
-       TextInput{
-           id: passwordConfirmInput
-           height: 30
-           anchors.left: discInput.left
-           anchors.leftMargin: discInput.leftMargin
-           anchors.right: discInput.right
-           anchors.top: passwordInput.bottom
-           anchors.topMargin: 40
-           echoMode: TextInput.Password
-           passwordCharacter: "❄❄❄❄❄❄❄"
-           Rectangle{
-               anchors.fill: parent
-               color:"yellow"
-           }
-       }
-*/
+    }
+    function checkInput(){
+        if(rect1.input1.text == ""){
+            hintLabel.visible=true
+            hintLabel.textsE="说明为空";
+            return;
+        }
+        else if(rect2.input2.text == ""){
+            hintLabel.visible=true
+            hintLabel.textsE="账号为空";
+            return;
+        }
+        else if(rect3.input3.text == ""){
+            hintLabel.visible=true
+            hintLabel.textsE="密码为空";
+            return;
+        }
+        else if(rect4.input4.text == ""){
+            hintLabel.visible=true
+            hintLabel.textsE="确认密码为空";
+            return;
+        }
+        else if(rect3.input3.text != rect4.input4.text){
+            hintLabel.visible=true
+            hintLabel.textsE="两次输入密码不一致";
+            return;
+        }
+        hintLabel.visible=false
+        addTabItem.checkInputExistence(rect1.input1.text, rect2.input2.text, rect3.input3.text);
+    }
 
+    Connections{
+        target: addTabItem
+        onCheckInputExistence:{
+            var result= -1
+            result = root.importer.checkExistence(disc, account, password);
+            if(result <0){
+                hintLabel.visible=true
+                hintLabel.textsE="与第"+ (-result)+"个重复"
+                return;
+            }
+            if(result>0){
+                hintLabel.visible=true
+                addTabItem.addNewKeyToView(disc, account, password)
+                hintLabel.textsE="保存完成"
+                rect1.input1.clear();
+                rect2.input2.clear();
+                rect3.input3.clear();
+                rect4.input4.clear();
+                closeHintTimer.running=true
+                return;
+            }
+            console.log("TabViewTabAddKey: add result ", result)
+        }
+    }
+    Timer{
+        id: closeHintTimer
+        interval: 5000
+        repeat: false
+        running: false
+        onTriggered: {
+            hintLabel.visible=false
+        }
+    }
+
+    Connections{
+        target: addTabItem
+        onAddNewKeyToView:{
+            root.viewer.model.append(
+                JSON.parse(
+                   "{\"disc\":\""+disc+"\",
+                    \"account\":\""+account+"\",
+                    \"password\":\""+disc+"\",
+                    \"keyChecked\":false,
+                    \"showAccount\":false,
+                    \"showPassword\":false}"
+                )
+            );
+        }
     }
 }
