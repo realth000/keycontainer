@@ -2,7 +2,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 2.2.16.3
+VERSION = 2.2.16.4
 
 win32 {
     QT += core gui

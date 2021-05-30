@@ -1,38 +1,29 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
+import QtQml 2.12
 import "QuickItem"
 
 Item {
     property alias viewer: homeTab.viewer
     property QtObject root
+    property color bgColor: "transparent"
     id: self
+    Rectangle{
+        anchors.fill: parent
+        color: bgColor
+    }
+
     ColumnLayout{
         id: mainColLayout
         width: self.parent.width
         height: self.parent.height
         anchors.fill: parent
         spacing: 0
-        Rectangle{
-            id: mainTopRect
-            Layout.preferredWidth: self.parent.width
-            Layout.preferredHeight: 60
-            color:"#141414"
 
-            ButtonEx{
-                id: tabButton23
-                width: 60
-                height: 60
-                checkable: false
-                useTexts: false
-                bgColor: "#141414"
-                borderColor: "#141414"
-                iconChecked: "qrc:/androidsrc/menu.png"
-                iconUnchecked: "qrc:/androidsrc/menu.png"
-                onClicked: {
-                    mainDrawer.open()
-                }
-            }
+        MainTopRect{
+            id: mainTopRect
+            root: root
         }
 
         StackLayout {
@@ -73,8 +64,8 @@ Item {
                 width: mainTabBar.width/3
                 height: mainTabBar.height
                 texts: "添加"
-                iconChecked: "qrc:/androidsrc/config_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/config.png"
+                iconChecked: "qrc:/androidsrc/addKey_reverse.png"
+                iconUnchecked: "qrc:/androidsrc/addKey.png"
             }
 
             TabButtonEx {
@@ -85,7 +76,6 @@ Item {
                 iconChecked: "qrc:/androidsrc/about_reverse.png"
                 iconUnchecked: "qrc:/androidsrc/about.png"
             }
-
         }
 
     }

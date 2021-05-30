@@ -11,6 +11,7 @@ Item {
     property string hides: "*******"
     property color bgColor: "transparent"
     property int toolNum: 4
+    signal saveKeys()
     id: mainTabKeys
     //背景
     Rectangle{
@@ -59,20 +60,16 @@ Item {
             anchors.horizontalCenter: manaToolRect.horizontalCenter
             anchors.verticalCenter: manaToolRect.verticalCenter
             bgColor: "transparent"
-            checkable: true
-            texts: self.checked ? "123" : "456"
+            checkable: false
+            texts: "保存"
             textsBold: true
-            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
+//            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
             iconUnchecked: "qrc:/androidsrc/hideAccount.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
             onClicked: {
-                var newState=false
-                self.checked ? newState = true : newState = false
-                for(var i=0; i<KeyModel.count; i++){
-                    KeyModel.get(i).showAccountBtnEx.checked=newState
-                }
+                mainTabKeys.saveKeys()
             }
         }
         ButtonEx{
@@ -84,8 +81,7 @@ Item {
             checkable: false
             texts: "查询"
             textsBold: true
-            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
-            iconUnchecked: "qrc:/androidsrc/hideAccount.png"
+            iconUnchecked: "qrc:/androidsrc/findKey.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -156,6 +152,7 @@ Item {
                             }
                         }
                         Rectangle{
+                            id: rrect
                             height: keyItemRect.height
                             anchors.left: keysCheckBtnEx.right
                             anchors.verticalCenter: keyItemRect.verticalCenter
@@ -167,6 +164,7 @@ Item {
                                 Text {
                                     id: discText
                                     text: '<b>'+ disc + '</b>'
+                                    Layout.preferredWidth: rrect.width
                                     font.pixelSize: 16
                                     color: keysView.currentIndex==index ? "#f0ffff" : "#f0ffff"
                                     clip: true
@@ -175,6 +173,7 @@ Item {
                                 Text {
                                     id: accountText
                                     text: '<b>账户: ' + showAccountBtnEx.checked ? hides : account + '</b>'
+                                    Layout.preferredWidth: rrect.width
                                     font.pixelSize: 15
                                     color: keysView.currentIndex==index ? "#f0ffff" : "#f0ffff"
                                     clip: true
@@ -183,6 +182,7 @@ Item {
                                 Text {
                                     id: passwordText
                                     text: '<b>密码: ' + showAccountBtnEx.checked ? hides : password + '</b>'
+                                    Layout.preferredWidth: rrect.width
                                     font.pixelSize: 15
                                     color: keysView.currentIndex==index ? "#f0ffff" : "#f0ffff"
                                     clip: true
@@ -266,6 +266,12 @@ Item {
 
         for(var i=0; i<keys_count; i++){
             mod.append(adaptKeyBeforeSync(keys_data[i]));
+        }
+    }
+    Connections{
+        target: mainTabKeys
+        onSaveKeys:{
+            root.importer.saveKeys()
         }
     }
 }

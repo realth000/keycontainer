@@ -1,6 +1,7 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 1.4
 import QtQuick.Layouts 1.12
+import QtQml 2.12
 import "QuickItem"
 
 Item {
@@ -71,9 +72,9 @@ Item {
             anchors.verticalCenter: addToolRect.verticalCenter
             bgColor: "transparent"
             checkable: false
-            texts: "保存密码"
+            texts: "保存"
             textsBold: true
-            iconUnchecked: "qrc:/androidsrc/key_checked.png"
+            iconUnchecked: "qrc:/androidsrc/addKey2.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -101,7 +102,6 @@ Item {
            ButtonEx{
                id: b1
                texts: "说明"
-               textsUncheckedColor: "#f0ffff"
                iconPos: 1
                bgColor: "transparent"
                checkable: false
@@ -131,7 +131,6 @@ Item {
            ButtonEx{
                id: b2
                texts: "账户"
-               textsUncheckedColor: "#f0ffff"
                iconPos: 1
                bgColor: "transparent"
                checkable: false
@@ -161,7 +160,6 @@ Item {
            ButtonEx{
                id: b3
                texts: "密码"
-               textsUncheckedColor: "#f0ffff"
                iconPos: 1
                bgColor: "transparent"
                checkable: false
@@ -192,7 +190,6 @@ Item {
            ButtonEx{
                id: b4
                texts: "确认密码"
-               textsUncheckedColor: "#f0ffff"
                iconPos: 1
                bgColor: "transparent"
                checkable: false
@@ -302,7 +299,7 @@ Item {
                 JSON.parse(
                    "{\"disc\":\""+disc+"\",
                     \"account\":\""+account+"\",
-                    \"password\":\""+disc+"\",
+                    \"password\":\""+password+"\",
                     \"keyChecked\":false,
                     \"showAccount\":false,
                     \"showPassword\":false}"
