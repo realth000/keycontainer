@@ -42,7 +42,7 @@ ApplicationWindow  {
             text: "\n\n\n\n      0"
             font.pixelSize: 50
         }
-        MainDrawerPage1{
+        MainDrawerPageMain{
             id: p1
             root: mainWindow
         }
@@ -54,9 +54,9 @@ ApplicationWindow  {
             text: "\n\n\n\n      3"
             font.pixelSize: 50
         }
-        Label{
-            text: "\n\n\n\n      4"
-            font.pixelSize: 50
+        MainDrawerPageSettings{
+            id: p4
+            root: mainWindow
         }
         Label{
             text: "\n\n\n\n      5"

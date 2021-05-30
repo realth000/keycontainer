@@ -35,9 +35,19 @@
 3. 添加密码功能
 4. 增加root及viewer方便透过作用域访问QmlImporter及ListView
 ---------
+20210530:
+1. 保存密码功能
+2. 密码设置页面初步
+3. 添加密码中密码为disc的问题
+4. 添加密码时若disc含有非数字字符则保存密码失败的问题
+---------
 FIXME:
 
 TODO：
+1. 密码和账号中的空格看不出来
+2. autoChangeAES对应设置显示
+3. 过长的话看不到，点击后要看到全部
+
 
 ELSE:
 1. 渐变映射上下限为ButtonExImage#4b6876、TabButtonEx#6d799c

@@ -27,9 +27,9 @@ void QmlImporter::initImporter()
     workPath = uuu.toLocalFile();
     QDir workDir(workPath);
     if(!workDir.exists()){
-        qml_msg_info("mkdir1: "+QString::number(workDir.mkpath(workPath)));
+        emit qml_msg_info("mkdir1: "+QString::number(workDir.mkpath(workPath)));
     }
-    qml_msg_info("exists?: "+QString::number(workDir.exists(workPath)));
+    emit qml_msg_info("exists?: "+QString::number(workDir.exists(workPath)));
 #else
     workPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #endif
@@ -52,13 +52,39 @@ int QmlImporter::checkExistence(QString disc, QString account, QString password)
         if(e.getVal() == disc){
             return -pos;
         }
-        // NOTE: 反正现在新密码在前端是加在最后一行，return个pos其实没啥用
-        if(e.getVal() > disc){
-            keyMap.insert(keyMap.count(), KeyMap(keyMap.count(), Estring(disc), Estring(account), Estring(password)));
-            return pos;
-        }
     }
+    qDebug() << "before insert count:" << keyMap.count();
+    keyMap.insert(keyMap.count(), KeyMap(keyMap.count(), Estring(disc), Estring(account), Estring(password)));
+    qDebug() << "after insert count:" << keyMap.count();
+    // NOTE: 反正现在新密码在前端是加在最后一行，return个pos其实没啥用
     return pos;
+}
+
+void QmlImporter::saveKeys()
+{
+    if(keyMap.count() < 1){
+        return;
+    }
+    kcdb->setBackupState(false);
+    QFileInfo saveInfo(savePath);
+    QDir saveDir(saveInfo.path());
+    if(saveDir.exists()){
+        if(autoChangeAES){refreshAESKey();}
+    }
+    syncKeyMapToKcdb();
+    emit qml_msg_info("正在保存数据...");
+    if(kcdb->writeKcdb(savePath)){
+        writeCheckFile(savePath);
+        emit qml_msg_info("数据保存完成");
+        bool autoBackupPathOld=autoBackupPath;
+        autoBackupPath=true;
+        // TODO: 保存的同时备份
+//        on_backupKeyBtn_clicked();
+        autoBackupPath=autoBackupPathOld;
+    }
+    else{
+        emit qml_msg_info("保存失败");
+    }
 }
 
 #ifdef Q_OS_ANDROID
@@ -111,6 +137,7 @@ void QmlImporter::initConfig()
     kcdb->setSavePath(savePath);
     backupPath = ini->value("/Path/BackupPath").toString();
     kcdb->setBackupPath(backupPath);
+    autoChangeAES = ini->value("/Security/AutoChangeAESKey").toBool();
     delete ini;
 }
 
@@ -214,6 +241,38 @@ bool QmlImporter::checkDb(QString dbPath)
     }
 }
 
+void QmlImporter::refreshAESKey()
+{
+    int max = 256;
+    QString tmp = QString("12TocJn%BFde6Ng}0fGSY5s34H-PIwWEhi+#x)DuvptklabZUKq8z9jQmM$VA{R7C[X(rLOy");
+    QString str;
+    QTime t;
+    t = QTime::currentTime();
+    qsrand(t.msec()+t.second()*1000);
+    for(int i=0;i<max;i++)
+    {
+        int len = qrand()%tmp.length();
+        str[i] =tmp.at(len);
+    }
+    kcdb->setKey_in(str);
+    QString aesKeyFilePath = QDir::toNativeSeparators(workPath + "/dat.ec");
+    QFile aesFile(aesKeyFilePath);
+    if(aesFile.open(QIODevice::ReadWrite)){
+        QDataStream aesStream(&aesFile);
+        aesStream.setVersion(QDataStream::Qt_5_12);
+        AesClass *de = new AesClass;
+        de->initTestCase(kcdb->getKey().getVal());
+        QByteArray resultAes = de->CFB256Encrypt(kcdb->getKey_in().getVal());
+        aesStream << resultAes;
+#ifdef DEBUG_SHOW_KEYS
+        qDebug() << "refreshAESKey: write new AES key(Encrypted)=" << resultAes;
+#endif
+        aesFile.close();
+        emit qml_msg_info("已刷新AES密钥");
+    }
+    else{emit qml_msg_info("无法保存密码,密码文件被其他程序占用，请重试。");}
+}
+
 void QmlImporter::syncKeyFromMap()
 {
     QMap<QString, GroupKey> tmp = kcdb->getKeys();
@@ -229,4 +288,56 @@ void QmlImporter::syncKeyFromMap()
     }
     emit sendKeys(KeyMapJsonEngine::keyMapToJson(keyMap));
     qDebug() << "read .kcdb successed:" << count << "keys";
+}
+
+void QmlImporter::syncKeyMapToKcdb()
+{
+    QMap<QString, GroupKey> tmp;
+    kcdb->clearKeys();
+    QMap<int, KeyMap>::const_iterator t = keyMap.begin();
+    while (t != keyMap.cend()) {
+        GroupKey nKey(t.value().disc, t.value().account, t.value().password);
+
+        tmp.insert(t.value().disc.getVal(), nKey);
+        t++;
+    }
+    kcdb->setKeys(tmp);
+}
+
+void QmlImporter::writeCheckFile(QString checkPath)
+{
+    QFileInfo configFileInfo(checkPath);
+    if(configFileInfo.exists()){
+        QByteArray tmpMD5;
+        QByteArray resultHash;
+        QFile dbFile(checkPath);
+        dbFile.open(QIODevice::ReadOnly);
+        QCryptographicHash hash1(QCryptographicHash::Keccak_512);
+        hash1.addData(&dbFile);
+        QString salt1 = "撒差盐可空拟中";
+        hash1.addData(salt1.toUtf8());
+        tmpMD5 = hash1.result().toHex();
+        dbFile.close();
+        QCryptographicHash hash2(QCryptographicHash::Keccak_512);
+        hash2.addData(tmpMD5);
+        QString salt2 = "未因若风柳起絮";
+        hash2.addData(salt2.toUtf8());
+        resultHash = hash2.result().toHex();
+
+        // Update(2.1.5): Encryption on *.chf
+        AesClass *ec = new AesClass;
+        ec->initTestCase(kcdb->getKey_in().getVal());
+        QByteArray resultHash_en = ec->CFB256Encrypt(resultHash);
+        delete ec;
+
+        QString hashFilePath = checkPath + ".chf";
+        QFile hashFile(hashFilePath);
+        hashFile.open(QIODevice::WriteOnly);
+        QDataStream outData(&hashFile);
+        outData.setVersion(QDataStream::Qt_5_12);
+        outData << resultHash_en;
+        hashFile.close();
+        emit qml_msg_info("已生成校验文件");
+    }
+    else{emit qml_msg_info("无法生成校验文件,无法生成校验文件，建议重新保存");}
 }

@@ -2,7 +2,7 @@
     <qresource prefix="/">
         <file>qml/KeyModel.qml</file>
         <file>qml/MainQML.qml</file>
-        <file>qml/MainDrawerPage1.qml</file>
+        <file>qml/MainDrawerPageMain.qml</file>
         <file>qml/TabViewTabAddKey.qml</file>
         <file>qml/TabViewTab3.qml</file>
         <file>qml/TabViewTabKeys.qml</file>
@@ -66,5 +66,10 @@
         <file>qml/QuickItem/ButtonEx.qml</file>
         <file>qml/QuickItem/TabButtonEx.qml</file>
         <file>qml/QuickItem/TextInputEx.qml</file>
+        <file>androidsrc/addKey2.png</file>
+        <file>androidsrc/addKey_reverse.png</file>
+        <file>androidsrc/opts.png</file>
+        <file>qml/QuickItem/MainTopRect.qml</file>
+        <file>qml/MainDrawerPageSettings.qml</file>
     </qresource>
 </RCC>

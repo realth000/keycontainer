@@ -38,7 +38,6 @@ Button{
     Rectangle{
         id: assistant1
         // 方框的大小保证刚刚好装满
-//        width: useTexts ? Math.max(image1.width, text1.contentWidth) : image1.width
         width: if(useTexts){
                    if(iconPos==0){
                        Math.max(image1.width, text1.contentWidth)
@@ -51,7 +50,6 @@ Button{
                    image1.width
                }
 
-//        height: useTexts ? image1.height + text1.contentHeight + textPadding : image1.height
         height: if(useTexts){
                     if(iconPos==0){
                         image1.height + text1.contentHeight
@@ -73,7 +71,6 @@ Button{
 
     Image{
         id: image1
-//        source: self.checked ? iconChecked : iconUnchecked
         source: self.checked ? iconChecked :iconUnchecked
         sourceSize.width: 60
         sourceSize.height: 60

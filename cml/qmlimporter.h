@@ -18,11 +18,13 @@ signals:
 public slots:
     void initImporter();
     int checkExistence(QString disc, QString account, QString password);
+    void saveKeys();
 #ifdef Q_OS_ANDROID
     void updateAndroidNotifier(QString msg);
 #endif
 
 private:
+    bool autoChangeAES=false;
     QString workPath = "";
     QString savePath = "/pw.kcdb";
     QString backupPath = "/pwbp.kcdb";
@@ -30,6 +32,8 @@ private:
     QMap<int, KeyMap> keyMap;
     QList<Estring> existsKeys;
     QString msg;
+    bool autoBackupPath=false;
+
 
 #ifdef Q_OS_ANDROID
     void initPermission();
@@ -37,7 +41,10 @@ private:
     void initConfig();
     void initKeyData();
     bool checkDb(QString dbPath = "");
+    void refreshAESKey();
     void syncKeyFromMap();
+    void syncKeyMapToKcdb();
+    void writeCheckFile(QString checkPath);
 };
 
 #endif // QMLIMPORTER_H
