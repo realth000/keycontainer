@@ -87,6 +87,35 @@ void QmlImporter::saveKeys()
     }
 }
 
+bool QmlImporter::getAutoChangeAES() const
+{
+    return autoChangeAES;
+}
+
+QString QmlImporter::getSavePath() const
+{
+    return savePath;
+}
+
+QString QmlImporter::getBackupPath() const
+{
+    return backupPath;
+}
+
+void QmlImporter::setSavePath(QString path)
+{
+//    path.replace("file:///", "");
+    savePath = path;
+    kcdb->setSavePath(path);
+    saveConfig();
+}
+
+void QmlImporter::setAutoChangeAES(bool autoAES)
+{
+    autoChangeAES = autoAES;
+    saveConfig();
+}
+
 #ifdef Q_OS_ANDROID
 void QmlImporter::updateAndroidNotifier(QString msg)
 {
@@ -340,4 +369,16 @@ void QmlImporter::writeCheckFile(QString checkPath)
         emit qml_msg_info("已生成校验文件");
     }
     else{emit qml_msg_info("无法生成校验文件,无法生成校验文件，建议重新保存");}
+}
+
+void QmlImporter::saveConfig()
+{
+    QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
+    ini->setValue("/Path/SavePath", savePath.replace("\\", "/"));
+    ini->setValue("/Path/BackupPath", backupPath.replace("\\", "/"));
+    // 同时还要同步两个变量
+//    kcdb->setBackupPath(ui->backupPathLE->text());
+    ini->setValue("/Security/AutoChangeAESKey", autoChangeAES);
+    ini->setValue("/Common/AutoBackupPath", autoBackupPath);
+    delete ini;
 }

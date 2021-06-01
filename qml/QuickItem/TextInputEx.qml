@@ -12,7 +12,7 @@ TextInput {
     property int textsSize: 15
     property bool textsClip: true
     property int textsLeftPadding: 2
-    property color cursorColor: "#f0ffff"
+    property color cursorColor: textsColor
     property int cursorWidth: 2
     passwordCharacter: passwordCharacterEx
     color: textsColor
@@ -24,11 +24,23 @@ TextInput {
     leftPadding: 2
     selectionColor: borderColor
     Rectangle{
+        id: tiexInputArea
         anchors.fill: parent
-        color: bgColor
-        border.width: borderWidth
-        border.color: borderColor
+//        color: "transparent"
+        color: "#2d2e30"
+        border.width: 0
+        z: -1
     }
+    Rectangle{
+        id: tiexInputBaseline
+        height: 1
+        anchors.bottom: tiexInputArea.bottom
+        anchors.left: tiexInputArea.left
+        anchors.right: tiexInputArea.right
+        color: textInputEx.activeFocus ? "#f0ffff" : borderColor
+        border.color: textInputEx.activeFocus ? "#f0ffff" : borderColor
+    }
+
     Component{
         id:cursorEx
         Rectangle{

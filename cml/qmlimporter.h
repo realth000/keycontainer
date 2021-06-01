@@ -19,6 +19,11 @@ public slots:
     void initImporter();
     int checkExistence(QString disc, QString account, QString password);
     void saveKeys();
+    bool getAutoChangeAES() const;
+    QString getSavePath() const;
+    QString getBackupPath() const;
+    void setSavePath(QString path);
+    void setAutoChangeAES(bool autoAES);
 #ifdef Q_OS_ANDROID
     void updateAndroidNotifier(QString msg);
 #endif
@@ -45,6 +50,7 @@ private:
     void syncKeyFromMap();
     void syncKeyMapToKcdb();
     void writeCheckFile(QString checkPath);
+    void saveConfig();
 };
 
 #endif // QMLIMPORTER_H

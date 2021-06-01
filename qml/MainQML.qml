@@ -197,5 +197,6 @@ ApplicationWindow  {
 
     Component.onCompleted: {
         mainQmlImporter.initImporter();
+        mainDrawer.currentIndex=4;
     }
 }
