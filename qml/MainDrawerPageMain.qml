@@ -23,7 +23,7 @@ Item {
 
         MainTopRect{
             id: mainTopRect
-            root: root
+            Layout.preferredWidth: mainColLayout.width
         }
 
         StackLayout {
@@ -55,9 +55,9 @@ Item {
                 id: tabButton1
                 width: mainTabBar.width/3
                 height: mainTabBar.height
-                texts: "管理"
-                iconChecked: "qrc:/androidsrc/manage_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/manage.png"
+                texts: "查看"
+                iconChecked: "qrc:/androidsrc/viewKey_reverse.png"
+                iconUnchecked: "qrc:/androidsrc/viewKey.png"
             }
             TabButtonEx {
                 id: tabButton2

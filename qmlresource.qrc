@@ -71,5 +71,10 @@
         <file>androidsrc/opts.png</file>
         <file>qml/QuickItem/MainTopRect.qml</file>
         <file>qml/MainDrawerPageSettings.qml</file>
+        <file>qml/QuickItem/GroupBoxEx.qml</file>
+        <file>androidsrc/saveFileConfig.png</file>
+        <file>androidsrc/viewKey.png</file>
+        <file>androidsrc/viewKey_reverse.png</file>
+        <file>qml/QuickItem/SeparatorEx.qml</file>
     </qresource>
 </RCC>

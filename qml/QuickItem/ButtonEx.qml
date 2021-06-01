@@ -13,10 +13,8 @@ Button{
     property bool thisIsButtonEx: true
     property color bgSelectedColor: "#40403d"
     property color bgColor: "#232323"
-//    property color bgColorEnd: "#333333"
     property int borderWidth: 0
     property color borderColor: "#375564"
-//    property color textsCheckedColor: "#28292a"
     property color textsCheckedColor: "#f0ffff"
     property color textsUncheckedColor: "#4b6876"
     property bool textsBold: true
@@ -25,12 +23,23 @@ Button{
     property int iconWidth: 30
     property int iconHeight: 30
     property string texts
-    property int textPadding: 3
     property bool useTexts: true
     property int iconPos: 0
-    property int textsSize: 15
-    property bool iconAntialiasing: false
+    property int textsSize: 16
+    property bool iconAntialiasing: true
     property int horizontalOffset: 0
+    property bool iconToLeft: false
+
+    property bool useDoubleTexts: false
+    property string dtests
+    property color dtextsCheckedColor: textsCheckedColor
+    property color dtextsUncheckedColor: textsUncheckedColor
+    property int dtextSize: 13
+    property bool dtextBold: textsBold
+    property int dtextTopMargin: 4
+    property int dtextLeftMargin: 4
+    property int leftMargin: 0
+
     checkable: true
 
     // 这个方框是辅助定位tabButton中图标和文字的，由于anchors的值只能定义为anchors的值，因此如果想把图标和
@@ -55,18 +64,34 @@ Button{
                         image1.height + text1.contentHeight
                     }
                     else{
-                        Math.max(image1.height, text1.contentHeight)
+                        if(useDoubleTexts || iconToLeft){
+                            Math.max(image1.height, text1.contentHeight + dtextTopMargin + text2.contentHeight)
+                        }
+                        else{
+                            Math.max(image1.height, text1.contentHeight)
+                        }
+
+
                     }
                 }
                 else{
                     image1.height
                 }
-
         color: "transparent"
         border.width: 0
-        anchors.horizontalCenter: iconPos==0 ? parent.horizontalCenter : parent.horizontalCenter
+        anchors.horizontalCenter: if(useDoubleTexts || iconToLeft){
+                                      parent.left
+                                  }
+                                  else{
+                                      iconPos==0 ? parent.horizontalCenter : parent.horizontalCenter
+                                  }
         anchors.verticalCenter: self.verticalCenter
-        anchors.horizontalCenterOffset: horizontalOffset
+        anchors.horizontalCenterOffset: if(useDoubleTexts || iconToLeft){
+                                            assistant1.width*0.5 +leftMargin
+                                        }
+                                        else{
+                                            iconPos==1 && iconToLeft ? assistant1.width*0.5-self.width*0.5 : horizontalOffset
+                                        }
     }
 
     Image{
@@ -88,15 +113,34 @@ Button{
         text: qsTr(texts)
         opacity: enabled ? 1.0 : 0.3
         color: self.checkable && self.checked ? textsCheckedColor : textsUncheckedColor
-//        color: textsCheckedColor
         // 文字顶着方框下边沿中间，图标和文字间的padding设置在方框的高度中了
         anchors.right: iconPos==0 ? assistant1.right : assistant1.right
         anchors.verticalCenter: iconPos==0 ? assistant1.bottom : assistant1.verticalCenter
-        anchors.verticalCenterOffset:iconPos==0 ? -textsSize/2 :0
+        anchors.verticalCenterOffset:if(useDoubleTexts){
+                                         -dtextSize/2-dtextTopMargin/2
+                                     }
+                                     else{
+                                         iconPos==0 ? -textsSize/2 :0
+                                     }
+
         elide: Text.ElideRight
         visible: useTexts ? true : false
         font.pixelSize: textsSize
         font.bold: textsBold
+    }
+    Text {
+        id: text2
+        text: qsTr(dtests)
+        opacity: enabled ? 1.0 : 0.3
+        color: self.checkable && self.checked ? dtextsCheckedColor : dtextsUncheckedColor
+        anchors.top: text1.bottom
+        anchors.topMargin: dtextTopMargin
+        anchors.left: text1.left
+        anchors.leftMargin: dtextLeftMargin
+        elide: Text.ElideRight
+        visible: useDoubleTexts ? true : false
+        font.pixelSize: dtextSize
+        font.bold: dtextBold
     }
     background: Rectangle{
         width: Math.max(self.width, assistant1.width)
