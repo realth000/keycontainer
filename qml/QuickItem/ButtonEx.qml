@@ -10,6 +10,8 @@ Button{
             IconLeft = 0x00000001
         }
     }
+    property bool borderBottom: false
+    property color borderBottomColor: "#4b6876"
     property bool thisIsButtonEx: true
     property color bgSelectedColor: "#40403d"
     property color bgColor: "#232323"
@@ -24,11 +26,13 @@ Button{
     property int iconHeight: 30
     property string texts
     property bool useTexts: true
+    property bool useIcon: true
     property int iconPos: 0
     property int textsSize: 16
+    property int textsLeftMargin: 0
     property bool iconAntialiasing: true
     property int horizontalOffset: 0
-    property bool iconToLeft: false
+    property bool posToLeft: false
 
     property bool useDoubleTexts: false
     property string dtests
@@ -49,7 +53,12 @@ Button{
         // 方框的大小保证刚刚好装满
         width: if(useTexts){
                    if(iconPos==0){
-                       Math.max(image1.width, text1.contentWidth)
+                       if(useIcon){
+                            Math.max(image1.width, text1.contentWidth)
+                       }
+                       else{
+                           text1.contentWidth
+                       }
                    }
                    else{
                        image1.width + text1.contentWidth
@@ -61,17 +70,21 @@ Button{
 
         height: if(useTexts){
                     if(iconPos==0){
-                        image1.height + text1.contentHeight
+                        if(useIcon){
+                            image1.height + text1.contentHeight
+                        }
+                        else{
+                            text1.contentHeight
+                        }
+
                     }
                     else{
-                        if(useDoubleTexts || iconToLeft){
+                        if(useDoubleTexts || posToLeft){
                             Math.max(image1.height, text1.contentHeight + dtextTopMargin + text2.contentHeight)
                         }
                         else{
                             Math.max(image1.height, text1.contentHeight)
                         }
-
-
                     }
                 }
                 else{
@@ -79,18 +92,28 @@ Button{
                 }
         color: "transparent"
         border.width: 0
-        anchors.horizontalCenter: if(useDoubleTexts || iconToLeft){
+        anchors.horizontalCenter: if(useDoubleTexts || posToLeft){
                                       parent.left
                                   }
                                   else{
                                       iconPos==0 ? parent.horizontalCenter : parent.horizontalCenter
                                   }
         anchors.verticalCenter: self.verticalCenter
-        anchors.horizontalCenterOffset: if(useDoubleTexts || iconToLeft){
-                                            assistant1.width*0.5 +leftMargin
+        anchors.horizontalCenterOffset: if(useDoubleTexts || posToLeft){
+                                            assistant1.width*0.5 + leftMargin
                                         }
                                         else{
-                                            iconPos==1 && iconToLeft ? assistant1.width*0.5-self.width*0.5 : horizontalOffset
+                                            if(!useIcon){
+                                                if(posToLeft){
+                                                    width/2 - parent.width/2;
+                                                }
+                                                else{
+                                                    0
+                                                }
+                                            }
+                                            else{
+                                                iconPos==1 && posToLeft ? assistant1.width*0.5-self.width*0.5 : horizontalOffset
+                                            }
                                         }
     }
 
@@ -115,14 +138,19 @@ Button{
         color: self.checkable && self.checked ? textsCheckedColor : textsUncheckedColor
         // 文字顶着方框下边沿中间，图标和文字间的padding设置在方框的高度中了
         anchors.right: iconPos==0 ? assistant1.right : assistant1.right
+        anchors.rightMargin: -textsLeftMargin
         anchors.verticalCenter: iconPos==0 ? assistant1.bottom : assistant1.verticalCenter
         anchors.verticalCenterOffset:if(useDoubleTexts){
                                          -dtextSize/2-dtextTopMargin/2
                                      }
                                      else{
-                                         iconPos==0 ? -textsSize/2 :0
+                                         if(iconPos==0){
+                                             -textsSize/2;
+                                         }
+                                         else{
+                                             0;
+                                         }
                                      }
-
         elide: Text.ElideRight
         visible: useTexts ? true : false
         font.pixelSize: textsSize
@@ -142,6 +170,17 @@ Button{
         font.pixelSize: dtextSize
         font.bold: dtextBold
     }
+    SeparatorEx{
+        id: borderBottomRect
+        anchors.top: parent.bottom
+        anchors.left: parent.left
+        anchors.topMargin: -1
+        visible: borderBottom
+        width: parent.width
+        color: borderBottomColor
+        height: 1
+    }
+
     background: Rectangle{
         width: Math.max(self.width, assistant1.width)
         height: Math.max(self.height, assistant1.height)

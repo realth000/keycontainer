@@ -31,14 +31,14 @@ Item {
         color: "#282828"
         ButtonEx{
             id: showAccountAllBtnEx
-            width: 100
+            width: parent.width/4
             height: manaToolRect.height
             anchors.left: manaToolRect.left
             anchors.verticalCenter: manaToolRect.verticalCenter
             bgColor: "transparent"
             bgSelectedColor: "transparent"
             checkable: true
-            texts: showAccountAllBtnEx.checked ? "隐藏密码" : "显示密码"
+            texts: showAccountAllBtnEx.checked ? "隐藏" : "显示"
             textsBold: true
             iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
             iconUnchecked: "qrc:/androidsrc/hideAccount.png"
@@ -55,16 +55,16 @@ Item {
             }
         }
         ButtonEx{
-            width: 100
+            id: saveKeysBtnex
+            width: showAccountAllBtnEx.width
             height: manaToolRect.height
-            anchors.horizontalCenter: manaToolRect.horizontalCenter
+            anchors.left: showAccountAllBtnEx.right
             anchors.verticalCenter: manaToolRect.verticalCenter
             bgColor: "transparent"
             checkable: false
             texts: "保存"
             textsBold: true
-//            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
-            iconUnchecked: "qrc:/androidsrc/hideAccount.png"
+            iconUnchecked: "qrc:/androidsrc/saveFile.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -73,9 +73,35 @@ Item {
             }
         }
         ButtonEx{
-            width: 100
+            id: delKeysBtnex
+            width: showAccountAllBtnEx.width
             height: manaToolRect.height
-            anchors.right: manaToolRect.right
+            anchors.left: saveKeysBtnex.right
+            anchors.verticalCenter: manaToolRect.verticalCenter
+            bgColor: "transparent"
+            checkable: false
+            texts: "删除"
+            textsBold: true
+            iconUnchecked: "qrc:/androidsrc/delKey.png"
+            iconPos: 1
+            iconWidth: 30
+            iconHeight: 30
+            onClicked: {
+                for(var i=keysView.model.count-1; i>=0; i--){
+                    var obj =keysView.model.get(i)
+                    if(obj.keyChecked === true){
+                        keysView.model.remove(i);
+                        root.importer.deleteKey(i);
+                    }
+                }
+                root.importer.syncKeyIndex();
+            }
+        }
+        ButtonEx{
+            id: findKeyBtnex
+            width: showAccountAllBtnEx.width
+            height: manaToolRect.height
+            anchors.left: delKeysBtnex.right
             anchors.verticalCenter: manaToolRect.verticalCenter
             bgColor: "transparent"
             checkable: false

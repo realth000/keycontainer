@@ -92,6 +92,13 @@ bool QmlImporter::getAutoChangeAES() const
     return autoChangeAES;
 }
 
+QString QmlImporter::getWorkPath()
+{
+    QString s= workPath.replace("\\", "/");
+    workPath = QDir::toNativeSeparators(workPath);
+    return s;
+}
+
 QString QmlImporter::getSavePath() const
 {
     return savePath;
@@ -105,8 +112,12 @@ QString QmlImporter::getBackupPath() const
 void QmlImporter::setSavePath(QString path)
 {
 //    path.replace("file:///", "");
+#ifndef Q_OS_ANDROID
+    savePath = parsePath(path);
+#else
     savePath = path;
-    kcdb->setSavePath(path);
+#endif
+    kcdb->setSavePath(savePath + "/pw.kcdb");
     saveConfig();
 }
 
@@ -382,3 +393,41 @@ void QmlImporter::saveConfig()
     ini->setValue("/Common/AutoBackupPath", autoBackupPath);
     delete ini;
 }
+
+void QmlImporter::changeAESKey()
+{
+    if(!autoChangeAES){refreshAESKey();};
+    saveKeys();
+    emit qml_msg_update("SETTINGS_AESKEY_UPDATE_FINISH");
+}
+
+void QmlImporter::deleteKey(QVariant id)
+{
+    keyMap.remove(id.toInt());
+    existsKeys.removeAt(id.toInt());
+    deletedKeysCount++;
+    qDebug() << "deleting:" << id;
+}
+
+void QmlImporter::syncKeyIndex()
+{
+    int pos=0;
+    QMap<int, KeyMap>::const_iterator t = keyMap.begin();
+    while((deletedKeysCount > 0) && (t != keyMap.end())){
+        if(t.key() != pos){
+            KeyMap newItem (t.value().id, t.value().disc, t.value().account, t.value().password);
+            keyMap.insert(pos, newItem);
+            keyMap.remove(t.key());
+        }
+        pos++;
+        t++;
+        deletedKeysCount--;
+    }
+}
+
+#ifndef Q_OS_ANDROID
+QString QmlImporter::parsePath(QString path)
+{
+    return path.insert(1, ":");
+}
+#endif
