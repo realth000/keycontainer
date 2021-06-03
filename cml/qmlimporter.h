@@ -13,6 +13,7 @@ public:
 
 signals:
     void qml_msg_info(QString msg);
+    void qml_msg_update(QString msg);
     void sendKeys(QString keysJsonString);
 
 public slots:
@@ -20,10 +21,14 @@ public slots:
     int checkExistence(QString disc, QString account, QString password);
     void saveKeys();
     bool getAutoChangeAES() const;
+    QString getWorkPath();
     QString getSavePath() const;
     QString getBackupPath() const;
     void setSavePath(QString path);
     void setAutoChangeAES(bool autoAES);
+    void changeAESKey();
+    void deleteKey(QVariant id);
+    void syncKeyIndex();
 #ifdef Q_OS_ANDROID
     void updateAndroidNotifier(QString msg);
 #endif
@@ -38,6 +43,7 @@ private:
     QList<Estring> existsKeys;
     QString msg;
     bool autoBackupPath=false;
+    int deletedKeysCount=0;
 
 
 #ifdef Q_OS_ANDROID
@@ -51,6 +57,10 @@ private:
     void syncKeyMapToKcdb();
     void writeCheckFile(QString checkPath);
     void saveConfig();
+
+#ifndef Q_OS_ANDROID
+    QString parsePath(QString path);
+#endif
 };
 
 #endif // QMLIMPORTER_H

@@ -7,9 +7,11 @@ import "QuickItem"
 
 Item {
     property QtObject root
+    property string workPath: ""
     property string savePath: "/storage/emulated/0/KeyContainer"
     property string backupPath: "/storage/emulated/0/KeyContainer"
     property bool autoChangeAES: false
+    property string aesKeyState: "已设置"
     id: self
     MainTopRect{
         id: mainTopRect
@@ -89,7 +91,7 @@ Item {
                     height: 50
                     width: defaultBox.width
                     iconUnchecked: "qrc:/androidsrc/key_checked.png"
-                    iconToLeft: true
+                    posToLeft: true
                     leftMargin: 15
                     anchors.top: defaultBox.top
                 }
@@ -99,16 +101,20 @@ Item {
                     texts: "更新加密密密钥"
                     textsSize: 15
                     useDoubleTexts: true
-                    dtests: "已设置"
+                    dtests: aesKeyState
                     iconPos: 1
                     bgColor: "transparent"
                     checkable: false
                     height: 50
                     width: defaultBox.width
                     iconUnchecked: "qrc:/androidsrc/changeAESKey.png"
-                    iconToLeft: true
+                    posToLeft: true
                     leftMargin: 15
                     anchors.top: changeInitKeyBtn.bottom
+                    onClicked: {
+                        aesKeyState = "设置中……";
+                        root.importer.changeAESKey();
+                    }
                 }
                 Switch{
                     id: autoChangeAESChB
@@ -156,19 +162,30 @@ Item {
         }
     }
     Component.onCompleted: {
+        workPath = root.importer.getWorkPath();
         autoChangeAES = root.importer.getAutoChangeAES();
         savePath = root.importer.getSavePath();
         backupPath = root.importer.getBackupPath();
     }
-    FileDialog {
+    FileDialogEx {
          id: fileDialog
-         title: "Please choose a file"
-         selectFolder: true
-         folder: savePath
-         onAccepted: {
-             root.importer.setSavePath(fileDialog.folder.toString().replace("file:///", ""));
-         }
-         onRejected: {
+         selectedDir: workPath
+         onChangeSelectedDir: {
+             selectedDir = newDir;
+             self.savePath = newDir;
+             root.importer.setSavePath(newDir);
+             console.log("current dir set to", currentDir);
          }
      }
+    Connections{
+        target: root
+        onMsgUpdate:{
+            if(msg.indexOf("SETTINGS") !== 0){
+                return;
+            }
+            if(msg.indexOf("SETTINGS_AESKEY_UPDATE_FINISH") === 0){
+                aesKeyState="设置完成"
+            }
+        }
+    }
 }

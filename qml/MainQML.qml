@@ -33,7 +33,7 @@ ApplicationWindow  {
     property int usingHeight: 700
 
     signal keysString(string keys)
-
+    signal msgUpdate(string msg)
     StackLayout{
         id: swe
         currentIndex: mainDrawer.currentIndex
@@ -189,6 +189,10 @@ ApplicationWindow  {
         onQml_msg_info: {
             console.log(msg)
         }
+        onQml_msg_update:{
+            mainWindow.msgUpdate(msg);
+        }
+
         onSendKeys: {
             var obj = JSON.parse(keysJsonString);
             p1.syncKeysFromJson(obj);
@@ -197,6 +201,7 @@ ApplicationWindow  {
 
     Component.onCompleted: {
         mainQmlImporter.initImporter();
-        mainDrawer.currentIndex=4;
+//        mainDrawer.currentIndex=4;
+
     }
 }

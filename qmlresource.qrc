@@ -76,5 +76,7 @@
         <file>androidsrc/viewKey.png</file>
         <file>androidsrc/viewKey_reverse.png</file>
         <file>qml/QuickItem/SeparatorEx.qml</file>
+        <file>qml/QuickItem/FileDialogEx.qml</file>
+        <file>androidsrc/saveFile.png</file>
     </qresource>
 </RCC>

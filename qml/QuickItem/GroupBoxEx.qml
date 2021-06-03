@@ -40,7 +40,7 @@ Rectangle {
             textsUncheckedColor: labelColor
             textsSize: labelTextSize
             textsBold: labelTextBold
-            iconToLeft:true
+            posToLeft:true
         }
 
         SeparatorEx{

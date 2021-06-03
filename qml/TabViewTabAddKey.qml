@@ -35,7 +35,7 @@ Item {
             bgColor: "transparent"
             bgSelectedColor: "transparent"
             checkable: true
-            texts: showAccountAllBtnEx.checked ? "隐藏密码" : "显示密码"
+            texts: showAccountAllBtnEx.checked ? "隐藏" : "显示"
             textsBold: true
             iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
             iconUnchecked: "qrc:/androidsrc/hideAccount.png"
@@ -295,6 +295,7 @@ Item {
     Connections{
         target: addTabItem
         onAddNewKeyToView:{
+            // 添加时加到最后了
             root.viewer.model.append(
                 JSON.parse(
                    "{\"disc\":\""+disc+"\",
