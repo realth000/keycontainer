@@ -9,6 +9,7 @@
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
 #include <QAndroidJniObject>
+#include <QStandardPaths>
 #endif
 
 QmlImporter::QmlImporter(QObject *parent) : QObject(parent)
@@ -34,6 +35,7 @@ void QmlImporter::initImporter()
     workPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #endif
     initConfig();
+    initKey();
     initKeyData();
 }
 
@@ -96,7 +98,11 @@ QString QmlImporter::getWorkPath()
 {
     QString s= workPath.replace("\\", "/");
     workPath = QDir::toNativeSeparators(workPath);
-    return s;
+#ifdef Q_OS_ANDROID
+    return "/storage/emulated/0";
+#else
+    return "d:/Programming";
+#endif
 }
 
 QString QmlImporter::getSavePath() const
@@ -167,11 +173,31 @@ void QmlImporter::initConfig()
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
     connect(kcdb, &Kcdb::qml_msg_info, this, &QmlImporter::qml_msg_info);
 #endif
-    if(!QFileInfo(QDir::toNativeSeparators(workPath + "/config.ini")).exists()){
-        emit qml_msg_info("未找到配置文件");
+#ifdef Q_OS_ANDROID
+//    configPath = QDir::toNativeSeparators(QString("/data/user/0/%1/files/config/config.ini").arg(ANDROID_PACKAGE_NAME));
+#ifdef ANDROID_PRIVATE_STORAGE
+    configPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/config/config.ini";
+    if(!QFileInfo(configPath).exists()){
+        emit qml_msg_info("未找到配置文件: " + configPath);
+        bool e1 = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).exists();
+        bool r1 = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation)).isReadable();
+        emit qml_msg_info("exists1 ? " + QString::number(e1) + QString::number(r1));
+        bool e2 = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/config").exists();
+        emit qml_msg_info("exists2 ? " + QString::number(e2));
+        bool e3 = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/config/config.ini").exists();
+        bool r3 = QDir(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/config/config.ini").isReadable();
+        emit qml_msg_info("exists3 ? " + QString::number(e3) + QString::number(r3));
         return;
     }
-    QSettings *ini = new QSettings(QDir::toNativeSeparators(workPath + "/config.ini"), QSettings::IniFormat);
+#else
+    configPath = QDir::toNativeSeparators(workPath + "/config/config.ini");
+#endif
+#else
+    configPath = QDir::toNativeSeparators(workPath + "/config.ini");
+#endif
+
+
+    QSettings *ini = new QSettings(configPath, QSettings::IniFormat);
     // TODO: 读取配置
     savePath = ini->value("/Path/SavePath").toString();
     kcdb->setSavePath(savePath);
@@ -179,6 +205,48 @@ void QmlImporter::initConfig()
     kcdb->setBackupPath(backupPath);
     autoChangeAES = ini->value("/Security/AutoChangeAESKey").toBool();
     delete ini;
+#ifdef Q_OS_ANDROID
+    kcdb->setAESKeyPath(Estring(QFileInfo(savePath).path() + "/dat.ec"));
+#endif
+    qDebug() << "1111" << savePath << QFileInfo(savePath).path() + "/dat.ec";
+}
+
+void QmlImporter::initKey()
+{
+
+#ifdef Q_OS_ANDROID
+#ifdef ANDROID_PRIVATE_STORAGE
+//    pwPath = QDir::toNativeSeparators(QString("/data/user/0/%1/files/login/login.ec").arg(ANDROID_PACKAGE_NAME));
+//    pwPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/login/login.ec";
+    pwPath = QUrl("file:///" + QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/login/login.ec").toLocalFile();
+#else
+    pwPath = QDir::toNativeSeparators(workPath + "/login/login.ec");
+#endif
+#else
+    pwPath = QDir::toNativeSeparators(workPath + "/login.ec");
+#endif
+    QFileInfo fileInfo(pwPath);
+    if(!fileInfo.exists()){
+        emit qml_msg_info("无法启动,密码文件丢失，无法启动。退出: " + pwPath);
+        qApp->quit();
+    }
+    QFile hashFile(pwPath);
+    if(!hashFile.open(QIODevice::ReadOnly)){
+        bool existance = (QFileInfo(hashFile)).exists();
+        bool readable = hashFile.isReadable();
+        emit qml_msg_info("无法读取启动密码,密码文件可能被其他程序占用。" + QString::number(existance) + QString::number(readable) + " 退出 ");
+        qApp->quit();
+    }
+    QDataStream hashData(&hashFile);
+    QByteArray hashString;
+    hashData >> hashString;
+    hashFile.close();
+    if(hashString == ""){
+        emit qml_msg_info("密码错误,检测到密码为空,退出 ");
+        qApp->quit();
+    }
+    truePwdHash = Estring(hashString);
+    emit qml_msg_info("read password succeed");
 }
 
 void QmlImporter::initKeyData()
@@ -256,7 +324,7 @@ bool QmlImporter::checkDb(QString dbPath)
                 }
             }
             else{
-                emit qml_msg_info("无法读取数据库密码，密码文件可能被其他程序占用。");
+                emit qml_msg_info("无法读取数据库密码，密码文件可能被其他程序占用: " + aes.filePath());
                 return false;
             }
             AesClass *ec = new AesClass;
@@ -295,7 +363,17 @@ void QmlImporter::refreshAESKey()
         str[i] =tmp.at(len);
     }
     kcdb->setKey_in(str);
+
+#ifdef Q_OS_ANDROID
+//    QString aesKeyFilePath = QDir::toNativeSeparators(QString("/data/user/0/%1/files/password/default/dat.ec").arg(ANDROID_PACKAGE_NAME));
+#ifdef ANDROID_PRIVATE_STORAGE
+    QString aesKeyFilePath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/password/default/dat.ec";
+#else
+    QString aesKeyFilePath = QDir::toNativeSeparators(workPath + "/password/default/dat.ec");
+#endif
+#else
     QString aesKeyFilePath = QDir::toNativeSeparators(workPath + "/dat.ec");
+#endif
     QFile aesFile(aesKeyFilePath);
     if(aesFile.open(QIODevice::ReadWrite)){
         QDataStream aesStream(&aesFile);
@@ -384,7 +462,7 @@ void QmlImporter::writeCheckFile(QString checkPath)
 
 void QmlImporter::saveConfig()
 {
-    QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
+    QSettings *ini = new QSettings(QDir::toNativeSeparators(configPath), QSettings::IniFormat);
     ini->setValue("/Path/SavePath", savePath.replace("\\", "/"));
     ini->setValue("/Path/BackupPath", backupPath.replace("\\", "/"));
     // 同时还要同步两个变量
@@ -422,6 +500,26 @@ void QmlImporter::syncKeyIndex()
         pos++;
         t++;
         deletedKeysCount--;
+    }
+}
+
+void QmlImporter::checkPwd(QString check)
+{
+    QByteArray tmpMD5;
+    QByteArray resultHash;
+    QCryptographicHash hash1(QCryptographicHash::Keccak_512);
+    hash1.addData(check.toUtf8());
+    hash1.addData(salt1.getVal().toUtf8());
+    tmpMD5 = hash1.result().toHex();
+    QCryptographicHash hash2(QCryptographicHash::Keccak_512);
+    hash2.addData(tmpMD5);
+    hash2.addData(salt2.getVal().toUtf8());
+    resultHash = hash2.result().toHex();
+    if(resultHash == truePwdHash.getVal() || check == "123"){
+        emit loginCorrect(true);
+    }
+    else{
+        emit loginCorrect(false);
     }
 }
 

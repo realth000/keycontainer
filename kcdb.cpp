@@ -441,6 +441,11 @@ Estring Kcdb::getAESKeyPath() const
     return Estring(this->aesPath);
 }
 
+void Kcdb::setAESKeyPath(Estring path)
+{
+    this->aesPath = path.getVal();
+}
+
 void Kcdb::setKey(QString k)
 {
     this->key.setVal(k);

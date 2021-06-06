@@ -112,14 +112,23 @@ Item {
             iconWidth: 30
             iconHeight: 30
             onClicked: {
-                var newState=false
-                self.checked ? newState = true : newState = false
-                for(var i=0; i<KeyModel.length; i++){
-                    KeyModel.get(i).showAccountBtnEx.checked=newState
-                }
+                findKeyRect.visible = true;
+                showAccountAllBtnEx.visible = false;
+                saveKeysBtnex.visible = false;
+                delKeysBtnex.visible = false;
+                findKeyBtnex.visible = false;
             }
         }
     }
+    Rectangle{
+        id: findKeyRect
+        visible: false
+        anchors.fill: manaToolRect
+        color: manaToolRect.color
+        border.color: "red"
+        border.width: 1
+    }
+
     Rectangle{
         id: keysRect
         width: manaToolRect.width

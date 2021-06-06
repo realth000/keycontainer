@@ -29,18 +29,21 @@ ApplicationWindow  {
     property int tabButtonIconTextPadding: 3
 
     // 窗口大小
-    property int usingWidth: 354
-    property int usingHeight: 700
+    property int usingWidth: 500
+    property int usingHeight: 800
+
+    property alias loginPage: loginPage
 
     signal keysString(string keys)
     signal msgUpdate(string msg)
+    signal loginShowHint()
     StackLayout{
         id: swe
         currentIndex: mainDrawer.currentIndex
         anchors.fill: parent
-        Label{
-            text: "\n\n\n\n      0"
-            font.pixelSize: 50
+        Login{
+            id: loginPage
+            root: mainWindow
         }
         MainDrawerPageMain{
             id: p1
@@ -76,7 +79,7 @@ ApplicationWindow  {
         // 详情：https://bugreports.qt.io/browse/QTBUG-59141
 //        dragMargin: mainWindow.width
 
-        property int currentIndex: 1
+        property int currentIndex: 0
 
         background: Rectangle{
             color: "#2d2f32"
@@ -201,7 +204,16 @@ ApplicationWindow  {
 
     Component.onCompleted: {
         mainQmlImporter.initImporter();
-//        mainDrawer.currentIndex=4;
-
+    }
+    Connections{
+        target: mainQmlImporter
+        onLoginCorrect:{
+            if(correct === true){
+                mainDrawer.currentIndex=1;
+            }
+            else{
+                mainWindow.loginShowHint();
+            }
+        }
     }
 }

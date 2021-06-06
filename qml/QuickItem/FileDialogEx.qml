@@ -4,65 +4,97 @@ import QtQml 2.12
 
 Rectangle {
     id: mainDialog
-    property string currentDir
-    property string selectedDir
-    property bool files: true
+    property bool files: false
     property bool dirs: true
     readonly property bool dirsFirst: true
-    signal changeCurrentDir(string dir)
+//    signal changeCurrentDir(string dir)
     signal changeSelectedDir(string newDir)
     anchors.fill: parent
     visible: false
     color: "transparent"
 
     FolderListModel{
+        property alias folder: model.folder
         id: model
         showFiles: files
         showDirs: dirs
         showDirsFirst: dirsFirst
         showDotAndDotDot: false
         showHidden: false
-        folder: "file://" + currentDir
+        folder: "file:///storage/emulated/0"
     }
     Rectangle{
-        id: titleRect
-        width: parent.width
-        height: 30
-        anchors.left: parent.left
+        id: tRect
+        height: 60
         anchors.top: parent.top
-        color: "#202020"
-        ButtonEx{
-            anchors.fill: parent
-            checkable: false
-            useIcon: false
-            posToLeft: true
-            texts: "选择目录"
-            textsSize: 18
-            textsLeftMargin: 10
+        anchors.left: parent.left
+        anchors.right: upDirRect.left
+        Rectangle{
+            id: titleRect
+            width: parent.width
+            height: 30
+            anchors.left: parent.left
+            anchors.top: parent.top
+            color: "#202020"
+            ButtonEx{
+                anchors.fill: parent
+                checkable: false
+                useIcon: false
+                posToLeft: true
+                texts: "选择目录"
+                textsSize: 18
+                textsLeftMargin: 10
+            }
+        }
+        Rectangle{
+            id: tipRect
+            width: parent.width
+            height: 30
+            anchors.left: parent.left
+            anchors.top: titleRect.bottom
+            color: "transparent"
+            ButtonEx{
+                anchors.fill: parent
+                checkable: false
+                useIcon: false
+                posToLeft: true
+                texts: model.folder.toString().replace("/storage/emulated/0", "/~").replace("file://", "").replace(new RegExp("/",'g'), "►")
+                textsSize: 17
+                borderBottom: true
+                textsLeftMargin: 10
+            }
         }
     }
+
     Rectangle{
-        id: tipRect
-        width: parent.width
-        height: 30
-        anchors.left: parent.left
-        anchors.top: titleRect.bottom
+        id: upDirRect
+        width: tRect.height
+        height: tRect.height
+        anchors.top: parent.top
+        anchors.right: parent.right
         color: "transparent"
         ButtonEx{
-            anchors.fill: parent
+            width: parent.height
+            height: parent.height
             checkable: false
-            useIcon: false
+            useTexts: false
             posToLeft: true
-            texts: currentDir
-            textsSize: 17
-            borderBottom: true
-            textsLeftMargin: 10
+            leftMargin: 0
+            iconUnchecked: "qrc:/androidsrc/arrow_up_30.png"
+            onClicked: {
+                if(model.parentFolder === "file:///"){
+                    return;
+                }
+
+                model.folder = model.parentFolder;
+                console.log("FileDialogEx:: Move to parent folder:", model.parentFolder);
+            }
         }
     }
     Rectangle{
         id: liseViewRect
         width: parent.width
-        anchors.top: tipRect.bottom
+        anchors.top: tRect.bottom
         anchors.left: parent.left
         anchors.bottom: okBtnEx.top
         color: "#282828"
@@ -97,7 +129,7 @@ Rectangle {
                         textsLeftMargin: 15
                         borderBottom: true
                         onClicked: {
-                            mainDialog.changeCurrentDir(model.fileName);
+                            gotoFolder(model.fileName);
                         }
                     }
                 }
@@ -137,15 +169,9 @@ Rectangle {
         }
     }
 
-    Connections{
-        target: mainDialog
-        onChangeCurrentDir:{
-            currentDir = currentDir + "/" + dir;
-        }
-    }
     onVisibleChanged: {
         if(visible){
-            currentDir = selectedDir;
+            console.log(model.parentFolder);
         }
     }
 
@@ -170,5 +196,9 @@ Rectangle {
         // NOTE: 设置null后再次打开还是null
 //        view.model=null;
         mainDialog.uninitModel();
+    }
+    function gotoFolder(name){
+        model.folder += "/" + name
+        console.log("folder=", model.folder)
     }
 }
