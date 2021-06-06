@@ -23,7 +23,7 @@ Item {
 
         MainTopRect{
             id: mainTopRect
-            Layout.preferredWidth: mainColLayout.width
+            Layout.fillWidth: true
         }
 
         StackLayout {

@@ -78,5 +78,7 @@
         <file>qml/QuickItem/SeparatorEx.qml</file>
         <file>qml/QuickItem/FileDialogEx.qml</file>
         <file>androidsrc/saveFile.png</file>
+        <file>qml/Login.qml</file>
+        <file>androidsrc/arrow_up_30.png</file>
     </qresource>
 </RCC>

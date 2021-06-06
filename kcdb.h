@@ -122,6 +122,7 @@ public:
     Estring getKey() const;
     Estring getKey_in() const;
     Estring getAESKeyPath() const;
+    void setAESKeyPath(Estring path);
     void setKey(QString k);
     void setKey_in(QString k);
     void setBackupState(bool isBackup);

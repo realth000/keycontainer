@@ -17,4 +17,8 @@ debugShowOptions::debugShowOptions()
 #ifdef DEBUG_QML_SHOW_INFO
     qDebug() << "DebugShowOptions: DEBUG_QML_SHOW_INFO enabled";
 #endif
+
+#ifdef ANDROID_PRIVATE_STORAGE
+    qDebug() << "DebugShowOptions: ANDROID_PRIVATE_STORAGE enabled";
+#endif
 }

@@ -49,7 +49,7 @@ Item {
                     texts: "保存路径"
                     textsSize: 15
                     useDoubleTexts: true
-                    dtests: savePath
+                    dtests: savePath.replace("/storage/emulated/0", "")
                     iconPos: 1
                     bgColor: "transparent"
                     checkable: false
@@ -169,12 +169,10 @@ Item {
     }
     FileDialogEx {
          id: fileDialog
-         selectedDir: workPath
          onChangeSelectedDir: {
-             selectedDir = newDir;
              self.savePath = newDir;
              root.importer.setSavePath(newDir);
-             console.log("current dir set to", currentDir);
+             console.log("change selectr dir: ", newDir);
          }
      }
     Connections{

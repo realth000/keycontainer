@@ -15,6 +15,7 @@ signals:
     void qml_msg_info(QString msg);
     void qml_msg_update(QString msg);
     void sendKeys(QString keysJsonString);
+    void loginCorrect(bool correct);
 
 public slots:
     void initImporter();
@@ -29,11 +30,14 @@ public slots:
     void changeAESKey();
     void deleteKey(QVariant id);
     void syncKeyIndex();
+    void checkPwd(QString check);
+
 #ifdef Q_OS_ANDROID
     void updateAndroidNotifier(QString msg);
 #endif
 
 private:
+    QString configPath = "";
     bool autoChangeAES=false;
     QString workPath = "";
     QString savePath = "/pw.kcdb";
@@ -44,12 +48,17 @@ private:
     QString msg;
     bool autoBackupPath=false;
     int deletedKeysCount=0;
+    QString pwPath = "";
+    Estring truePwdHash;
+    const Estring salt1 = Estring("15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破");
+    const Estring salt2 = Estring("離れない君といた夏のおわりゼロゼロさてんるいこおかえり");
 
 
 #ifdef Q_OS_ANDROID
     void initPermission();
 #endif
     void initConfig();
+    void initKey();
     void initKeyData();
     bool checkDb(QString dbPath = "");
     void refreshAESKey();
