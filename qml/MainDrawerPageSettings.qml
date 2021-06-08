@@ -116,43 +116,12 @@ Item {
                         root.importer.changeAESKey();
                     }
                 }
-                Switch{
+                SwitchEx{
                     id: autoChangeAESChB
                     anchors.top: changeAESKeyBtn.bottom
                     anchors.left: parent.left
-                    width: parent.width
-                    height: 50
                     checked: autoChangeAES
-                    background: Rectangle{
-                        color: "transparent"
-                    }
-                    indicator: Rectangle{
-                        id: indi
-                        implicitWidth: 40
-                        implicitHeight: 20
-                        radius: 10
-                        x: autoChangeAESChB.leftPadding
-                        y: parent.height / 2 - height / 2
-                        color: autoChangeAESChB.checked ? "#375564" : "transparent"
-                        border.color: "#4b6876"
-                        Rectangle {
-                            x: autoChangeAESChB.checked ? parent.width - width : 0
-                            width: 20
-                            height: 20
-                            radius: 10
-                            color: "#4b6876"
-                        }
-                    }
-                    contentItem: Text{
-                        text: "每次保存自动更新加密密钥"
-                        anchors.left: indi.right
-                        anchors.leftMargin: 7
-                        anchors.verticalCenter: parent.verticalCenter
-                        verticalAlignment: Qt.AlignVCenter
-                        font.pixelSize: 15
-                        font.bold: true
-                        color: "#4b6876"
-                    }
+                    texts: "每次保存自动更新加密密钥"
                     onCheckedChanged: {
                         autoChangeAES=checked
                         root.importer.setAutoChangeAES(autoChangeAES)

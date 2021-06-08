@@ -28,7 +28,7 @@ Item {
         height: 50
         anchors.top: parent.top
         anchors.left: parent.left
-        color: "#282828"
+        color: "#232323"
         ButtonEx{
             id: showAccountAllBtnEx
             width: parent.width/4
@@ -105,7 +105,7 @@ Item {
             anchors.verticalCenter: manaToolRect.verticalCenter
             bgColor: "transparent"
             checkable: false
-            texts: "查询"
+            texts: "搜索"
             textsBold: true
             iconUnchecked: "qrc:/androidsrc/findKey.png"
             iconPos: 1
@@ -127,6 +127,133 @@ Item {
         color: manaToolRect.color
         border.color: "red"
         border.width: 1
+        TextInputEx{
+            id: findKeyKeywordInput
+            height: findKeyRect.height
+            anchors.verticalCenter: parent.verticalCenter
+            anchors.left: parent.left
+            anchors.right: findBackwardBtnex.left
+            onTextChanged: {
+                root.importer.changeFindText(text);
+            }
+        }
+
+        ButtonEx{
+            id: findBackwardBtnex
+            width: height
+            height: findKeyRect.height
+            anchors.top: parent.top
+            anchors.right: findForwardBtnex.left
+            useTexts: false
+            checkable: false
+            iconUnchecked: "qrc:/androidsrc/arrow_left_30.png"
+            onClicked: {
+                root.importer.findPreviousKey();
+            }
+        }
+        ButtonEx{
+            id: findForwardBtnex
+            width: height
+            height: findKeyRect.height
+            anchors.top: parent.top
+            anchors.right: closeFindBtnex.left
+            useTexts: false
+            checkable: false
+            iconUnchecked: "qrc:/androidsrc/arrow_right_30.png"
+            onClicked: {
+                root.importer.findNextKey();
+            }
+        }
+        ButtonEx{
+            id: closeFindBtnex
+            width: height
+            height: findKeyRect.height
+            anchors.top: parent.top
+            anchors.right: parent.right
+            useTexts: false
+            checkable: false
+            iconUnchecked: "qrc:/androidsrc/config3.png"
+            onClicked: {
+                findKeyMenu.visible = true;
+            }
+        }
+    }
+
+    MenuEx{
+        id: findKeyMenu
+        trigger: closeFindBtnex
+        width: 150
+        optsCount: 5
+        MenuItemEx{
+            id: i1
+            texts: "计数"
+            anchors.top: parent.top
+            textsLeftMargin: 5
+            iconUnchecked: "qrc:/androidsrc/count2.png"
+            onClicked: {
+            }
+        }
+
+        SwitchEx{
+            id: i2
+            texts: "全词匹配"
+            height: 60
+            bgColor: i1.bgColor
+            anchors.top: i1.bottom
+            indiBgColor: "#f0ffff"
+            indiCheckedColor: "#4b6876"
+            indiUncheckedColor: "#404040"
+            borderBottom: true
+            borderBottomColor: "#f0ffff"
+            onCheckedChanged: {
+                root.importer.setFindAllWord(checked);
+            }
+        }
+        SwitchEx{
+            id: i3
+            texts: "区分大小写"
+            height: 60
+            bgColor: i1.bgColor
+            anchors.top: i2.bottom
+            indiBgColor: "#f0ffff"
+            indiCheckedColor: "#4b6876"
+            indiUncheckedColor: "#404040"
+            borderBottom: true
+            borderBottomColor: "#f0ffff"
+            onCheckedChanged: {
+                root.importer.setFindCaseSen(checked);
+            }
+        }
+        SwitchEx{
+            id: i4
+            texts: "正则表达式"
+            height: 60
+            bgColor: i1.bgColor
+            anchors.top: i3.bottom
+            indiBgColor: "#f0ffff"
+            indiCheckedColor: "#4b6876"
+            indiUncheckedColor: "#404040"
+            borderBottom: true
+            borderBottomColor: "#f0ffff"
+            onCheckedChanged: {
+                root.importer.setFindUseReg(checked);
+            }
+        }
+        MenuItemEx{
+            id: i5
+            texts: "退出搜索"
+            textsLeftMargin: 10
+            iconUnchecked: "qrc:/androidsrc/close.png"
+            borderBottom: false
+            anchors.top: i4.bottom
+            onClicked: {
+                findKeyRect.visible=false;
+                showAccountAllBtnEx.visible = true;
+                saveKeysBtnex.visible = true;
+                delKeysBtnex.visible = true;
+                findKeyBtnex.visible = true;
+            }
+        }
     }
 
     Rectangle{
@@ -144,7 +271,6 @@ Item {
             delegate: keyDelegate
             highlight: Rectangle {
                 color: "#40403d";
-//                border.color: "#375564"
             }
             highlightFollowsCurrentItem:true
             highlightMoveDuration: 70
@@ -287,8 +413,15 @@ Item {
                     }
                 }
             }
+            onCurrentIndexChanged: {
+                root.importer.updateFindPos(currentIndex);
+            }
          }
     }
+    Component.onCompleted: {
+        keysView.currentIndex = -1;
+    }
+
     function adaptKeyBeforeSync(key){
          return JSON.parse(JSON.stringify(key).replace(/}$/g, ",\"keyChecked\":false,\"showAccount\":false,\"showPassword\":false}"));
     }
@@ -307,6 +440,12 @@ Item {
         target: mainTabKeys
         onSaveKeys:{
             root.importer.saveKeys()
+        }
+    }
+    Connections{
+        target: root.importer
+        onFindKeyAt:{
+            keysView.currentIndex = pos;
         }
     }
 }

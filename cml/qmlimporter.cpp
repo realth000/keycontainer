@@ -5,6 +5,7 @@
 #include <QSettings>
 #include <QCryptographicHash>
 #include <QUrl>
+#include <QRegularExpression>
 
 #ifdef Q_OS_ANDROID
 #include <QtAndroid>
@@ -55,16 +56,18 @@ int QmlImporter::checkExistence(QString disc, QString account, QString password)
             return -pos;
         }
     }
-    qDebug() << "before insert count:" << keyMap.count();
-    keyMap.insert(keyMap.count(), KeyMap(keyMap.count(), Estring(disc), Estring(account), Estring(password)));
-    qDebug() << "after insert count:" << keyMap.count();
+    qDebug() << "before insert count:" << keyTableRowCount;
+    keyMap.insert(keyTableRowCount, KeyMap(keyTableRowCount, Estring(disc), Estring(account), Estring(password)));
+    existsKeys.append(Estring(disc));
+    qDebug() << "after insert count:" << keyTableRowCount;
+    keyTableRowCount++;
     // NOTE: 反正现在新密码在前端是加在最后一行，return个pos其实没啥用
     return pos;
 }
 
 void QmlImporter::saveKeys()
 {
-    if(keyMap.count() < 1){
+    if(keyTableRowCount < 1){
         return;
     }
     kcdb->setBackupState(false);
@@ -208,7 +211,6 @@ void QmlImporter::initConfig()
 #ifdef Q_OS_ANDROID
     kcdb->setAESKeyPath(Estring(QFileInfo(savePath).path() + "/dat.ec"));
 #endif
-    qDebug() << "1111" << savePath << QFileInfo(savePath).path() + "/dat.ec";
 }
 
 void QmlImporter::initKey()
@@ -404,6 +406,7 @@ void QmlImporter::syncKeyFromMap()
         count++;
         t++;
     }
+    keyTableRowCount = keyMap.count();
     emit sendKeys(KeyMapJsonEngine::keyMapToJson(keyMap));
     qDebug() << "read .kcdb successed:" << count << "keys";
 }
@@ -472,6 +475,157 @@ void QmlImporter::saveConfig()
     delete ini;
 }
 
+bool QmlImporter::findCheckKey() const
+{
+    if(findMode == 0 ){
+        return findAllWord ?
+                    !(existsKeys[keyTableFindPos].getVal().compare(findText, findCaseSen) == 0) :
+                    !existsKeys[keyTableFindPos].getVal().contains(findText, findCaseSen);
+    }
+    else if(findMode == 1){
+        return !existsKeys[keyTableFindPos].getVal().contains(QRegularExpression(findText));
+    }
+    else{
+        return true;
+    }
+}
+
+void QmlImporter::findPreviousKey()
+{
+    if(findText == ""){
+        emit qml_msg_info("搜索内容为空");
+        return;
+    }
+    findDirection = false;
+    int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
+    keyTableFindPos--;
+    if(keyTableFindPos>=keyTableRowCount_int){
+        keyTableFindPos=keyTableRowCount_int-1;
+    }
+    int startPos = keyTableFindPos;
+    while(keyTableFindPos>=0){
+        if(findCheckKey()){
+            keyTableFindPos--;
+        }
+        else{
+            emit findKeyAt(keyTableFindPos);
+            emit qml_msg_info("找到id: " + QString::number(keyTableFindPos));
+            return;
+        }
+    }
+    // 从pos->开头找完了，接着找结尾->pos
+    keyTableFindPos=keyTableRowCount_int-1;
+    while(keyTableFindPos >= startPos){
+        if(findCheckKey()){
+            keyTableFindPos--;
+        }
+        else{
+            emit findKeyAt(keyTableFindPos);
+            emit qml_msg_info("找到id: " + QString::number(keyTableFindPos) + " 从最后一个开始查找");
+            return;
+        }
+    }
+    keyTableFindPos = startPos;
+    emit qml_msg_info("搜索结果为空");
+    return;
+}
+
+void QmlImporter::findNextKey()
+{
+    if(findText == ""){
+        emit qml_msg_info("搜索内容为空");
+        return;
+    }
+    findDirection = true;
+    int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
+    keyTableFindPos++;
+    if(keyTableFindPos>=keyTableRowCount_int  || keyTableFindPos<0){
+        keyTableFindPos=0;
+    }
+     int startPos = keyTableFindPos;
+    while(keyTableFindPos<keyTableRowCount_int){
+        if(findCheckKey()){
+            keyTableFindPos++;
+        }
+        else{
+            emit findKeyAt(keyTableFindPos);
+            emit qml_msg_info("找到id: " + QString::number(keyTableFindPos));
+            return;
+        }
+    }
+    // 从pos->结尾找完了，接着找开头->pos
+    keyTableFindPos=0;
+    while(keyTableFindPos <= startPos){
+        if(findCheckKey()){
+            keyTableFindPos++;
+        }
+        else{
+            emit findKeyAt(keyTableFindPos);
+            emit qml_msg_info("找到id: " + QString::number(keyTableFindPos) + "  从第一个开始查找");
+            return;
+        }
+    }
+    keyTableFindPos = startPos;
+    emit qml_msg_info("搜索结果为空");
+    return;
+}
+
+void QmlImporter::updateFindPos(int index)
+{
+    keyTableFindPos = index;
+}
+
+void QmlImporter::setFindAllWord(bool allWord)
+{
+    this->findAllWord = allWord;
+}
+
+void QmlImporter::setFindCaseSen(bool sen)
+{
+    sen ? findCaseSen=Qt::CaseSensitive : findCaseSen = Qt::CaseInsensitive;
+}
+
+void QmlImporter::setFindUseReg(bool useReg)
+{
+    this->findUseReg = useReg;
+    useReg ? findMode=1 : findMode=0;
+}
+
+QString QmlImporter::getQtVerionString() const
+{
+    return ABOUT_BASE_QT;
+}
+
+QString QmlImporter::getPlatform() const
+{
+    return ABOUT_PLANTFORM;
+}
+
+QString QmlImporter::getAppVersion() const
+{
+    return ABOUT_VERSION;
+}
+
+QString QmlImporter::getCPPVersion() const
+{
+    return QString::number(ABOUT_BASE_CPP);
+}
+
+QString QmlImporter::getBuildTime() const
+{
+    return ABOUT_TIME;
+}
+
+QString QmlImporter::getCompilerInfo() const
+{
+    QString ABOUT_BASE_COMPILER_type = typeid (ABOUT_BASE_COMPILER).name();
+#ifdef ABOUT_BASE_COMPILER_STRING
+    return QString(ABOUT_BASE_COMPILER_TYPE) + QString(ABOUT_BASE_COMPILER);
+#else
+    return QString(ABOUT_BASE_COMPILER_TYPE) + QString::number(ABOUT_BASE_COMPILER);
+#endif
+}
+
 void QmlImporter::changeAESKey()
 {
     if(!autoChangeAES){refreshAESKey();};
@@ -484,6 +638,7 @@ void QmlImporter::deleteKey(QVariant id)
     keyMap.remove(id.toInt());
     existsKeys.removeAt(id.toInt());
     deletedKeysCount++;
+    keyTableRowCount--;
     qDebug() << "deleting:" << id;
 }
 
@@ -515,12 +670,29 @@ void QmlImporter::checkPwd(QString check)
     hash2.addData(tmpMD5);
     hash2.addData(salt2.getVal().toUtf8());
     resultHash = hash2.result().toHex();
+#ifdef DEBUG_QML_PASS_PASSWORD
     if(resultHash == truePwdHash.getVal() || check == "123"){
+#else
+    if(resultHash == truePwdHash.getVal()){
+#endif
         emit loginCorrect(true);
     }
     else{
         emit loginCorrect(false);
     }
+}
+
+void QmlImporter::changeFindText(QString s)
+{
+    if(s == ""){
+        return;
+    }
+    this->findText = s;
+}
+
+void QmlImporter::findKey()
+{
+    findDirection==false ? findPreviousKey() : findNextKey();
 }
 
 #ifndef Q_OS_ANDROID

@@ -25,7 +25,7 @@ Item {
         height: 50
         anchors.top: parent.top
         anchors.left: parent.left
-        color: "#282828"
+        color: "#232323"
         ButtonEx{
             id: showAccountAllBtnEx
             width: 100

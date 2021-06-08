@@ -80,5 +80,12 @@
         <file>androidsrc/saveFile.png</file>
         <file>qml/Login.qml</file>
         <file>androidsrc/arrow_up_30.png</file>
+        <file>qml/QuickItem/MenuEx.qml</file>
+        <file>qml/QuickItem/MenuItemEx.qml</file>
+        <file>qml/QuickItem/SwitchEx.qml</file>
+        <file>androidsrc/config3.png</file>
+        <file>androidsrc/count.png</file>
+        <file>androidsrc/count2.png</file>
+        <file>qml/MainDrawerPageAbout.qml</file>
     </qresource>
 </RCC>
