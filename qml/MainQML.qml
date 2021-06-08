@@ -49,21 +49,20 @@ ApplicationWindow  {
             id: p1
             root: mainWindow
         }
-        Label{
-            text: "\n\n\n\n      2"
-            font.pixelSize: 50
-        }
-        Label{
-            text: "\n\n\n\n      3"
-            font.pixelSize: 50
-        }
+//        Label{
+//            text: "\n\n\n\n      2"
+//            font.pixelSize: 50
+//        }
+//        Label{
+//            text: "\n\n\n\n      3"
+//            font.pixelSize: 50
+//        }
         MainDrawerPageSettings{
             id: p4
             root: mainWindow
         }
-        Label{
-            text: "\n\n\n\n      5"
-            font.pixelSize: 50
+        MainDrawerPageAbout{
+            id: p5
         }
     }
 
@@ -124,34 +123,34 @@ ApplicationWindow  {
                     mainDrawer.close()
                 }
             }
-            ButtonEx{
-                id: mainDrawerBE2
-                bgColor: "#2d2f32"
-                iconPos: 1
-                texts: "   导出      "
-                iconChecked: "qrc:/androidsrc/exportKey_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/exportKey.png"
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: 50
-                onClicked: {
-                    mainDrawer.currentIndex=2
-                    mainDrawer.close()
-                }
-            }
-            ButtonEx{
-                id: mainDrawerBE3
-                bgColor: "#2d2f32"
-                iconPos: 1
-                texts: "   导入      "
-                iconChecked: "qrc:/androidsrc/importKeys_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/importKeys.png"
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: 50
-                onClicked: {
-                    mainDrawer.currentIndex=3
-                    mainDrawer.close()
-                }
-            }
+//            ButtonEx{
+//                id: mainDrawerBE2
+//                bgColor: "#2d2f32"
+//                iconPos: 1
+//                texts: "   导出      "
+//                iconChecked: "qrc:/androidsrc/exportKey_reverse.png"
+//                iconUnchecked: "qrc:/androidsrc/exportKey.png"
+//                Layout.preferredWidth: parent.width
+//                Layout.preferredHeight: 50
+//                onClicked: {
+//                    mainDrawer.currentIndex=2
+//                    mainDrawer.close()
+//                }
+//            }
+//            ButtonEx{
+//                id: mainDrawerBE3
+//                bgColor: "#2d2f32"
+//                iconPos: 1
+//                texts: "   导入      "
+//                iconChecked: "qrc:/androidsrc/importKeys_reverse.png"
+//                iconUnchecked: "qrc:/androidsrc/importKeys.png"
+//                Layout.preferredWidth: parent.width
+//                Layout.preferredHeight: 50
+//                onClicked: {
+//                    mainDrawer.currentIndex=3
+//                    mainDrawer.close()
+//                }
+//            }
             ButtonEx{
                 id: mainDrawerBE4
                 bgColor: "#2d2f32"
@@ -162,7 +161,7 @@ ApplicationWindow  {
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: 50
                 onClicked: {
-                    mainDrawer.currentIndex=4
+                    mainDrawer.currentIndex=2
                     mainDrawer.close()
                 }
             }
@@ -176,7 +175,7 @@ ApplicationWindow  {
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: 50
                 onClicked: {
-                    mainDrawer.currentIndex=5
+                    mainDrawer.currentIndex=3
                     mainDrawer.close()
                 }
             }
@@ -200,10 +199,14 @@ ApplicationWindow  {
             var obj = JSON.parse(keysJsonString);
             p1.syncKeysFromJson(obj);
         }
+        onFindKeyAt: {
+
+        }
     }
 
     Component.onCompleted: {
         mainQmlImporter.initImporter();
+        loginPage.visible = true;
     }
     Connections{
         target: mainQmlImporter

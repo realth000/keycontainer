@@ -1,4 +1,4 @@
-import QtQuick 2.0
+import QtQuick 2.12
 import QtQuick.Controls 2.5
 import "QuickItem"
 import QtQml 2.12
@@ -7,6 +7,7 @@ Rectangle {
     property QtObject root
     id: loginRect
     color: "#232323"
+    visible: false
     property bool hint: false
     Rectangle{
         property alias input1: passwordInput
@@ -17,17 +18,6 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
         anchors.verticalCenterOffset: -parent.height*0.2
         color: "transparent"
-//        ButtonEx{
-//            id: b1
-//            texts: "说明"
-//            iconPos: 1
-//            bgColor: "transparent"
-//            checkable: false
-//            width: 70
-//            height: 30
-//            anchors.left: parent.left
-//            anchors.verticalCenter: parent.verticalCenter
-//        }
 
         TextInputEx{
             id: passwordInput
@@ -86,6 +76,14 @@ Rectangle {
         onLoginShowHint:{
             loginRect.showHint();
         }
+    }
+    Keys.onReleased: {
+        if((event.modifiers === Qt.NoModifier) && (event.key === Qt.Key_Enter || event.key === Qt.Key_Return )){
+            loginBtnex.clicked();
+        }
+    }
+    onVisibleChanged: {
+        visible ? mainDrawer.interactive=false : mainDrawer.interactive=true;
     }
 
 }

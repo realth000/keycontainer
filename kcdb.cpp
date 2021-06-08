@@ -198,7 +198,6 @@ GroupKey::GroupKey(QString disc, QString account, QString keyValue)
         this->checkKey.setVal(keyValue);
         this->iKey.setVal(keyValue);
         this->iCheckKey.setVal(keyValue);
-
 }
 
 QString GroupKey::getiKeyValue() const

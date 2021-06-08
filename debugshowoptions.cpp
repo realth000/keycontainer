@@ -21,4 +21,8 @@ debugShowOptions::debugShowOptions()
 #ifdef ANDROID_PRIVATE_STORAGE
     qDebug() << "DebugShowOptions: ANDROID_PRIVATE_STORAGE enabled";
 #endif
+
+#ifdef DEBUG_ALL_CONTROL_CLOSE
+    qDebug() << "DebugShowOptions: DEBUG_ALL_CONTROL_CLOSE enabled";
+#endif
 }

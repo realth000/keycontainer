@@ -8,6 +8,7 @@ Rectangle {
     property string iconPath
     property string labelText
     property color labelColor: "#4b6876"
+    property color labelBgColor: "transparent"
     property int labelWidth: 200
     property int labelHeight: 60
     property int labelTextSize: 16
@@ -27,12 +28,12 @@ Rectangle {
         color: "transparent"
         ButtonEx{
             id: gbexLabel
-            width: labelWidth
+            width: parent.width
             height: labelHeight
             checkable: false
             iconUnchecked: iconPath
             iconPos: 1
-            bgColor: parent.color
+            bgColor: labelBgColor
             anchors.left: parent.left
             anchors.leftMargin: labelLeftMargin
             anchors.top: parent.top
