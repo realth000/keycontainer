@@ -21,11 +21,12 @@ Rectangle {
 
         TextInputEx{
             id: passwordInput
-            height: 32
+            height: 45
             width: 300
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
             echoMode: "Password"
+            textsSize: 20
         }
     }
 
@@ -34,9 +35,9 @@ Rectangle {
         useIcon: false
         checkable: false
         texts: "登录"
-        textsSize: 18
-        width: 60
-        height: 60
+        textsSize: 20
+        width: 70
+        height: 70
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: rect1.bottom
         anchors.topMargin: 40
@@ -50,7 +51,7 @@ Rectangle {
     Label{
         text: "失败"
         color: "#f0ffff"
-        font.pixelSize: 15
+        font.pixelSize: 18
         font.bold: true
         horizontalAlignment: Qt.AlignHCenter
         background: Rectangle{

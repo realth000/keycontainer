@@ -6,6 +6,7 @@ TextInput {
     property color bgColor: "transparent"
     property int borderWidth: 1
     property color borderColor: "#4b6876"
+    property int borderColorAniDuration: 130
     property string passwordCharacterEx: "******"
     property color textsColor: "#f0ffff"
     property bool textsBold: true
@@ -23,22 +24,21 @@ TextInput {
     clip: textsClip
     leftPadding: 2
     selectionColor: borderColor
+    selectByMouse: true
     Rectangle{
         id: tiexInputArea
         anchors.fill: parent
-//        color: "transparent"
         color: "#2d2e30"
         border.width: 0
         z: -1
     }
-    Rectangle{
+    SeparatorEx{
         id: tiexInputBaseline
         height: 1
         anchors.bottom: tiexInputArea.bottom
-        anchors.left: tiexInputArea.left
-        anchors.right: tiexInputArea.right
-        color: textInputEx.activeFocus ? "#f0ffff" : borderColor
-        border.color: textInputEx.activeFocus ? "#f0ffff" : borderColor
+        sepColor: textInputEx.activeFocus ? "#f0ffff" : borderColor
+        leftMargin: 0
+        rightMargin: 0
     }
 
     Component{
@@ -47,6 +47,16 @@ TextInput {
             width: cursorWidth
             color: textInputEx.activeFocus ? cursorColor : "transparent"
         }
-
+    }
+    PropertyAnimation{
+        id: borderColorAni
+        target: tiexInputBaseline
+        property: "width"
+        from: 0
+        to: width - tiexInputBaseline.leftMargin - tiexInputBaseline.rightMargin
+        duration: borderColorAniDuration
+    }
+    onFocusChanged: {
+        borderColorAni.start();
     }
 }

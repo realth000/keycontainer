@@ -87,5 +87,6 @@
         <file>androidsrc/count.png</file>
         <file>androidsrc/count2.png</file>
         <file>qml/MainDrawerPageAbout.qml</file>
+        <file>qml/QuickItem/FolderEx.qml</file>
     </qresource>
 </RCC>

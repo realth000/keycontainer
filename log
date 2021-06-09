@@ -78,6 +78,12 @@
 6. 暂时关闭部分没有实现的页面
 
 ---------
+20210608:
+1. 修改启动密码
+2. ButtonEx、TextInputEx、SwitchEx动画
+3. 读取kcdb动作推迟到登陆成功后
+
+---------
 FIXME:
 1. 优化安卓QML选文件夹的界面
 2. 安卓端设置页的ButtonEx歪了
@@ -96,8 +102,9 @@ TODO：
 8. login.ec和dat.ec的路径在默认和config.ini的情况下太混乱
 9. 搜索功能搜索时冻结按钮
 10. 查找中的计数功能以及结果显示（toast）
-11. 读取kcdb动作推迟到登陆成功后
-12. 更改启动密码
+11. 更改启动密码
+12. 登录后储存的truePwdHash中加的盐改成随机盐
+13. 改进readKcdb和writeKcdb
 
 ELSE:
 1. 渐变映射上下限为ButtonExImage#4b6876、TabButtonEx#6d799c
