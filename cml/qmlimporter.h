@@ -17,6 +17,8 @@ signals:
     void sendKeys(QString keysJsonString);
     void loginCorrect(bool correct);
     void findKeyAt(int pos);
+    void changeInitKey_wrong_oldPw();
+    void changeInitKey_success();
 
 public slots:
     void initImporter();
@@ -40,6 +42,8 @@ public slots:
     void setFindAllWord(bool allWord);
     void setFindCaseSen(bool sen);
     void setFindUseReg(bool useReg);
+    bool checkInputOldPWHash(QString oldPw);
+    void checkInputInitKey(QString oldPw, QString newPw);
 
     QString getQtVerionString() const;
     QString getPlatform() const;
@@ -64,7 +68,7 @@ private:
     bool autoBackupPath=false;
     quint32 keyTableRowCount = 0;
     int deletedKeysCount=0;
-    QString pwPath = "";
+    Estring pwPath;
     Estring truePwdHash;
     const Estring salt1 = Estring("15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破");
     const Estring salt2 = Estring("離れない君といた夏のおわりゼロゼロさてんるいこおかえり");
@@ -76,6 +80,7 @@ private:
     bool findAllWord = false;
     Qt::CaseSensitivity findCaseSen = Qt::CaseInsensitive;
     bool findUseReg = false;
+    QFile hashFile;
 
 #ifdef Q_OS_ANDROID
     void initPermission();

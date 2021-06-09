@@ -43,6 +43,7 @@ ScrollView {
             text: mainWindow.importer.getPlatform()
             color: "#f0ffff"
             font.pixelSize: 16
+            font.bold: true
         }
     }
     Rectangle{
@@ -52,27 +53,26 @@ ScrollView {
         color: "transparent"
         anchors.top: platformRect.bottom
         anchors.topMargin: 10
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.horizontalCenter: parent.horizontalCenter
         Label{
             width: appNameLabel.contentWidth
             height: 20
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             horizontalAlignment: Qt.AlignLeft
-            text: "软件版本: " + "<b>" + mainWindow.importer.getAppVersion() + "</b>"
+            text: "软件版本: " + mainWindow.importer.getAppVersion()
             color: "#f0ffff"
             font.pixelSize: 16
+            font.bold: true
         }
     }
     Rectangle{
         id: buildTimeRect
-        width: appVersionRect.width
+        width: 200
         height: 20
         color: "transparent"
         anchors.top: appVersionRect.bottom
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.horizontalCenter: parent.horizontalCenter
         Label{
             width: appNameLabel.contentWidth
             height: 20
@@ -82,16 +82,16 @@ ScrollView {
             text: "构建时间: " + mainWindow.importer.getBuildTime()
             color: "#f0ffff"
             font.pixelSize: 16
+            font.bold: true
         }
     }
     Rectangle{
         id: buildInfoRect
-        width: buildTimeRect.width
+        width: 200
         height: 200
         color: "transparent"
         anchors.top: buildTimeRect.bottom
-        anchors.left: parent.left
-        anchors.leftMargin: 150
+        anchors.horizontalCenter: parent.horizontalCenter
         Label{
             id: lb
             width: 80
@@ -102,6 +102,7 @@ ScrollView {
             text: "构建信息: "
             color: "#f0ffff"
             font.pixelSize: 16
+            font.bold: true
         }
         Label{
             height: 20
@@ -115,6 +116,7 @@ ScrollView {
                     + "Qt-AES bricke@github"
             color: "#f0ffff"
             font.pixelSize: 16
+            font.bold: true
         }
     }
 

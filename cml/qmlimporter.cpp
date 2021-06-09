@@ -37,7 +37,7 @@ void QmlImporter::initImporter()
 #endif
     initConfig();
     initKey();
-    initKeyData();
+//    initKeyData();
 }
 
 // TODO: 接收qml传来的账号密码用明文有点憨憨
@@ -218,21 +218,21 @@ void QmlImporter::initKey()
 
 #ifdef Q_OS_ANDROID
 #ifdef ANDROID_PRIVATE_STORAGE
-//    pwPath = QDir::toNativeSeparators(QString("/data/user/0/%1/files/login/login.ec").arg(ANDROID_PACKAGE_NAME));
-//    pwPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/login/login.ec";
-    pwPath = QUrl("file:///" + QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/login/login.ec").toLocalFile();
+//    pwPath = Estring(QDir::toNativeSeparators(QString("/data/user/0/%1/files/login/login.ec").arg(ANDROID_PACKAGE_NAME)));
+//    pwPath = Estring(QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/login/login.ec");
+    pwPath = Estring(QUrl("file:///" + QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + "/login/login.ec").toLocalFile());
 #else
-    pwPath = QDir::toNativeSeparators(workPath + "/login/login.ec");
+    pwPath = Estring(QDir::toNativeSeparators(workPath + "/login/login.ec"));
 #endif
 #else
-    pwPath = QDir::toNativeSeparators(workPath + "/login.ec");
+    pwPath = Estring(QDir::toNativeSeparators(workPath + "/login.ec"));
 #endif
-    QFileInfo fileInfo(pwPath);
+    QFileInfo fileInfo(pwPath.getVal());
     if(!fileInfo.exists()){
-        emit qml_msg_info("无法启动,密码文件丢失，无法启动。退出: " + pwPath);
+        emit qml_msg_info("无法启动,密码文件丢失，无法启动。退出: " + pwPath.getVal());
         qApp->quit();
     }
-    QFile hashFile(pwPath);
+    QFile hashFile(pwPath.getVal());
     if(!hashFile.open(QIODevice::ReadOnly)){
         bool existance = (QFileInfo(hashFile)).exists();
         bool readable = hashFile.isReadable();
@@ -591,6 +591,52 @@ void QmlImporter::setFindUseReg(bool useReg)
     useReg ? findMode=1 : findMode=0;
 }
 
+bool QmlImporter::checkInputOldPWHash(QString oldPw)
+{
+    QByteArray tmpMD5;
+    QByteArray resultHash;
+    QCryptographicHash hash1(QCryptographicHash::Keccak_512);
+    hash1.addData(oldPw.toUtf8());
+    hash1.addData(salt1.getVal().toUtf8());
+    tmpMD5 = hash1.result().toHex();
+    QCryptographicHash hash2(QCryptographicHash::Keccak_512);
+    hash2.addData(tmpMD5);
+    hash2.addData(salt2.getVal().toUtf8());
+    resultHash = hash2.result().toHex();
+    return resultHash == truePwdHash.getVal() ? true : false;
+
+}
+
+void QmlImporter::checkInputInitKey(QString oldPw, QString newPw)
+{
+    if(!checkInputOldPWHash(oldPw)){
+        emit changeInitKey_wrong_oldPw();
+        return;
+    }
+    hashFile.setFileName(pwPath.getVal());
+    if(hashFile.open(QIODevice::WriteOnly)){
+        QByteArray tmpMD5;
+        QByteArray resultHash;
+        QCryptographicHash hash1(QCryptographicHash::Keccak_512);
+        hash1.addData(newPw.toUtf8());
+        hash1.addData(salt1.getVal().toUtf8());
+        tmpMD5 = hash1.result().toHex();
+        QCryptographicHash hash2(QCryptographicHash::Keccak_512);
+        hash2.addData(tmpMD5);
+        hash2.addData(salt2.getVal().toUtf8());
+        resultHash = hash2.result().toHex();
+        QFile hashFile(pwPath.getVal());
+        if(hashFile.open(QIODevice::ReadWrite)){
+            QDataStream hashStream(&hashFile);
+            hashStream.setVersion(QDataStream::Qt_5_12);
+            hashStream << resultHash;
+            hashFile.close();
+            truePwdHash = Estring(resultHash);
+        emit changeInitKey_success();
+        }
+    }
+}
+
 QString QmlImporter::getQtVerionString() const
 {
     return ABOUT_BASE_QT;
@@ -676,6 +722,7 @@ void QmlImporter::checkPwd(QString check)
     if(resultHash == truePwdHash.getVal()){
 #endif
         emit loginCorrect(true);
+        initKeyData();
     }
     else{
         emit loginCorrect(false);

@@ -1,6 +1,7 @@
-﻿import QtQuick 2.0
-import QtQuick.Controls 2.0
+﻿import QtQuick 2.12
+import QtQuick.Controls 2.5
 import QtQml 2.12
+import QtGraphicalEffects 1.12
 
 Button{
     id: self
@@ -43,8 +44,16 @@ Button{
     property int dtextTopMargin: 4
     property int dtextLeftMargin: 4
     property int leftMargin: 0
+    property int bottomMargin: 0
+
+
+    property double pressWaveLeftArea: 0.0
+    property real pressWaveRightArea: 0
+    property int pressWaveDuration: 200
+    property int pressWaveStartPosX: 0
 
     checkable: true
+    clip: true
 
     // 这个方框是辅助定位tabButton中图标和文字的，由于anchors的值只能定义为anchors的值，因此如果想把图标和
     // 文字的整体的中心定位在整个tabButton的中心，需要这样一个装着图标和文字的方框来辅助定位
@@ -115,6 +124,7 @@ Button{
                                                 iconPos==1 && posToLeft ? assistant1.width*0.5-self.width*0.5 : horizontalOffset
                                             }
                                         }
+        anchors.verticalCenterOffset: -bottomMargin
     }
 
     Image{
@@ -182,11 +192,52 @@ Button{
     }
 
     background: Rectangle{
+        id: bgRect
         width: Math.max(self.width, assistant1.width)
         height: Math.max(self.height, assistant1.height)
         color: self.checked ? bgSelectedColor : bgColor
         radius: 0
         border.width: borderWidth
         border.color: borderColor
+    }
+    RadialGradient{
+        id: pressWaveGraLeft
+        anchors.horizontalCenter: self.left
+        anchors.horizontalCenterOffset: pressWaveStartPosX
+        anchors.verticalCenter: self.verticalCenter
+        width: self.width*pressWaveLeftArea*2
+        height: self.height
+        horizontalRadius: self.height
+        verticalRadius: self.height
+        gradient: Gradient{
+            GradientStop{position:0.1; color: self.checked ? bgSelectedColor + "40" : bgSelectedColor + "40"}
+            GradientStop{position:0.9; color: self.checked ? bgSelectedColor + "40" : bgSelectedColor + "40"}
+        }
+    }
+
+    PropertyAnimation{
+        id: pressWaveAniLeft
+        target: self
+        property: "pressWaveLeftArea"
+        from: 0.0
+        to: 1.0
+        duration: self.pressWaveDuration
+        running: false
+    }
+
+    onPressed: {
+        pressWaveStartPosX = pressX;
+        pressWaveGraLeft.visible=true;
+        pressWaveAniLeft.start();
+    }
+    onPressedChanged: {
+        pressWaveAniLeft.stop();
+        self.pressWaveLeftArea=0;
+        pressWaveGraLeft.visible=false;
+    }
+    onReleased: {
+        pressWaveAniLeft.stop();
+        self.pressWaveLeftArea=0;
+        pressWaveGraLeft.visible=false;
     }
 }
