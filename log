@@ -78,10 +78,17 @@
 6. 暂时关闭部分没有实现的页面
 
 ---------
-20210608:
+20210609:
 1. 修改启动密码
 2. ButtonEx、TextInputEx、SwitchEx动画
 3. 读取kcdb动作推迟到登陆成功后
+
+---------
+20210612:
+1. 搜索中的互斥
+2. 搜索加锁
+3. 设置页加锁
+4. pro文件优化结构，加快编译速度
 
 ---------
 FIXME:
@@ -89,22 +96,20 @@ FIXME:
 2. 安卓端设置页的ButtonEx歪了
 3. qapp->quit()无效
 4. FolderListModel向上时超过folder后其他文件夹下无输出
-
+5. 高刷屏疑似动画过快
 
 TODO：
 1. 密码和账号中的空格看不出来
 2. autoChangeAES对应设置显示
 3. 过长的话看不到，点击后要看到全部
-4. 设置页加锁
-5. 删除是一个一个删的，既不安全又低效
-6. 更换路径以后，文件名？
-7. 更换读取kcdb文件？
-8. login.ec和dat.ec的路径在默认和config.ini的情况下太混乱
-9. 搜索功能搜索时冻结按钮
-10. 查找中的计数功能以及结果显示（toast）
-11. 更改启动密码
-12. 登录后储存的truePwdHash中加的盐改成随机盐
-13. 改进readKcdb和writeKcdb
+4. 删除是一个一个删的，既不安全又低效
+5. 更换路径以后，文件名？
+6. 更换读取kcdb文件？
+7. login.ec和dat.ec的路径在默认和config.ini的情况下太混乱
+8. 查找中的计数功能以及结果显示（toast）
+9. 更改启动密码
+10. 登录后储存的truePwdHash中加的盐改成随机盐
+11. 改进readKcdb和writeKcdb
 
 ELSE:
 1. 渐变映射上下限为ButtonExImage#4b6876、TabButtonEx#6d799c

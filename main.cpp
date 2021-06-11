@@ -67,7 +67,6 @@ int main(int argc, char *argv[])
     a.setFont(af);
 
     QCoreApplication::setApplicationName(TITLEBAR_TITLETEXT);
-    QCoreApplication::setOrganizationName("海淀区干饭大队");
     QCoreApplication::setApplicationVersion(ABOUT_VERSION);
 
     MessageBoxExX w;

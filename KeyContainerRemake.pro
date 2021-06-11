@@ -4,6 +4,11 @@ CONFIG += c++17 no_batch
 # 防止linux下程序名中空格造成的问题，分开处理
 VERSION = 2.2.16.8
 
+# 此处控制在windows下编译qml版还是widget版
+# 被注释时编译widget版
+# 未注释时编译qml版
+DEFINES += COMPILE_QML
+
 win32 {
     QT += core
 #    RC_ICONS = "Key Container.ico"
@@ -16,20 +21,8 @@ win32 {
         debugshowoptions.cpp \
         encryption/encrypted.cpp \
         encryption/qaesencryption.cpp \
-        findkeyui.cpp \
-        globalshortcut/globalshortcut.cpp \
-        inputinitkeyui.cpp \
-        inputkeyui.cpp \
         kcdb.cpp \
-        login.cpp \
         main.cpp \
-        mainui.cpp \
-        qssinstaller.cpp \
-        ui/messageboxexx.cpp \
-        ui/qlineeditpro.cpp \
-        ui/tablewidgetex.cpp \
-        ui/titlebar.cpp \
-        uistyle/proxystyle.cpp
 
     HEADERS += \
         cml/keymapjsonengine.h \
@@ -38,45 +31,61 @@ win32 {
         debugshowoptions.h \
         encryption/encrypted.h \
         encryption/qaesencryption.h \
-        findkeyui.h \
-        globalshortcut/globalshortcut.h \
-        inputinitkeyui.h \
-        inputkeyui.h \
         kcdb.h \
-        login.h \
-        mainui.h \
-        qssinstaller.h \
-        ui/messageboxexx.h \
-        ui/qlineeditpro.h \
-        ui/tablewidgetex.h \
-        ui/titlebar.h \
-        uistyle/proxystyle.h
-
-    FORMS += \
-        findkeyui.ui \
-        inputinitkeyui.ui \
-        inputkeyui.ui \
-        login.ui \
-        mainui.ui \
-        ui/messageboxexx.ui
-
-    RESOURCES += \
-        resource.qrc
 }
 
-# 此处控制在windows下编译qml版还是widget版
-# 被注释时编译widget版
-# 未注释时编译qml版
+if(contains(DEFINES, COMPILE_QML)){
+    win32{
+        QT += quick qml
+        SOURCES += cml/qmlimporter.cpp
+        HEADERS += cml/qmlimporter.h
+        RESOURCES += qmlresource.qrc
+        DEFINES += ENABLE_QML
+    }
+}
+else{
+    win32{
+        QT += gui
+        LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
+        SOURCES += \
+            findkeyui.cpp \
+            globalshortcut/globalshortcut.cpp \
+            inputinitkeyui.cpp \
+            inputkeyui.cpp \
+            login.cpp \
+            mainui.cpp \
+            qssinstaller.cpp \
+            ui/messageboxexx.cpp \
+            ui/qlineeditpro.cpp \
+            ui/tablewidgetex.cpp \
+            ui/titlebar.cpp \
+            uistyle/proxystyle.cpp
 
-#win32{
-#    QT += gui
-#}
-win32{
-    QT += quick qml
-    SOURCES += cml/qmlimporter.cpp
-    HEADERS += cml/qmlimporter.h
-    RESOURCES += qmlresource.qrc
-    DEFINES += ENABLE_QML
+        HEADERS += \
+            findkeyui.h \
+            globalshortcut/globalshortcut.h \
+            inputinitkeyui.h \
+            inputkeyui.h \
+            login.h \
+            mainui.h \
+            qssinstaller.h \
+            ui/messageboxexx.h \
+            ui/qlineeditpro.h \
+            ui/tablewidgetex.h \
+            ui/titlebar.h \
+            uistyle/proxystyle.h
+
+        FORMS += \
+            findkeyui.ui \
+            inputinitkeyui.ui \
+            inputkeyui.ui \
+            login.ui \
+            mainui.ui \
+            ui/messageboxexx.ui
+
+        RESOURCES += \
+            resource.qrc
+    }
 }
 
 win32-msvc* {
@@ -194,6 +203,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     android/AndroidManifest.xml \
+    android/src/com/th000/keycontainer/IOData.java \
     android/src/com/th000/keycontainer/SelfApplication.java \
     log
 

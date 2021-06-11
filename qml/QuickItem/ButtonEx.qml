@@ -49,7 +49,7 @@ Button{
 
     property double pressWaveLeftArea: 0.0
     property real pressWaveRightArea: 0
-    property int pressWaveDuration: 200
+    property int pressWaveDuration: 300
     property int pressWaveStartPosX: 0
 
     checkable: true
