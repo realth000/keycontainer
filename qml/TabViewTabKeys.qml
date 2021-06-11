@@ -12,6 +12,7 @@ Item {
     property color bgColor: "transparent"
     property int toolNum: 4
     signal saveKeys()
+    signal freezeFindSig()
     id: mainTabKeys
     //背景
     Rectangle{
@@ -125,11 +126,9 @@ Item {
         visible: false
         anchors.fill: manaToolRect
         color: manaToolRect.color
-        border.color: "red"
-        border.width: 1
         TextInputEx{
             id: findKeyKeywordInput
-            height: findKeyRect.height
+            height: findKeyRect.height*0.65
             anchors.verticalCenter: parent.verticalCenter
             anchors.left: parent.left
             anchors.right: findBackwardBtnex.left
@@ -148,6 +147,7 @@ Item {
             checkable: false
             iconUnchecked: "qrc:/androidsrc/arrow_left_30.png"
             onClicked: {
+                mainTabKeys.freezeFindSig();
                 root.importer.findPreviousKey();
             }
         }
@@ -161,6 +161,7 @@ Item {
             checkable: false
             iconUnchecked: "qrc:/androidsrc/arrow_right_30.png"
             onClicked: {
+                mainTabKeys.freezeFindSig();
                 root.importer.findNextKey();
             }
         }
@@ -207,6 +208,7 @@ Item {
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
                 root.importer.setFindAllWord(checked);
+                checked || i3.checked ? i4.checkable=false : i4.checkable=true;
             }
         }
         SwitchEx{
@@ -222,6 +224,7 @@ Item {
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
                 root.importer.setFindCaseSen(checked);
+                checked || i2.checked ? i4.checkable=false : i4.checkable=true;
             }
         }
         SwitchEx{
@@ -237,6 +240,14 @@ Item {
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
                 root.importer.setFindUseReg(checked);
+                if(checked){
+                    i2.checkable=false;
+                    i3.checkable=false;
+                }
+                else{
+                    i2.checkable=true;
+                    i3.checkable=true;
+                }
             }
         }
         MenuItemEx{
@@ -436,16 +447,33 @@ Item {
             mod.append(adaptKeyBeforeSync(keys_data[i]));
         }
     }
+
+    function freezeFind(){
+//        findBackwardBtnex.enabled = false;
+//        findForwardBtnex.enabled = false;
+//        closeFindBtnex.enabled = false;
+//        findKeyMenu.enabled = false;
+    }
+
     Connections{
         target: mainTabKeys
         onSaveKeys:{
-            root.importer.saveKeys()
+            root.importer.saveKeys();
+        }
+        onFreezeFindSig:{
+            mainTabKeys.freezeFind();
         }
     }
     Connections{
         target: root.importer
         onFindKeyAt:{
             keysView.currentIndex = pos;
+        }
+        onUnfreezeFind:{
+            findBackwardBtnex.enabled = true;
+            findForwardBtnex.enabled = true;
+            closeFindBtnex.enabled = true;
+            findKeyMenu.enabled = true;
         }
     }
 }

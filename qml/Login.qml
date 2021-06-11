@@ -36,7 +36,7 @@ Rectangle {
         checkable: false
         texts: "登录"
         textsSize: 20
-        width: 70
+        width: parent.width
         height: 70
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: rect1.bottom
@@ -49,7 +49,7 @@ Rectangle {
     }
 
     Label{
-        text: "失败"
+        text: "密码错误"
         color: "#f0ffff"
         font.pixelSize: 18
         font.bold: true

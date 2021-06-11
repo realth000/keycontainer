@@ -134,6 +134,7 @@ void QmlImporter::setAutoChangeAES(bool autoAES)
 {
     autoChangeAES = autoAES;
     saveConfig();
+    emit unfreezeSetting();
 }
 
 #ifdef Q_OS_ANDROID
@@ -163,6 +164,17 @@ void QmlImporter::initPermission()
         QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.MANAGE_EXTERNAL_STORAGE");
     }
 }
+
+//QString QmlImporter::callJava_fileRW(QString filePath)
+//{
+//    QAndroidJniObject javaFilePath = QAndroidJniObject::fromString(filePath);
+//    QAndroidJniObject fileData = QAndroidJniObject::callStaticObjectMethod("com/th000/keycontainer/IOData",
+//                          "readFile",
+//                          "(I)Ljava/lang/String;",
+//                          filePath.toStdString().c_str());
+//    qDebug() << "read from java" << fileData.toString();
+//    return fileData.toString();
+//}
 #endif
 
 void QmlImporter::initConfig()
@@ -494,6 +506,7 @@ void QmlImporter::findPreviousKey()
 {
     if(findText == ""){
         emit qml_msg_info("搜索内容为空");
+        emit unfreezeFind();
         return;
     }
     findDirection = false;
@@ -510,6 +523,7 @@ void QmlImporter::findPreviousKey()
         else{
             emit findKeyAt(keyTableFindPos);
             emit qml_msg_info("找到id: " + QString::number(keyTableFindPos));
+            emit unfreezeFind();
             return;
         }
     }
@@ -522,11 +536,13 @@ void QmlImporter::findPreviousKey()
         else{
             emit findKeyAt(keyTableFindPos);
             emit qml_msg_info("找到id: " + QString::number(keyTableFindPos) + " 从最后一个开始查找");
+            emit unfreezeFind();
             return;
         }
     }
     keyTableFindPos = startPos;
     emit qml_msg_info("搜索结果为空");
+    emit unfreezeFind();
     return;
 }
 
@@ -534,6 +550,7 @@ void QmlImporter::findNextKey()
 {
     if(findText == ""){
         emit qml_msg_info("搜索内容为空");
+        emit unfreezeFind();
         return;
     }
     findDirection = true;
@@ -550,6 +567,7 @@ void QmlImporter::findNextKey()
         else{
             emit findKeyAt(keyTableFindPos);
             emit qml_msg_info("找到id: " + QString::number(keyTableFindPos));
+            emit unfreezeFind();
             return;
         }
     }
@@ -562,11 +580,13 @@ void QmlImporter::findNextKey()
         else{
             emit findKeyAt(keyTableFindPos);
             emit qml_msg_info("找到id: " + QString::number(keyTableFindPos) + "  从第一个开始查找");
+            emit unfreezeFind();
             return;
         }
     }
     keyTableFindPos = startPos;
     emit qml_msg_info("搜索结果为空");
+    emit unfreezeFind();
     return;
 }
 
@@ -611,6 +631,7 @@ void QmlImporter::checkInputInitKey(QString oldPw, QString newPw)
 {
     if(!checkInputOldPWHash(oldPw)){
         emit changeInitKey_wrong_oldPw();
+        emit unfreezeSetting();
         return;
     }
     hashFile.setFileName(pwPath.getVal());
@@ -633,8 +654,11 @@ void QmlImporter::checkInputInitKey(QString oldPw, QString newPw)
             hashFile.close();
             truePwdHash = Estring(resultHash);
         emit changeInitKey_success();
+        emit unfreezeSetting();
         }
     }
+    emit changeInitKey_failed("文件无法写入");
+    emit unfreezeSetting();
 }
 
 QString QmlImporter::getQtVerionString() const
@@ -677,6 +701,7 @@ void QmlImporter::changeAESKey()
     if(!autoChangeAES){refreshAESKey();};
     saveKeys();
     emit qml_msg_update("SETTINGS_AESKEY_UPDATE_FINISH");
+    emit emit unfreezeSetting();
 }
 
 void QmlImporter::deleteKey(QVariant id)

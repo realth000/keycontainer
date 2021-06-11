@@ -54,6 +54,9 @@ Rectangle{
         bgColor: "#141414"
         borderColor: "#141414"
         iconUnchecked: "qrc:/androidsrc/opts.png"
+        onClicked: {
+//            root.importer.callJava_fileRW("CONFIG");
+        }
     }
     Component.onCompleted: {
 //        width=root.width

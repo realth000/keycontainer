@@ -13,6 +13,7 @@ Item {
     property bool autoChangeAES: false
     property string aesKeyState: "已设置"
     property color changeInitKeyHintColor: "#f0ffff"
+    signal freezeSettingSig()
     id: self
     MainTopRect{
         id: mainTopRect
@@ -118,6 +119,10 @@ Item {
                             pwInput.clear();
                             pwConfirmInput.clear();
                             changeInitKeyBtn.clicked();
+                        }
+                        onChangeInitKey_failed:{
+                            changeInitKeyBtn.dtests = msg;
+                            changeInitKeyBtn.dtextsUncheckedColor = changeInitKeyHintColor;
                         }
                     }
                 }
@@ -257,6 +262,7 @@ Item {
                                     changeInitKeyBtn.dtextsUncheckedColor = changeInitKeyHintColor;
                                     return;
                                 }
+                                self.freezeSettingSig();
                                 root.importer.checkInputInitKey(oldPwInput.text, pwConfirmInput.text);
                             }
                         }
@@ -281,6 +287,7 @@ Item {
                     anchors.top: initPwFolder.bottom
                     onClicked: {
                         aesKeyState = "设置中……";
+                        self.freezeSettingSig();
                         root.importer.changeAESKey();
                     }
                 }
@@ -292,6 +299,7 @@ Item {
                     texts: "每次保存自动更新加密密钥"
                     onCheckedChanged: {
                         autoChangeAES=checked
+                        self.freezeSettingSig();
                         root.importer.setAutoChangeAES(autoChangeAES)
                     }
                 }
@@ -321,6 +329,26 @@ Item {
             if(msg.indexOf("SETTINGS_AESKEY_UPDATE_FINISH") === 0){
                 aesKeyState="设置完成"
             }
+        }
+    }
+    Connections{
+        target: self
+        onFreezeSettingSig:{
+            savePathBtnex.enabled=false;
+            changeInitKeyBtn.enabled=false;
+            initPwFolder.enabled=false;
+            changeAESKeyBtn.enabled=false;
+            autoChangeAESChB.checkable=false;
+        }
+    }
+    Connections{
+        target: root.importer
+        onUnfreezeSetting:{
+            savePathBtnex.enabled=true;
+            changeInitKeyBtn.enabled=true;
+            initPwFolder.enabled=true;
+            changeAESKeyBtn.enabled=true;
+            autoChangeAESChB.checkable=true;
         }
     }
 }

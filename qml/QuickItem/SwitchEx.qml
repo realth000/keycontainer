@@ -29,11 +29,10 @@ Switch {
         border.color: indiBgColor
         Rectangle {
             id: switchHead
-//            x: switchItem.checked ? indiRect.width - width : 0
             width: indiRect.height
             height: width
             radius: width/2
-            color: indiBgColor
+            color: checkable ? indiBgColor : "#c1c7d0";
         }
     }
     contentItem: Text{
@@ -67,6 +66,5 @@ Switch {
     }
     onCheckedChanged: {
         headPosAni.start();
-        console.log("swith ani form ", switchHead.x, "to ", switchItem.checked ? indiRect.width - switchHead.width : 0)
     }
 }

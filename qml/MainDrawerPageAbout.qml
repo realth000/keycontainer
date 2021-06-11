@@ -8,10 +8,17 @@ ScrollView {
         color: "#232323"
     }
 
+    MainTopRect{
+        id: mainTopRect
+        width: parent.width
+        root: parent.parent
+    }
+
     Rectangle{
         id: appNameRect
         width: parent.width
         height: 100
+        anchors.top: mainTopRect.bottom
         anchors.left: parent.left
         color: "transparent"
         Label{

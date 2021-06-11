@@ -6,7 +6,7 @@ TextInput {
     property color bgColor: "transparent"
     property int borderWidth: 1
     property color borderColor: "#4b6876"
-    property int borderColorAniDuration: 130
+    property int borderColorAniDuration: 330
     property string passwordCharacterEx: "******"
     property color textsColor: "#f0ffff"
     property bool textsBold: true

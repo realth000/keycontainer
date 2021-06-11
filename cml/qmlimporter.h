@@ -19,6 +19,9 @@ signals:
     void findKeyAt(int pos);
     void changeInitKey_wrong_oldPw();
     void changeInitKey_success();
+    void changeInitKey_failed(QString msg);
+    void unfreezeFind();
+    void unfreezeSetting();
 
 public slots:
     void initImporter();
@@ -53,6 +56,7 @@ public slots:
     QString getCompilerInfo() const;
 #ifdef Q_OS_ANDROID
     void updateAndroidNotifier(QString msg);
+//    QString callJava_fileRW(QString filePath);
 #endif
 
 private:
@@ -84,6 +88,7 @@ private:
 
 #ifdef Q_OS_ANDROID
     void initPermission();
+
 #endif
     void initConfig();
     void initKey();
@@ -95,6 +100,7 @@ private:
     void writeCheckFile(QString checkPath);
     void saveConfig();
     bool findCheckKey() const;
+
 
 
 #ifndef Q_OS_ANDROID
