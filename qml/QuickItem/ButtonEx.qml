@@ -89,7 +89,12 @@ Button{
                     }
                     else{
                         if(useDoubleTexts || posToLeft){
-                            Math.max(image1.height, text1.contentHeight + dtextTopMargin + text2.contentHeight)
+                            if(useDoubleTexts){
+                                Math.max(image1.height, text1.contentHeight + dtextTopMargin + text2.contentHeight)
+                            }
+                            else{
+                                Math.max(image1.height, text1.contentHeight)
+                            }
                         }
                         else{
                             Math.max(image1.height, text1.contentHeight)

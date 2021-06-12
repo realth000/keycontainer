@@ -242,14 +242,14 @@ void QmlImporter::initKey()
     QFileInfo fileInfo(pwPath.getVal());
     if(!fileInfo.exists()){
         emit qml_msg_info("无法启动,密码文件丢失，无法启动。退出: " + pwPath.getVal());
-        qApp->quit();
+        emit qml_quit();
     }
     QFile hashFile(pwPath.getVal());
     if(!hashFile.open(QIODevice::ReadOnly)){
         bool existance = (QFileInfo(hashFile)).exists();
         bool readable = hashFile.isReadable();
         emit qml_msg_info("无法读取启动密码,密码文件可能被其他程序占用。" + QString::number(existance) + QString::number(readable) + " 退出 ");
-        qApp->quit();
+        emit qml_quit();
     }
     QDataStream hashData(&hashFile);
     QByteArray hashString;
@@ -257,7 +257,7 @@ void QmlImporter::initKey()
     hashFile.close();
     if(hashString == ""){
         emit qml_msg_info("密码错误,检测到密码为空,退出 ");
-        qApp->quit();
+        emit qml_quit();
     }
     truePwdHash = Estring(hashString);
     emit qml_msg_info("read password succeed");
@@ -646,6 +646,7 @@ void QmlImporter::checkInputInitKey(QString oldPw, QString newPw)
         hash2.addData(tmpMD5);
         hash2.addData(salt2.getVal().toUtf8());
         resultHash = hash2.result().toHex();
+        hashFile.close();
         QFile hashFile(pwPath.getVal());
         if(hashFile.open(QIODevice::ReadWrite)){
             QDataStream hashStream(&hashFile);
@@ -653,9 +654,10 @@ void QmlImporter::checkInputInitKey(QString oldPw, QString newPw)
             hashStream << resultHash;
             hashFile.close();
             truePwdHash = Estring(resultHash);
-        emit changeInitKey_success();
-        emit unfreezeSetting();
-        }
+            emit changeInitKey_success();
+            emit unfreezeSetting();
+            return;
+        }    
     }
     emit changeInitKey_failed("文件无法写入");
     emit unfreezeSetting();

@@ -202,6 +202,9 @@ ApplicationWindow  {
         onFindKeyAt: {
 
         }
+        onQml_quit: {
+           Qt.quit();
+        }
     }
 
     Component.onCompleted: {

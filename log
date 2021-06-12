@@ -91,12 +91,18 @@
 4. pro文件优化结构，加快编译速度
 
 ---------
+20210612:
+1. 修复了更改启动密码时错误提示文件无法写入的问题
+2. 修复了更改启动密码时可能造成的文件读写状态异常的问题
+3. 修复了ButtonEx在posToLeft=true时texts位置偏下的问题
+4. 修复了部分正确退出程序的问题
+
+---------
 FIXME:
 1. 优化安卓QML选文件夹的界面
-2. 安卓端设置页的ButtonEx歪了
-3. qapp->quit()无效
-4. FolderListModel向上时超过folder后其他文件夹下无输出
-5. 高刷屏疑似动画过快
+2. FolderListModel向上时超过folder后其他文件夹下无输出
+3. 高刷屏疑似动画过快
+4. kcdb、dat、login之间捆绑关系要重新设计，不能使用if判断的方式
 
 TODO：
 1. 密码和账号中的空格看不出来
@@ -107,9 +113,9 @@ TODO：
 6. 更换读取kcdb文件？
 7. login.ec和dat.ec的路径在默认和config.ini的情况下太混乱
 8. 查找中的计数功能以及结果显示（toast）
-9. 更改启动密码
-10. 登录后储存的truePwdHash中加的盐改成随机盐
-11. 改进readKcdb和writeKcdb
+9. 登录后储存的truePwdHash中加的盐改成随机盐
+10. 改进readKcdb和writeKcdb
+11. 日志功能
 
 ELSE:
 1. 渐变映射上下限为ButtonExImage#4b6876、TabButtonEx#6d799c

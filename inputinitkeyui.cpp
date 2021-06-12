@@ -162,6 +162,7 @@ void InputInitKeyUi::checkInput()
             hash2.addData(tmpMD5);
             hash2.addData(salt2.getVal().toUtf8());
             resultHash = hash2.result().toHex();
+            hashFile.close();
             QFile hashFile(pwFilePath.getVal());
             if(hashFile.open(QIODevice::ReadWrite)){
                 QDataStream hashStream(&hashFile);
