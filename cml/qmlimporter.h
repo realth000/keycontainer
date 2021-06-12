@@ -22,6 +22,7 @@ signals:
     void changeInitKey_failed(QString msg);
     void unfreezeFind();
     void unfreezeSetting();
+    void qml_quit();
 
 public slots:
     void initImporter();
