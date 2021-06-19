@@ -23,6 +23,7 @@
 #include <QMenu>
 #include <QTimer>
 #include <QRegularExpression>
+#include "cml/keymapjsonengine.h"
 
 //#include <QWaylandObject>
 
@@ -1340,7 +1341,7 @@ void MainUi::on_exportKeyBtn_clicked()
         return;
     }
     QString exportPath = QFileDialog::getSaveFileName(this, "导出文件",
-                             workPath + "/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".txt", "文本文件(*.txt)");
+                             workPath + "/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".kcdj", "KeyContainerDataJson(*.kcdj)");
     if(exportPath.isEmpty()){
        return;
     }
@@ -1353,6 +1354,11 @@ void MainUi::on_exportKeyBtn_clicked()
         return;
     }
     Estring outEstring("");
+    // 2.3.0.0版本及以后的导出密码，导出json明文
+    outEstring.setVal(KeyMapJsonEngine::keyMapToJson(keyMap));
+
+    // 2.2.16.8版本及以前的导出密码，导出明文
+    /*
     if(keyTW_chkBoxCheckNum !=0) {
         for (quint32 row=0; row< keyTableRowCount; row++) {
             if(checkBoxItem[row]->isChecked()){
@@ -1369,6 +1375,7 @@ void MainUi::on_exportKeyBtn_clicked()
                                  " Password=" + keyMap.value(row).password.getVal() + "\n");
         }
     }
+   */
     exportStream << outEstring.getVal();
     exportFile.close();
     log("导出完成： " + exportPath.replace("\\","/"));
@@ -1580,25 +1587,48 @@ void MainUi::countAll()
 void MainUi::on_importKeysBtn_clicked()
 {
     QString importPath = QFileDialog::getOpenFileName(this, "导入数据", workPath,
-                            "KeyContainerDataBase (*.kcdb)", nullptr ,QFileDialog::DontResolveSymlinks);
+                            "全部格式 (*.kcdb *.kcdj);;"
+                            "KeyContainerDataBase (*.kcdb);;"
+                            "KeyContainerDataJson (*.kcdj)", nullptr ,QFileDialog::DontResolveSymlinks);
     if(importPath.isEmpty()){
         return;
     }
-    if(!(QFileInfo(importPath+".chf")).exists()){
-        log("检验文件丢失，无法读取");
-        return;
+    QFileInfo dataFileInfo(importPath);
+    if(dataFileInfo.suffix() == "kcdb"){
+        if(!QFileInfo::exists(importPath+".chf")){
+            log("检验文件丢失，无法读取");
+            return;
+        }
+        if(!checkDb(importPath)){
+            log("导入失败");
+            return;
+        }
+        if(!kcdb->readKcdb(importPath)){
+            log("导入失败");
+            return;
+        }
+        syncKeyFromMap();
+        refreshKeyTW();
+        log("导入成功");
     }
-    if(!checkDb(importPath)){
+    else if(dataFileInfo.suffix() == "kcdj"){
+        QFile dataJsonFile(importPath);
+        QTextStream dataJsonStream;
+        dataJsonStream.setCodec("UTF-8");
+        dataJsonStream.setDevice(&dataJsonFile);
+        if(!dataJsonFile.open(QIODevice::ReadOnly | QIODevice:: Text)){
+            log("文件无法打开");
+            return;
+        }
+        keyMap = KeyMapJsonEngine::jsonToKeyMap(dataJsonStream.readAll());
+        refreshKeyTW();
+        log("导入成功");
+    }
+    else{
         log("导入失败");
         return;
     }
-    if(!kcdb->readKcdb(importPath)){
-        log("导入失败");
-        return;
-    }
-    syncKeyFromMap();
-    refreshKeyTW();
-    log("导入成功");
+
 }
 
 void MainUi::on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn)

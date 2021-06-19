@@ -32,8 +32,8 @@ QString KeyMapJsonEngine::keyMapToJson(QMap<int, KeyMap> keyMap)
     keyMapJsonObj.insert("keycontainer_compiler_version", QString::number(ABOUT_BASE_COMPILER));
 #endif
 
-    QMap<int, KeyMap>::const_iterator iter = keyMap.begin();
-    while(iter != keyMap.end()){
+    QMap<int, KeyMap>::const_iterator iter = keyMap.constBegin();
+    while(iter != keyMap.constEnd()){
         QJsonObject keyJsonObj;
         keyJsonObj.insert("id", iter.key());
         keyJsonObj.insert("disc", iter.value().disc.getVal());
@@ -48,4 +48,29 @@ QString KeyMapJsonEngine::keyMapToJson(QMap<int, KeyMap> keyMap)
     QString result;
     result = keyMapJsonDoc.toJson();
     return result;
+}
+
+QMap<int, KeyMap> KeyMapJsonEngine::jsonToKeyMap(QString json)
+{
+    QMap<int, KeyMap> keyMap;
+    QJsonDocument keyMapJsonDoc;
+    QJsonObject keyMapJsonObj;
+    QJsonObject keyMapDataJsonObj;
+    QJsonParseError keyMapJsonErr;
+    keyMapJsonDoc = QJsonDocument::fromJson(json.toUtf8().data(), &keyMapJsonErr);
+    if(keyMapJsonDoc.isNull()){
+        qDebug() << "keyMapJsonDoc invalid:" << keyMapJsonErr.errorString();
+        return keyMap;
+    }
+    keyMapJsonObj = keyMapJsonDoc.object();
+    keyMapDataJsonObj = keyMapJsonObj.value("keys_data").toObject();
+    QStringList keyNumberList = keyMapDataJsonObj.keys();
+    foreach(QString keyNumber, keyNumberList){
+        QJsonObject keyJsonObj = keyMapDataJsonObj.value(keyNumber).toObject();
+        keyMap.insert(keyNumber.toInt(),KeyMap(static_cast<quint32>(keyJsonObj.value("id").toInt()),
+                                            Estring(keyJsonObj.value("disc").toString()),
+                                            Estring(keyJsonObj.value("account").toString()),
+                                            Estring(keyJsonObj.value("password").toString())));
+    }
+    return keyMap;
 }
