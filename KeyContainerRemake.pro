@@ -2,12 +2,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 2.2.16.8
+VERSION = 2.3.0
 
 # 此处控制在windows下编译qml版还是widget版
 # 被注释时编译widget版
 # 未注释时编译qml版
-DEFINES += COMPILE_QML
+#DEFINES += COMPILE_QML
 
 win32 {
     QT += core

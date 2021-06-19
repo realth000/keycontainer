@@ -8,6 +8,7 @@ class KeyMapJsonEngine
 public:
     KeyMapJsonEngine();
     static QString keyMapToJson(QMap<int, KeyMap> keyMap);
+    static QMap<int, KeyMap> jsonToKeyMap(QString json);
 };
 
 #endif // KEYMAPJSONENGINE_H
