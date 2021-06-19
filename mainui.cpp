@@ -1355,8 +1355,20 @@ void MainUi::on_exportKeyBtn_clicked()
     }
     Estring outEstring("");
     // 2.3.0.0版本及以后的导出密码，导出json明文
-    outEstring.setVal(KeyMapJsonEngine::keyMapToJson(keyMap));
-
+    QList<bool> select;
+    int exportCount=0;
+    foreach(QCheckBox *c, checkBoxItem){
+        select.append(c->isChecked());
+        if(!c->isChecked()){
+            exportCount++;
+        }
+    }
+    if(exportCount==checkBoxItem.count()){
+        outEstring.setVal(KeyMapJsonEngine::keyMapToJson(keyMap));
+    }
+    else{
+        outEstring.setVal(KeyMapJsonEngine::keyMapToJson(keyMap, select));
+    }
     // 2.2.16.8版本及以前的导出密码，导出明文
     /*
     if(keyTW_chkBoxCheckNum !=0) {
