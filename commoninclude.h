@@ -10,13 +10,13 @@
 
 #define ABOUT_VERSION APP_VERSION
 //#define ABOUT_TIME  QDateTime::currentDateTime().toString("yyyy.MM.dd")
-#define ABOUT_TIME  "2021.5.30"
+#define ABOUT_TIME  "2021.6.19"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
 #ifdef Q_CC_MSVC
 #   define ABOUT_BASE_COMPILER_TYPE "MSVC "
-#   define ABOUT_BASE_COMPILER _MSVC_LANG
+#   define ABOUT_BASE_COMPILER _MSC_VER
 #elif defined(Q_CC_GNU)
 #   ifdef Q_CC_CLANG
 #   define ABOUT_BASE_COMPILER_TYPE "GCC "
