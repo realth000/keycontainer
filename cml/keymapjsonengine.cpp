@@ -50,6 +50,51 @@ QString KeyMapJsonEngine::keyMapToJson(QMap<int, KeyMap> keyMap)
     return result;
 }
 
+QString KeyMapJsonEngine::keyMapToJson(QMap<int, KeyMap> keyMap, QList<bool> select)
+{
+    if(keyMap.count()<1){
+#ifdef DEBUG_QML_SHOW_INFO
+        qDebug() <<"KeyMapJsonEngine::keyMapToJson: keyMap.count=0";
+#endif
+        return QString();
+    }
+
+    QJsonDocument keyMapJsonDoc;
+    QJsonObject keyMapJsonObj;
+    QJsonObject keyMapDataJsonObj;
+    keyMapJsonObj.insert("time", QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss"));
+    keyMapJsonObj.insert("keys_count", keyMap.count());
+    keyMapJsonObj.insert("jsonengine_version", KEYMAP_JSON_ENGINE_VERSION);
+    keyMapJsonObj.insert("keycontainer_version", ABOUT_VERSION);
+    keyMapJsonObj.insert("keycontainer_platform", ABOUT_PLANTFORM);
+    keyMapJsonObj.insert("keycontainer_compiler_type", ABOUT_BASE_COMPILER_TYPE);
+#ifdef ABOUT_BASE_COMPILER_STRING
+    keyMapJsonObj.insert("keycontainer_compiler_version", ABOUT_BASE_COMPILER);
+#else
+    keyMapJsonObj.insert("keycontainer_compiler_version", QString::number(ABOUT_BASE_COMPILER));
+#endif
+
+    QMap<int, KeyMap>::const_iterator iter = keyMap.constBegin();
+    int checkCount=0;
+    while(iter != keyMap.constEnd()){
+        if(select[checkCount]){
+            QJsonObject keyJsonObj;
+            keyJsonObj.insert("id", iter.key());
+            keyJsonObj.insert("disc", iter.value().disc.getVal());
+            keyJsonObj.insert("account", iter.value().account.getVal());
+            keyJsonObj.insert("password", iter.value().password.getVal());
+            keyMapDataJsonObj.insert(QString::number(iter.key()), keyJsonObj);
+        }
+        checkCount++;
+        iter++;
+    }
+    keyMapJsonObj.insert("keys_data", keyMapDataJsonObj);
+    keyMapJsonDoc.setObject(keyMapJsonObj);
+    QString result;
+    result = keyMapJsonDoc.toJson();
+    return result;
+}
+
 QMap<int, KeyMap> KeyMapJsonEngine::jsonToKeyMap(QString json)
 {
     QMap<int, KeyMap> keyMap;
