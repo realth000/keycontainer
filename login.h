@@ -1,4 +1,4 @@
-﻿#ifndef LOGIN_H
+#ifndef LOGIN_H
 #define LOGIN_H
 
 #include <QDialog>
@@ -17,7 +17,7 @@ class LogIn : public QDialog
     Q_OBJECT
 
 public:
-    explicit LogIn(QWidget *parent = nullptr);
+    explicit LogIn(QWidget *parent = nullptr, Estring keyFilePath = Estring(""));
     ~LogIn();
     bool getContinueStart() const;
     void setContinueStart(bool yon);
@@ -41,7 +41,7 @@ private:
     bool continueStart = true;
     const Estring salt1 = Estring("15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破");
     const Estring salt2 = Estring("離れない君といた夏のおわりゼロゼロさてんるいこおかえり");
-    QString pwPath = "";
+    Estring pwPath = Estring("");
     Estring truePwdHash = Estring("");
     Ui::LogIn *ui;
     MessageBoxExX mb;

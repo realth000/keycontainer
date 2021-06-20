@@ -1,4 +1,4 @@
-﻿#include "mainui.h"
+#include "mainui.h"
 #include "ui_mainui.h"
 #include "qssinstaller.h"
 #include "ui/titlebar.h"
@@ -24,7 +24,9 @@
 #include <QTimer>
 #include <QRegularExpression>
 #include "cml/keymapjsonengine.h"
-
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
+#include <QRandomGenerator>
+#endif
 //#include <QWaylandObject>
 
 MainUi::MainUi(QWidget *parent)
@@ -32,7 +34,6 @@ MainUi::MainUi(QWidget *parent)
 {
     workPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
-    QEventLoop loop;
     logIn = new LogIn();
     connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
         if(result){
@@ -41,11 +42,11 @@ MainUi::MainUi(QWidget *parent)
         }
         emit open2();
     });
-    connect(this, &MainUi::open2, &loop, &QEventLoop::quit);
+    connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit);
     if(logIn->getContinueStart()){
         logIn->setContinueStart(false);
         logIn->show();
-        loop.exec();
+        loginLockLoop.exec();
     }
 
     if(!loginCorrent){
@@ -83,6 +84,15 @@ void MainUi::switchToRow(int row)
     ui->keyTW->verticalScrollBar()->setValue(row);
 }
 
+//void MainUi::closeEvent(QCloseEvent *event)
+//{
+//    Q_UNUSED(event)
+//    qDebug() << "restart:" << restart;
+//    if(restart){
+//        QProcess::startDetached(qApp->applicationFilePath(), QStringList());
+//    }
+//}
+
 bool MainUi::eventFilter(QObject *o, QEvent *e)
 {
    QMouseEvent *mouseReleased = reinterpret_cast<QMouseEvent *>(e);
@@ -93,7 +103,6 @@ bool MainUi::eventFilter(QObject *o, QEvent *e)
             return false;
         }
         if(mouseReleased->type() == QEvent::MouseButtonRelease){
-    //        qDebug() << mouseReleased->type();
             if(!fkui->geometry().contains(mouseReleased->globalPos()) && this->geometry().contains(mouseReleased->globalPos())){
                 // 设置透明
                 emit mouseReleasedSig(true);
@@ -102,7 +111,6 @@ bool MainUi::eventFilter(QObject *o, QEvent *e)
                 // 设置不透明
                 emit mouseReleasedSig(false);
             }
-    //        qDebug() << o->objectName() << o->metaObject()->className();
 
             // FIXME: 多次触发？
             QString name = QString(o->metaObject()->className());
@@ -115,7 +123,6 @@ bool MainUi::eventFilter(QObject *o, QEvent *e)
                     return false;
                 }
                 else{
-    //                qDebug() << "EventFilter true: LineEdit";
                     return true;
                 }
             }
@@ -125,12 +132,10 @@ bool MainUi::eventFilter(QObject *o, QEvent *e)
                     return false;
                 }
                 else{
-    //                qDebug() << "EventFilter true: TextEdit";
                     return true;
                 }
             }
             else{
-    //            qDebug() << "EventFilter true: final else";
                 return true;
             }
         }
@@ -592,6 +597,7 @@ void MainUi::initConfig()
 
 QWidget* MainUi::addCheckBox(int height)
 {
+    Q_UNUSED(height)
     QCheckBox *check = new QCheckBox(ui->keyTW);
 //    check->setFixedSize(height, height);
 
@@ -612,7 +618,7 @@ QWidget* MainUi::addCheckBox(int height)
     return resultQWidget;
 }
 
-void MainUi::keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight)
+void MainUi::keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight, bool show)
 {
     ui->keyTW->insertRow(rowIndex);
     ui->keyTW->setCellWidget(rowIndex, 0, addCheckBox(rowHeight));
@@ -622,7 +628,7 @@ void MainUi::keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estrin
     ui->keyTW->item(rowIndex,1)->setTextAlignment(Qt::AlignCenter);
     ui->keyTW->setItem(rowIndex, 2, new QTableWidgetItem(disc.getVal()));
     discQuickIndex.append(disc);
-    if(is_show_pwd){
+    if(is_show_pwd && (show || static_cast<quint32>(keysShowsNumber)==2*keyTableRowCount)){
         ui->keyTW->setItem(rowIndex, 3, new QTableWidgetItem(account.getVal()));
         ui->keyTW->setItem(rowIndex, 4, new QTableWidgetItem(key.getVal()));
     }
@@ -724,7 +730,7 @@ void MainUi::addKey()
             // 密码不存在，加入新密码
             // TODO: 新密码固定加入最后一行，或许该考虑直接加到准确位置
             else{
-                keyTW_addNewRow(keyTableRowCount, k->disc, k->account, k->password, 35);
+                keyTW_addNewRow(keyTableRowCount, k->disc, k->account, k->password, 35, false);
                 keyMap.insert(keyTableRowCount, KeyMap(keyTableRowCount, k->disc, k->account,k->password));
                 keyTableRowCount++;
             }
@@ -743,6 +749,13 @@ void MainUi::refreshAESKey()
     int max = 256;
     QString tmp = QString("12TocJn%BFde6Ng}0fGSY5s34H-PIwWEhi+#x)DuvptklabZUKq8z9jQmM$VA{R7C[X(rLOy");
     QString str;
+#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
+    for(int i=0;i<max;i++)
+    {
+        int len = QRandomGenerator::securelySeeded().bounded(0,tmp.length());
+        str[i] =tmp.at(len);
+    }
+#else
     QTime t;
     t = QTime::currentTime();
     qsrand(t.msec()+t.second()*1000);
@@ -751,6 +764,7 @@ void MainUi::refreshAESKey()
         int len = qrand()%tmp.length();
         str[i] =tmp.at(len);
     }
+#endif
     kcdb->setKey_in(str);
     QString aesKeyFilePath = QDir::toNativeSeparators(workPath + "/dat.ec");
     QFile aesFile(aesKeyFilePath);
@@ -801,7 +815,6 @@ bool MainUi::checkDb(QString dbPath)
         QString salt2 = "未因若风柳起絮";
         hash2.addData(salt2.toUtf8());
         resultHash = hash2.result().toHex();
-
         QFile hashFile(hashFilePath);
         if(hashFile.open(QIODevice::ReadOnly)){
             QDataStream hashData(&hashFile);
@@ -812,9 +825,10 @@ bool MainUi::checkDb(QString dbPath)
 
             // Update(2.1.5): Encryption on *.chf
             Estring key_in;
-            QFileInfo aes(kcdb->getAESKeyPath().getVal());
+            QString aesFilePath = QDir::toNativeSeparators(configFileInfo.path().replace("\\", "/") + "/dat.ec");
+            QFileInfo aes(aesFilePath);
             if(aes.exists()){
-                QFile aesHashFile(kcdb->getAESKeyPath().getVal());
+                QFile aesHashFile(aesFilePath);
                 if(aesHashFile.open(QIODevice::ReadOnly)){
                     QDataStream aesStream(&aesHashFile);
                     QByteArray aesString;
@@ -872,7 +886,7 @@ void MainUi::syncKeyMapToKcdb()
 {
     QMap<QString, GroupKey> tmp;
     kcdb->clearKeys();
-    QMap<int, KeyMap>::const_iterator t = keyMap.begin();
+    QMap<int, KeyMap>::const_iterator t = keyMap.cbegin();
     while (t != keyMap.cend()) {
         GroupKey nKey(t.value().disc, t.value().account, t.value().password);
 
@@ -886,7 +900,7 @@ void MainUi::refreshKeyTW()
 {
     ui->keyTW->clearContents();
     ui->keyTW->setRowCount(0);
-    QMap<int, KeyMap>::const_iterator i  = keyMap.begin();
+    QMap<int, KeyMap>::const_iterator i  = keyMap.cbegin();
     keyTableRowCount=0;
     while (i != keyMap.cend()) {
         keyTW_addNewRow(keyTableRowCount, i->disc, i->account, i->password, 35);
@@ -1192,7 +1206,10 @@ void MainUi::on_autoChangeAESKeyChB_stateChanged(int arg1)
 
 void MainUi::on_restartProgBtn_clicked()
 {
-    qApp->quit();
+
+    restart=true;
+//    this->close();
+    QApplication::closeAllWindows();
     QProcess::startDetached(qApp->applicationFilePath(), QStringList());
 }
 
@@ -1453,7 +1470,7 @@ void MainUi::on_findKeyBtn_clicked()
 
 }
 
-bool MainUi::findCheckKey() const
+bool MainUi::findCheckKey()
 {
     if(findMode == 0 ){
         return fkui->isFindAllWord() ?
@@ -1611,10 +1628,33 @@ void MainUi::on_importKeysBtn_clicked()
             log("检验文件丢失，无法读取");
             return;
         }
+        loginCorrent=false;
+        logIn = new LogIn(nullptr, Estring(QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + "/login.ec")));
+        connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
+            if(result){
+                truePwdHash = pwdHash;
+                loginCorrent = true;
+            }
+            emit open2();
+        });
+        connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit);
+        if(logIn->getContinueStart()){
+            logIn->setContinueStart(false);
+            this->setVisible(false);
+            logIn->show();
+            loginLockLoop.exec();
+        }
+        this->setVisible(true);
+        // FIXME: 不安全，需要绑定login.ec与dat.ec
+        if(!loginCorrent){
+            log("密码错误，导入失败");
+            return;
+        }
         if(!checkDb(importPath)){
             log("导入失败");
             return;
         }
+
         if(!kcdb->readKcdb(importPath)){
             log("导入失败");
             return;
