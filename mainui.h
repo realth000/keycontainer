@@ -1,4 +1,4 @@
-﻿#ifndef MAINUI_H
+#ifndef MAINUI_H
 #define MAINUI_H
 
 #include <QCheckBox>
@@ -10,6 +10,7 @@
 #include "ui/messageboxexx.h"
 #include <QApplication>
 #include "findkeyui.h"
+//#include <QCloseEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
@@ -32,9 +33,11 @@ signals:
     void open2();
     void mouseReleasedSig(bool pos);
     void findKeyOnRow(int row);
-    void sendLogLText(QString s) const;
+    void sendLogLText(QString s);
     void clearLogL();
-    void unfreezeFindBtn() const;
+    void unfreezeFindBtn();
+//protected:
+//    void closeEvent(QCloseEvent *event) override;
 
 protected:
     virtual bool eventFilter(QObject *o, QEvent *e) override;
@@ -67,7 +70,7 @@ private slots:
     void on_backupDataKeyBtn_clicked();
     void on_about_aboutQtB_clicked();
     void on_findKeyBtn_clicked();
-    bool findCheckKey() const;
+    bool findCheckKey();
     void findNextKey();
     void findPreviousKey();
     void changeFindMode(int mode);
@@ -82,7 +85,7 @@ private:
     void initUi();
     void initConfig();
     QWidget* addCheckBox(int height);
-    void keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight);
+    void keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight, bool show=true);
     void keyTW_deleteSeledtedKeys();
     void showKeyTableKeys();
     void addKey();
@@ -128,6 +131,8 @@ private:
     bool enableKeyTWContextMenuSearch = false; // 当要搜索的文本为空时，禁用表格右键菜单中的搜索
     int keysShowsNumber = 0; // 记录账户\密码显示的数量，对应控制显示\隐藏密码按钮
     bool autoBackupPath=false; // 跳过选择备份目录的选项
+    bool restart=false;
+    QEventLoop loginLockLoop;
 
 };
 #endif // MAINUI_H

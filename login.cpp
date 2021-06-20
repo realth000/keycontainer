@@ -1,4 +1,4 @@
-﻿#include "login.h"
+#include "login.h"
 #include "ui_login.h"
 #include "qssinstaller.h"
 #include "ui/titlebar.h"
@@ -24,14 +24,18 @@
 // #undef those Xlib #defines that conflict with QEvent::Type enum
 #endif
 
-LogIn::LogIn(QWidget *parent) :
+LogIn::LogIn(QWidget *parent, Estring keyFilePath) :
     QDialog(parent),
     ui(new Ui::LogIn)
 {
     ui->setupUi(this);
     initUi();
-
-    pwPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec");
+    if(keyFilePath.getVal().isEmpty()){
+        pwPath = Estring(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec"));
+    }
+    else{
+        pwPath = keyFilePath;
+    }
     readPwd();
     connect(ui->refreshAR, &AnimationRefresh::stopped, this, [this](){ui->logInB->setVisible(true);ui->logInB->setEnabled(true);});
 }
@@ -134,14 +138,14 @@ void LogIn::initUi()
 
 void LogIn::readPwd()
 {
-    QFileInfo fileInfo(pwPath);
+    QFileInfo fileInfo(pwPath.getVal());
     if(!fileInfo.exists()){
         mb.information("无法启动", "密码文件丢失，无法启动。", " 退出 ");
 //        emit finish(false, Estring(""));
         continueStart = false;
         return;
     }
-    QFile hashFile(pwPath);
+    QFile hashFile(pwPath.getVal());
     if(!hashFile.open(QIODevice::ReadOnly)){
         bool existance = (QFileInfo(hashFile)).exists();
         bool readable = hashFile.isReadable();
