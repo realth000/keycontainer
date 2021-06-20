@@ -1,4 +1,4 @@
-﻿#include "qmlimporter.h"
+#include "qmlimporter.h"
 #include <QDir>
 #include <QCoreApplication>
 #include <QFileInfo>
@@ -323,9 +323,9 @@ bool QmlImporter::checkDb(QString dbPath)
 
             // Update(2.1.5): Encryption on *.chf
             Estring key_in;
-            QFileInfo aes(kcdb->getAESKeyPath().getVal());
+            QFileInfo aes(kcdb->getSaveAESKeyPath().getVal());
             if(aes.exists()){
-                QFile aesHashFile(kcdb->getAESKeyPath().getVal());
+                QFile aesHashFile(kcdb->getSaveAESKeyPath().getVal());
                 if(aesHashFile.open(QIODevice::ReadOnly)){
                     QDataStream aesStream(&aesHashFile);
                     QByteArray aesString;

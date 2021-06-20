@@ -1,4 +1,4 @@
-﻿#ifndef KCDB_H
+#ifndef KCDB_H
 #define KCDB_H
 #include <QWidget>
 #include <QFile>
@@ -111,7 +111,7 @@ class Kcdb : public Kcdb_io, QWidget
 {
 #endif
 public:
-    explicit Kcdb(QString workPath);
+    explicit Kcdb(QString savePath, QString backupPath);
     void changeBackupState(bool state);
     void inserKey(QString disc, GroupKey key);
     void clearKeys();
@@ -121,8 +121,8 @@ public:
     QMap<QString, GroupKey> getKeys() const;
     Estring getKey() const;
     Estring getKey_in() const;
-    Estring getAESKeyPath() const;
-    void setAESKeyPath(Estring path);
+    Estring getSaveAESKeyPath() const;
+    void setSaveAESKeyPath(Estring path);
     void setKey(QString k);
     void setKey_in(QString k);
     void setBackupState(bool isBackup);
@@ -137,12 +137,12 @@ signals:
 
 private:
     Kcdb_io ko;
-    QString workPath="";
     Estring key = Estring("259741592652");
     Estring key_in = Estring("259741592652");
-    QString savePath = "/pw.kcdb";
-    QString backupPath = "/pwbp.kcdb";
-    QString aesPath = "/dat.ec";
+    QString savePath = "";
+    QString backupPath = "";
+    QString saveAESPath = "";
+    QString backupAESPath = "";
     QDataStream inStream;
     QDataStream outStream;
     // if backup, true; if save, false;

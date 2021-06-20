@@ -91,7 +91,7 @@ private:
     void addKey();
     // TODO: How to Refresh Aes Key?
     void refreshAESKey();
-    bool checkDb(QString dbPath = "");
+    bool checkDb(QString dbPath);
     void syncKeyFromMap();
     void syncKeyMapToKcdb();
     void refreshKeyTW();
@@ -116,7 +116,6 @@ private:
     const QString pwdCharacterString = "❄❄❄❄❄❄❄";
     bool autoChangeAES = false;
     Estring truePwdHash = Estring();
-    QString workPath = "";
     QString savePath = "/pw.kcdb";
     QString backupPath = "/pwbp.kcdb";
     int rightClickSelectedItemRow = false;
@@ -133,6 +132,11 @@ private:
     bool autoBackupPath=false; // 跳过选择备份目录的选项
     bool restart=false;
     QEventLoop loginLockLoop;
+    QString appPath="";
+    QString currentPath="";
+    bool onSaveKCDB=false;
+    bool onBackupKCDB=false;
+    Estring tmpPwdHash;
 
 };
 #endif // MAINUI_H

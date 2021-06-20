@@ -32,7 +32,7 @@
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent), ui(new Ui::MainUi)
 {
-    workPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
+    appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
     logIn = new LogIn();
     connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
@@ -210,7 +210,7 @@ void MainUi::initKeyData()
         return;
     }
 
-    if(!checkDb()){
+    if(!checkDb(savePath)){
         log("数据校验未通过，拒绝读取数据");
         return;
     }
@@ -552,15 +552,15 @@ void MainUi::initUi()
 }
 void MainUi::initConfig()
 {
-    savePath = QDir::toNativeSeparators(workPath + savePath);
-    backupPath = QDir::toNativeSeparators(workPath + backupPath);
-    kcdb = new Kcdb(workPath);
+    savePath = QDir::toNativeSeparators(appPath + "/pw.kcdb");
+    backupPath = QDir::toNativeSeparators(appPath + "/pwbp.kcdb");
+    kcdb = new Kcdb(savePath, backupPath);
 
-    if(!QFileInfo(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini")).exists()){
+    if(!QFileInfo(QDir::toNativeSeparators(appPath + "/config.ini")).exists()){
         log("未找到配置文件");
         return;
     }
-    QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
+    QSettings *ini = new QSettings(QDir::toNativeSeparators(appPath + "/config.ini"), QSettings::IniFormat);
     ui->savePathLE->setText(ini->value("/Path/SavePath").toString());
     kcdb->setSavePath(ui->savePathLE->text());
     savePath = ui->savePathLE->text();
@@ -766,7 +766,7 @@ void MainUi::refreshAESKey()
     }
 #endif
     kcdb->setKey_in(str);
-    QString aesKeyFilePath = QDir::toNativeSeparators(workPath + "/dat.ec");
+    QString aesKeyFilePath = QDir::toNativeSeparators(kcdb->getSaveAESKeyPath().getVal());
     QFile aesFile(aesKeyFilePath);
     if(aesFile.open(QIODevice::ReadWrite)){
         QDataStream aesStream(&aesFile);
@@ -789,17 +789,10 @@ bool MainUi::checkDb(QString dbPath)
     QFileInfo configFileInfo;
     QFile dbFile;
     QString hashFilePath;
-    if(dbPath.isEmpty()){
-        configFileInfo.setFile(savePath+ ".chf");
-        dbFile.setFileName(savePath);
-        hashFilePath = savePath + ".chf";
-    }
-    else{
-        configFileInfo.setFile(dbPath+ ".chf");
-        dbFile.setFileName(dbPath);
-        hashFilePath = dbPath + ".chf";
-    }
-//    qDebug()<<"checkDb" <<savePath+".chf";
+    configFileInfo.setFile(dbPath+ ".chf");
+    dbFile.setFileName(dbPath);
+    hashFilePath = dbPath + ".chf";
+
     if(configFileInfo.exists()){
         QByteArray tmpMD5;
         QByteArray resultHash;
@@ -827,6 +820,10 @@ bool MainUi::checkDb(QString dbPath)
             Estring key_in;
             QString aesFilePath = QDir::toNativeSeparators(configFileInfo.path().replace("\\", "/") + "/dat.ec");
             QFileInfo aes(aesFilePath);
+#ifdef DEBUG_SHOW_IO_PATH
+            qDebug() << "checkDb:" << "read kcdb hash data from " << hashFile.fileName();
+            qDebug() << "checkDb:" << "read dat.ec data from " << aes.filePath();
+#endif
             if(aes.exists()){
                 QFile aesHashFile(aesFilePath);
                 if(aesHashFile.open(QIODevice::ReadOnly)){
@@ -937,6 +934,9 @@ void MainUi::writeCheckFile(QString checkPath)
         delete ec;
 
         QString hashFilePath = checkPath + ".chf";
+#ifdef DEBUG_SHOW_IO_PATH
+        qDebug() << "writeCheckFile:" << "write check data to " << hashFilePath;
+#endif
         QFile hashFile(hashFilePath);
         hashFile.open(QIODevice::WriteOnly);
         QDataStream outData(&hashFile);
@@ -1178,7 +1178,7 @@ void MainUi::on_key_doubleClickRB_clicked()
 
 void MainUi::on_saveConfigBtn_clicked()
 {
-    QSettings *ini = new QSettings(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() + "/config.ini"), QSettings::IniFormat);
+    QSettings *ini = new QSettings(QDir::toNativeSeparators(appPath + "/config.ini"), QSettings::IniFormat);
     ini->setValue("/Path/SavePath", ui->savePathLE->text().replace("\\", "/"));
     ini->setValue("/Path/BackupPath", ui->backupPathLE->text().replace("\\", "/"));
     // 同时还要同步两个变量
@@ -1215,11 +1215,11 @@ void MainUi::on_restartProgBtn_clicked()
 
 void MainUi::on_changeInitKeyBtn_clicked()
 {
-    InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(workPath+"/login.ec"));
+    InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(appPath+"/login.ec"));
 //    u->installEventFilter(this);
     connect(u, &InputInitKeyUi::changedPw, this, &MainUi::log);
     connect(u, &InputInitKeyUi::changedPw, this, [this](){
-        QString pwPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec");
+        QString pwPath = QDir::toNativeSeparators(appPath +  "/login.ec");
         QFile hashFile(pwPath);
         if(!hashFile.open(QIODevice::ReadOnly)){
             mb.information("无法读取启动密码", "密码文件可能被其他程序占用。");
@@ -1246,26 +1246,54 @@ void MainUi::on_saveKeyBtn_clicked()
         log("密码为空");
         return;
     }
-    kcdb->setBackupState(false);
-    QFileInfo saveInfo(savePath);
-    QDir saveDir(saveInfo.path());
-    if(saveDir.exists()){
-        if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
-    }
-    syncKeyMapToKcdb();
-    log("正在保存数据...");
-    if(kcdb->writeKcdb(savePath)){
-        writeCheckFile(savePath);
-        log("数据保存完成");
-        bool autoBackupPathOld=autoBackupPath;
-        autoBackupPath=true;
-        on_backupKeyBtn_clicked();
-        autoBackupPath=autoBackupPathOld;
+    if((!currentPath.isEmpty()) && (currentPath != savePath)){
+        int result = mb.question("保存路径非默认", "当前导入数据库不是设置中的数据库，是否继续保存到当前位置？\n当前位置: " + currentPath);
+        if(result == MessageBoxExX::Yes){
+            kcdb->setBackupState(false);
+            QFileInfo saveInfo(currentPath);
+            QDir saveDir(saveInfo.path());
+            if(saveDir.exists()){
+                if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
+            }
+            syncKeyMapToKcdb();
+            log("正在保存数据...");
+            if(kcdb->writeKcdb(currentPath)){
+                writeCheckFile(currentPath);
+                log("数据保存完成");
+                bool autoBackupPathOld=autoBackupPath;
+                autoBackupPath=true;
+                on_backupKeyBtn_clicked();
+                autoBackupPath=autoBackupPathOld;
+            }
+            else{
+                log("保存失败");
+            }
+        }
+        else{
+            return;
+        }
     }
     else{
-        log("保存失败");
+        kcdb->setBackupState(false);
+        QFileInfo saveInfo(savePath);
+        QDir saveDir(saveInfo.path());
+        if(saveDir.exists()){
+            if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
+        }
+        syncKeyMapToKcdb();
+        log("正在保存数据...");
+        if(kcdb->writeKcdb(savePath)){
+            writeCheckFile(savePath);
+            log("数据保存完成");
+            bool autoBackupPathOld=autoBackupPath;
+            autoBackupPath=true;
+            on_backupKeyBtn_clicked();
+            autoBackupPath=autoBackupPathOld;
+        }
+        else{
+            log("保存失败");
+        }
     }
-
 }
 
 void MainUi::on_backupKeyBtn_clicked()
@@ -1279,7 +1307,7 @@ void MainUi::on_backupKeyBtn_clicked()
     if(!autoBackupPath){
         int result = mb.question("备份密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
         if(result == MessageBoxExX::Yes){
-            QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", workPath, QFileDialog::ShowDirsOnly);
+            QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", appPath, QFileDialog::ShowDirsOnly);
             if(newPath.isEmpty()){
                 return;
             }
@@ -1312,7 +1340,7 @@ void MainUi::on_backupKeyBtn_clicked()
 
 void MainUi::on_selectSavePathBtn_clicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "选择目录", workPath);
+    QString path = QFileDialog::getExistingDirectory(this, "选择目录", savePath);
     if(path != ""){
         savePath = path + "/pw.kcdb";
         kcdb->setSavePath(savePath);
@@ -1323,7 +1351,7 @@ void MainUi::on_selectSavePathBtn_clicked()
 
 void MainUi::on_selectBackupPathBtn_clicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "选择目录", workPath);
+    QString path = QFileDialog::getExistingDirectory(this, "选择目录", backupPath);
     if(path != ""){
         backupPath = path+ "/pwbp.kcdb";
         kcdb->setBackupPath(backupPath);
@@ -1358,7 +1386,7 @@ void MainUi::on_exportKeyBtn_clicked()
         return;
     }
     QString exportPath = QFileDialog::getSaveFileName(this, "导出文件",
-                             workPath + "/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".kcdj", "KeyContainerDataJson(*.kcdj)");
+                             appPath + "/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".kcdj", "KeyContainerDataJson(*.kcdj)");
     if(exportPath.isEmpty()){
        return;
     }
@@ -1416,18 +1444,18 @@ void MainUi::on_backupDataKeyBtn_clicked()
         log("密码为空");
         return;
     }
-    QString newPath = QFileDialog::getExistingDirectory(this, "导出文件", workPath);
+    QString newPath = QFileDialog::getExistingDirectory(this, "导出文件", savePath);
     if(newPath.isEmpty()){
         return;
     }
-    if(newPath == workPath){
+    if(newPath == savePath || newPath == backupPath){
         log("无效路径");
         return;
     }
     QFile newDatFile(QDir::toNativeSeparators(newPath + "/dat.ec"));
-    QFile oldDatFile(QDir::toNativeSeparators(workPath + "/dat.ec"));
+    QFile oldDatFile(QDir::toNativeSeparators(savePath + "/dat.ec"));
     QFile newLoginFIle(QDir::toNativeSeparators(newPath + "/login.ec"));
-    QFile oldLoginFile(QDir::toNativeSeparators(workPath + "/login.ec"));
+    QFile oldLoginFile(QDir::toNativeSeparators(savePath + "/login.ec"));
     if(newDatFile.exists()){
         if(!newDatFile.remove()){
             log("文件已存在且无法删除: " + (QFileInfo(newDatFile)).filePath());
@@ -1615,7 +1643,7 @@ void MainUi::countAll()
 
 void MainUi::on_importKeysBtn_clicked()
 {
-    QString importPath = QFileDialog::getOpenFileName(this, "导入数据", workPath,
+    QString importPath = QFileDialog::getOpenFileName(this, "导入数据", savePath,
                             "全部格式 (*.kcdb *.kcdj);;"
                             "KeyContainerDataBase (*.kcdb);;"
                             "KeyContainerDataJson (*.kcdj)", nullptr ,QFileDialog::DontResolveSymlinks);
@@ -1623,16 +1651,17 @@ void MainUi::on_importKeysBtn_clicked()
         return;
     }
     QFileInfo dataFileInfo(importPath);
+    QString datPath = QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + "/login.ec");
     if(dataFileInfo.suffix() == "kcdb"){
         if(!QFileInfo::exists(importPath+".chf")){
             log("检验文件丢失，无法读取");
             return;
         }
         loginCorrent=false;
-        logIn = new LogIn(nullptr, Estring(QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + "/login.ec")));
+        logIn = new LogIn(nullptr, Estring(datPath));
         connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
             if(result){
-                truePwdHash = pwdHash;
+                tmpPwdHash = pwdHash;
                 loginCorrent = true;
             }
             emit open2();
@@ -1661,6 +1690,9 @@ void MainUi::on_importKeysBtn_clicked()
         }
         syncKeyFromMap();
         refreshKeyTW();
+        currentPath = importPath;
+        truePwdHash = tmpPwdHash;
+        kcdb->setSaveAESKeyPath(Estring(datPath));
         log("导入成功");
     }
     else if(dataFileInfo.suffix() == "kcdj"){
