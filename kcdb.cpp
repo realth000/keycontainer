@@ -1,4 +1,4 @@
-﻿#include "kcdb.h"
+#include "kcdb.h"
 #include "encryption/qaesencryption.h"
 #include <QCryptographicHash>
 #include <QIODevice>
@@ -220,12 +220,12 @@ Estring GroupKey::getiCheckKey() const
     return iCheckKey;
 }
 
-Kcdb::Kcdb(QString workPath)
+Kcdb::Kcdb(QString savePath, QString backupPath)
 {
-    this->workPath =  QDir::toNativeSeparators(workPath);
-    this->savePath = QDir::toNativeSeparators(this->workPath + savePath);
-    this->backupPath = QDir::toNativeSeparators(this->workPath + backupPath);
-    this->aesPath = QDir::toNativeSeparators(this->workPath + aesPath);
+    this->savePath = QDir::toNativeSeparators(savePath);
+    this->backupPath = QDir::toNativeSeparators(backupPath);
+    this->saveAESPath = QDir::toNativeSeparators(QFileInfo(savePath).path() + "/dat.ec");
+    this->backupAESPath = QDir::toNativeSeparators(QFileInfo(backupPath).path() + "/dat.ec");
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
     connect(&ko, &Kcdb_io::qml_msg_info, this, &Kcdb::qml_msg_info);
 #endif
@@ -252,6 +252,7 @@ bool Kcdb::readKcdb(QString dbPath)
     QString aesPath;
     if(dbPath.isEmpty()){
         inFile.setFileName(savePath);
+        aesPath = saveAESPath;
         if(!inFile.exists()){
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
             emit qml_msg_info("数据库不存在,切换读取备份数据: " + inFile.fileName());
@@ -259,6 +260,7 @@ bool Kcdb::readKcdb(QString dbPath)
             t.information("数据库不存在","切换读取备份数据");
 #endif
             inFile.setFileName(backupPath);
+            aesPath = backupAESPath;
             if(!inFile.exists()){
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
                 emit qml_msg_info("找不到数据库,找不到数据库及数据库备份，无法读取密码。");
@@ -268,7 +270,6 @@ bool Kcdb::readKcdb(QString dbPath)
                 return false;
             }
         }
-        aesPath = this->aesPath;
 
     }
     else{
@@ -289,10 +290,15 @@ bool Kcdb::readKcdb(QString dbPath)
     }
     inStream.setDevice(&inFile);
     Estring aesKeyFilePath = Estring(QDir::toNativeSeparators(aesPath));
+    QFileInfo aes(aesKeyFilePath.getVal());
 #ifdef DEBUG_SHOW_KEYS
     qDebug() << "readKcdb: getAESKey in" << aesKeyFilePath.getVal();
 #endif
-    QFileInfo aes(aesKeyFilePath.getVal());
+
+#ifdef DEBUG_SHOW_IO_PATH
+    qDebug() << "readKcdb:" << "read data from " << inFile.fileName();
+    qDebug() << "readKcdb:" << "write AES key data from " << aes.filePath();
+#endif
     if(aes.exists()){
         QFile aesHashFile(aesKeyFilePath.getVal());
         if(aesHashFile.open(QIODevice::ReadOnly)){
@@ -326,7 +332,6 @@ bool Kcdb::readKcdb(QString dbPath)
     code->initTestCase(key_in.getVal());
     readResult = inKcdb(inStream, code);
     groupKeyList.clear();
-//    maintainKey::mtKeyList.clear();
     QListIterator<QList<QStringList>> Noptr = readResult;
     if(Noptr.hasNext()){
         QList<QStringList> classesOfKeys = Noptr.next();
@@ -346,20 +351,8 @@ bool Kcdb::readKcdb(QString dbPath)
                 inserKey(disc, ng);
             }
         }
-//        classesOfKeys = Noptr.next();
-//        for(QListIterator<QStringList> classListptr = classesOfKeys; classListptr.hasNext(); classListptr.next()){
-//            QStringList readClassKeyList = classListptr.peekNext();
-//            QListIterator<QString>BetweenKeysptr = readClassKeyList;
-//            QString keyLevel = BetweenKeysptr.next();
-//            QString keyValue = BetweenKeysptr.next();
-//            QString iKeyValue = BetweenKeysptr.next();
-//            QString checkKeyValue = BetweenKeysptr.next();
-//            QString iCheckKeyValue = BetweenKeysptr.next();
-//            maintainKey(keyLevel, keyValue, iKeyValue, checkKeyValue, iCheckKeyValue);
-//        }
     }
     inFile.close();
-//    qDebug() << "readed kcdb items:" << groupKeyList.size();
     delete code;
     return true;
 }
@@ -367,7 +360,6 @@ bool Kcdb::readKcdb(QString dbPath)
 bool Kcdb::writeKcdb(QString inputPath)
 {
     gkptr.toFront();
-//    mtkptr.toFront();
     if(inputPath == ""){
         if(backupState){outFile.setFileName(backupPath);}
         else{outFile.setFileName(savePath);}
@@ -385,6 +377,9 @@ bool Kcdb::writeKcdb(QString inputPath)
 #ifdef DEBUG_SHOW_KEYS
     qDebug() << "writeKcdb: write .kcdb file" << outFile.fileName() << "with key_in:" << key_in.getVal();
 #endif
+#ifdef DEBUG_SHOW_IO_PATH
+    qDebug() << "writeKcdb:" << "write data to " << outFile.fileName();
+#endif
     if(gkptr.hasNext()){
         quint8 inType = BEGIN_OF_GROUPLEY;
         outKcdbHead(outStream, inType, code);
@@ -393,23 +388,10 @@ bool Kcdb::writeKcdb(QString inputPath)
     while(gkptr.hasNext())
     {
         GroupKey tempGroupKey = gkptr.next().value();
-
-        if(gkptr.hasNext()){EOF_ = NEXT_IS_GROUPKEY;}
-        else {
-            if(/*mtkptr.hasNext()*/false){ EOF_ = NEXT_IS_MAINTAINKEY;}
-            else{ EOF_ = END_OF_KCDB;}
-        }
+        gkptr.hasNext() ? EOF_ = NEXT_IS_GROUPKEY : EOF_ = END_OF_KCDB;
         outKcdb(outStream, tempGroupKey.disc, tempGroupKey.account,
                     tempGroupKey.getiKey(), tempGroupKey.getiCheckKey(), EOF_, code);
     }
-//    while(mtkptr.hasNext())
-//    {
-//        maintainKey tempMaintainKey = mtkptr.next().value();
-//        if(mtkptr.hasNext()){ EOF_ = NEXT_IS_MAINTAINKEY;}
-//        else{ EOF_ = END_OF_KCDB;}
-//        outKcdb(outStream,QString::number(tempMaintainKey.index),
-//                tempMaintainKey.iKey.operator QString(), tempMaintainKey.iCheckKey.operator QString(), EOF_, code);
-//    }
     outFile.close();
     delete code;
     return true;
@@ -435,14 +417,14 @@ Estring Kcdb::getKey_in() const
     return this->key_in;
 }
 
-Estring Kcdb::getAESKeyPath() const
+Estring Kcdb::getSaveAESKeyPath() const
 {
-    return Estring(this->aesPath);
+    return Estring(this->saveAESPath);
 }
 
-void Kcdb::setAESKeyPath(Estring path)
+void Kcdb::setSaveAESKeyPath(Estring path)
 {
-    this->aesPath = path.getVal();
+    this->saveAESPath = path.getVal();
 }
 
 void Kcdb::setKey(QString k)
