@@ -119,6 +119,10 @@
 5. 尝试修复了偶现的没有重启起来的问题
 
 ---------
+20210623:
+1. 锁屏\超时锁屏（5分钟）
+
+---------
 FIXME:
 1. 优化安卓QML选文件夹的界面
 2. FolderListModel向上时超过folder后其他文件夹下无输出
@@ -131,14 +135,10 @@ TODO：
 3. 过长的话看不到，点击后要看到全部
 4. 删除是一个一个删的，既不安全又低效
 5. 更换路径以后，文件名？
-6. 更换读取kcdb文件？
-7. login.ec和dat.ec的路径在默认和config.ini的情况下太混乱
-8. 查找中的计数功能以及结果显示（toast）
-9. 登录后储存的truePwdHash中加的盐改成随机盐
-10. 改进readKcdb和writeKcdb
-11. 日志功能
-12. 锁屏
-13. 导入kcdb后，之后保存时，提示路径与默认路径不同，以供选择位置
+6. 查找中的计数功能以及结果显示（toast）
+7. 登录后储存的truePwdHash中加的盐改成随机盐
+8. 改进readKcdb和writeKcdb
+9. 日志功能
 
 ELSE:
 1. 渐变映射上下限为ButtonExImage#4b6876、TabButtonEx#6d799c
@@ -154,3 +154,10 @@ DEPRECATED:
 
 FolderListModel:
 1. folder属性，类型是url，string需要通过在前面加"file://"
+
+
+
+
+2521
+
+

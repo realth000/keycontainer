@@ -11,6 +11,7 @@
 #include <QApplication>
 #include "findkeyui.h"
 //#include <QCloseEvent>
+#include <QTimer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
@@ -79,6 +80,8 @@ private slots:
     void on_importKeysBtn_clicked();
     void on_keyTW_currentCellChanged(int currentRow, int currentColumn, int previousRow, int previousColumn);
     void on_autoBackupPathChB_stateChanged(int arg1);
+    void lockApp();
+    void on_lockAppBtn_clicked();
 
 private:
     void initKeyData();
@@ -137,6 +140,7 @@ private:
     bool onSaveKCDB=false;
     bool onBackupKCDB=false;
     Estring tmpPwdHash;
+    QTimer timeLocker;
 
 };
 #endif // MAINUI_H
