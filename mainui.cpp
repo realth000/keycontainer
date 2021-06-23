@@ -95,8 +95,24 @@ void MainUi::switchToRow(int row)
 
 bool MainUi::eventFilter(QObject *o, QEvent *e)
 {
-   QMouseEvent *mouseReleased = reinterpret_cast<QMouseEvent *>(e);
+    if(e == nullptr){
+        return false;
+    }
+
+    if(this->isVisible() && o->objectName() == "MainUiWindow" && e->type() == QEvent::Leave){
+        timeLocker.start(300000);
+        qDebug() << "timeLocker start";
+        return true;
+    }
+    else if(o->objectName() == "MainUiWindow" && e->type() == QEvent::Enter){
+        timeLocker.stop();
+        qDebug() << "timeLocker stop";
+        return true;
+    }
+
+    QMouseEvent *mouseReleased = reinterpret_cast<QMouseEvent *>(e);
     if(mouseReleased != nullptr){
+//        qDebug() << "123";
         // 鼠标左键释放事件中，处理FindKeyUi透明与否
         // 自然地就是，当前tabWidget不是表格那个的时，怎么点也都是透明状态
         if(!fkui->isVisible()){
@@ -399,6 +415,13 @@ void MainUi::initUi()
     }
     ui->importKeysBtn->setIcon(importKeysIcon);
 
+    QIcon lockAppIcon;
+    const QPixmap pixmp17 = QPixmap(":/src/lock_reverse.png");
+    if(!pixmp17.isNull()){
+        lockAppIcon.addPixmap(pixmp17, QIcon::Normal, QIcon::Off);
+    }
+    ui->lockAppBtn->setIcon(lockAppIcon);
+
     PushButtonStyle *t = new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR);
     PushButtonStyle *y = new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR);
     ui->addKeyBtn->setStyle(t);
@@ -418,6 +441,7 @@ void MainUi::initUi()
     ui->findKeyBtn->setStyle(t);
     ui->about_aboutQtB->setStyle(t);
     ui->importKeysBtn->setStyle(t);
+    ui->lockAppBtn->setStyle(y);
 
     ui->addKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->backupKeyBtn->setFocusPolicy(Qt::NoFocus);
@@ -442,6 +466,7 @@ void MainUi::initUi()
     ui->key_checkRB->setFocusPolicy(Qt::NoFocus);
     ui->key_clickRB->setFocusPolicy(Qt::NoFocus);
     ui->key_doubleClickRB->setFocusPolicy(Qt::NoFocus);
+    ui->lockAppBtn->setFocusPolicy(Qt::NoFocus);
 //    ui->key_check_defaultRB->setFocusPolicy(Qt::NoFocus);
 //    ui->key_click_defaultRB->setFocusPolicy(Qt::NoFocus);
 //    ui->key_doubleClick_defaultRB->setFocusPolicy(Qt::NoFocus);
@@ -548,7 +573,8 @@ void MainUi::initUi()
     connect(this, &MainUi::findKeyOnRow, this, &MainUi::switchToRow);
     // 没有搜索到行
 
-
+    // 设置锁屏
+    connect(&timeLocker, &QTimer::timeout, this, &MainUi::lockApp);
 }
 void MainUi::initConfig()
 {
@@ -1728,3 +1754,28 @@ void MainUi::on_autoBackupPathChB_stateChanged(int arg1)
 {
     autoBackupPath = static_cast<bool>(arg1);
 }
+
+void MainUi::lockApp()
+{
+    loginCorrent=false;
+    logIn = new LogIn();
+    connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
+        Q_UNUSED(pwdHash)
+        loginCorrent=result;
+        emit open2();
+    });
+    connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit);
+    if(logIn->getContinueStart()){
+        logIn->setContinueStart(false);
+        this->setVisible(false);
+        logIn->show();
+        loginLockLoop.exec();
+    }
+    loginCorrent ? this->setVisible(true) : exit(0);
+}
+
+void MainUi::on_lockAppBtn_clicked()
+{
+    lockApp();
+}
+

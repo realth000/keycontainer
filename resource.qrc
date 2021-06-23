@@ -37,5 +37,6 @@
         <file>src/importKeys.png</file>
         <file>etc/qt.conf</file>
         <file>qss/stylesheet_messageboxexx.qss</file>
+        <file>src/lock_reverse.png</file>
     </qresource>
 </RCC>
