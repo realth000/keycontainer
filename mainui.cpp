@@ -100,7 +100,9 @@ bool MainUi::eventFilter(QObject *o, QEvent *e)
     }
 
     if(this->isVisible() && o->objectName() == "MainUiWindow" && e->type() == QEvent::Leave){
-        timeLocker.start(300000);
+//        if(e->type() == QEvent::WindowDeactivate){
+//        timeLocker.start(300000);
+        timeLocker.start(3000);
         qDebug() << "timeLocker start";
         return true;
     }
@@ -733,6 +735,9 @@ void MainUi::addKey()
     KeyMap *k = new KeyMap;
     InputKeyUi *u = new InputKeyUi(this, keyTableRowCount, k, discQuickIndex);
 //    u->installEventFilter(this);q
+    connect(u, &InputKeyUi::finished, this, [this](){
+        QApplication::instance()->installEventFilter(this);
+    });
     connect(u, &InputKeyUi::inputFinish, this, [=](bool result, int existPos){
         // 需要加入密码
         if(result){
@@ -761,7 +766,6 @@ void MainUi::addKey()
                 keyTableRowCount++;
             }
         }
-        QApplication::instance()->installEventFilter(this);
     });
     connect(u, &InputKeyUi::inputFinish, u, &InputKeyUi::deleteLater);
     // INFO: 此处为何不需要析构？
@@ -1243,6 +1247,10 @@ void MainUi::on_changeInitKeyBtn_clicked()
 {
     InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(appPath+"/login.ec"));
 //    u->installEventFilter(this);
+    connect(u, &InputInitKeyUi::finished, this, [this](){
+        QApplication::instance()->installEventFilter(this);
+        qDebug() << "installed event filter";
+    });
     connect(u, &InputInitKeyUi::changedPw, this, &MainUi::log);
     connect(u, &InputInitKeyUi::changedPw, this, [this](){
         QString pwPath = QDir::toNativeSeparators(appPath +  "/login.ec");
@@ -1260,7 +1268,6 @@ void MainUi::on_changeInitKeyBtn_clicked()
             this->close();
         }
         truePwdHash.setVal(hashString);
-        QApplication::instance()->installEventFilter(this);
     });
     QApplication::instance()->removeEventFilter(this);
     u->show();

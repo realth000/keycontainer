@@ -1,4 +1,4 @@
-﻿#include "mainui.h"
+#include "mainui.h"
 #include <QDebug>
 #include "commoninclude.h"
 #include <QFont>
@@ -31,7 +31,8 @@ int main(int argc, char *argv[])
     // Windows and Linux
 #if defined(Q_OS_WINDOWS) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
     // Windows only
-#   if defined(Q_OS_WINDOWS)
+#   if defined(Q_OS_WINDOWS)/* && !defined(DEBUG_DISABLE_SINGLE_DETECTION)*/
+#       ifndef DEBUG_DISABLE_SINGLE_DETECTION
        HWND pwnd = FindWindow(NULL,QString::fromUtf8(TITLEBAR_TITLETEXT).toStdWString().c_str());
         if(pwnd){
             if(IsIconic(pwnd)){
@@ -40,7 +41,9 @@ int main(int argc, char *argv[])
             SetForegroundWindow(pwnd);
             return 0;
         }
+#       endif
         QApplication a(argc, argv);
+
     // Linux only
 #   elif defined(Q_OS_LINUX)
          QProcess p;
@@ -49,6 +52,7 @@ int main(int argc, char *argv[])
         p.waitForFinished();
         QByteArray all_pids = p.readAllStandardOutput();
         QApplication a(argc, argv);
+#       ifndef DEBUG_DISABLE_SINGLE_DETECTION
         if(QString(all_pids).count("\n") != 1){
             QProcess q;
             // 带管道的需要使用(QString programPath, QStringList args);
@@ -60,6 +64,7 @@ int main(int argc, char *argv[])
             q.execute("/bin/bash", t);
             return 0;
         }
+#       endif
 #   endif
     // Windows and Linux
     QFont af("Consolas");

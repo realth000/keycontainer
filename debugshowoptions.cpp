@@ -1,4 +1,4 @@
-﻿#include "debugshowoptions.h"
+#include "debugshowoptions.h"
 
 debugShowOptions::debugShowOptions()
 {
@@ -24,5 +24,9 @@ debugShowOptions::debugShowOptions()
 
 #ifdef DEBUG_ALL_CONTROL_CLOSE
     qDebug() << "DebugShowOptions: DEBUG_ALL_CONTROL_CLOSE enabled";
+#endif
+
+#ifdef DEBUG_DISABLE_SINGLE_DETECTION
+    qDebug() << "DebugShowOptions: DEBUG_DISABLE_SINGLE_DETECTION enabled";
 #endif
 }
