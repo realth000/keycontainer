@@ -82,6 +82,8 @@ private slots:
     void on_autoBackupPathChB_stateChanged(int arg1);
     void lockApp();
     void on_lockAppBtn_clicked();
+    void appStateChanged(Qt::ApplicationState state);
+    void on_lockAppTimingSB_currentTextChanged(const QString &arg1);
 
 private:
     void initKeyData();
@@ -141,6 +143,8 @@ private:
     bool onBackupKCDB=false;
     Estring tmpPwdHash;
     QTimer timeLocker;
+    QMap<QString, int> timeLockerTimingMap;
+    int timeLockerTiming=300000;
 
 };
 #endif // MAINUI_H
