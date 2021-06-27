@@ -24,6 +24,7 @@
 #include <QTimer>
 #include <QRegularExpression>
 #include "cml/keymapjsonengine.h"
+#include <QListView>
 #if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
 #include <QRandomGenerator>
 #endif
@@ -60,6 +61,7 @@ MainUi::MainUi(QWidget *parent)
     initConfig();
     initKeyData();
     QApplication::instance()->installEventFilter(this);
+    connect(qApp, &QGuiApplication::applicationStateChanged, this, &MainUi::appStateChanged);
 }
 
 MainUi::~MainUi()
@@ -97,19 +99,6 @@ bool MainUi::eventFilter(QObject *o, QEvent *e)
 {
     if(e == nullptr){
         return false;
-    }
-
-    if(this->isVisible() && o->objectName() == "MainUiWindow" && e->type() == QEvent::Leave){
-//        if(e->type() == QEvent::WindowDeactivate){
-//        timeLocker.start(300000);
-        timeLocker.start(3000);
-        qDebug() << "timeLocker start";
-        return true;
-    }
-    else if(o->objectName() == "MainUiWindow" && e->type() == QEvent::Enter){
-        timeLocker.stop();
-        qDebug() << "timeLocker stop";
-        return true;
     }
 
     QMouseEvent *mouseReleased = reinterpret_cast<QMouseEvent *>(e);
@@ -576,7 +565,24 @@ void MainUi::initUi()
     // 没有搜索到行
 
     // 设置锁屏
+    timeLocker.setSingleShot(true);
     connect(&timeLocker, &QTimer::timeout, this, &MainUi::lockApp);
+
+
+    //
+    QStringList lockAppTimingSBItems{"1分钟", "5分钟", "10分钟", "30分钟", "1小时", "3小时", "5小时"};
+    timeLockerTimingMap["1分钟"]=60000;
+    timeLockerTimingMap["5分钟"]=300000;
+    timeLockerTimingMap["10分钟"]=600000;
+    timeLockerTimingMap["30分钟"]=1800000;
+    timeLockerTimingMap["1小时"]=3600000;
+    timeLockerTimingMap["3小时"]=10800000;
+    timeLockerTimingMap["5小时"]=18000000;
+    ui->lockAppTimingSB->addItems(lockAppTimingSBItems);
+    ui->lockAppTimingSB->setView(new QListView());
+    ui->lockAppTimingSB->setCurrentText("5分钟");
+//    ui->lockAppTimingSB->view()->setWindowOpacity(1);
+//    ui->lockAppTimingSB->view()->parentWidget()->setAttribute(Qt::WA_TranslucentBackground, false);
 }
 void MainUi::initConfig()
 {
@@ -619,6 +625,11 @@ void MainUi::initConfig()
     ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
     autoBackupPath = ini->value("/Common/AutoBackupPath").toBool();
     ui->autoBackupPathChB->setChecked(autoBackupPath);
+    QString lockAppTimingTmp = ini->value("/Security/LockAppTiming").toString().replace("m", "分钟").replace("h", "小时");
+    if(timeLockerTimingMap.contains(lockAppTimingTmp)){
+        timeLockerTiming = timeLockerTimingMap[lockAppTimingTmp];
+        ui->lockAppTimingSB->setCurrentText(lockAppTimingTmp);
+    }
     delete ini;
     log("读取配置");
 }
@@ -1225,6 +1236,7 @@ void MainUi::on_saveConfigBtn_clicked()
     }
     ini->setValue("/Security/AutoChangeAESKey", autoChangeAES);
     ini->setValue("/Common/AutoBackupPath", ui->autoBackupPathChB->isChecked());
+    ini->setValue("/Security/LockAppTiming", ui->lockAppTimingSB->currentText().replace("分钟", "m").replace("小时", "h"));
     delete ini;
     log("已保存设置");
 }
@@ -1784,5 +1796,22 @@ void MainUi::lockApp()
 void MainUi::on_lockAppBtn_clicked()
 {
     lockApp();
+}
+
+void MainUi::appStateChanged(Qt::ApplicationState state)
+{
+    state==Qt::ApplicationActive ?  timeLocker.stop() : timeLocker.start(timeLockerTiming);
+}
+
+
+void MainUi::on_lockAppTimingSB_currentTextChanged(const QString &arg1)
+{
+    if(timeLockerTimingMap.contains(arg1)){
+        timeLockerTiming = timeLockerTimingMap[arg1];
+    }
+    else{
+        timeLockerTiming = 300000;
+    }
+
 }
 

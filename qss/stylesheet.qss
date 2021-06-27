@@ -1,4 +1,4 @@
-﻿QWidget{font:13px}
+QWidget{font:13px}
 QWidget#%1{background:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));border:1px solid rgb(64,66,68);}
 QHeaderView{font:16px;border:none;color:rgb(240,255,255);background-color:rgb(64,66,68)}
 QHeaderView::section:horizontal{border-top:none;border-left:none;border-right:1px solid %2;border-bottom:1px solid %2;
@@ -39,3 +39,7 @@ QCheckBox{color:rgb(240,255,255)}
 QCheckBox:disabled{color:rgb(128,128,128)}
 QMessageBox{color:rgb(240,255,255);background:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));}
 QMessageBox QPushButton{background:transparent;border:1px solid %2;color:rgb(240,255,255)}
+QComboBox{color:#f0ffff; border:1px solid #375564; background:rgb(49,49,49); border-radius:0px;selection-color:#f0ffff}
+QComboBox QAbstractItemView{border:1px solid #375564;outline:none}
+QComboBox QAbstractItemView::item{color:#f0ffff; height:20px; background:rgb(49,49,49)}
+QComboBox QAbstractItemView::item:selected{background-color:rgb(105,145,145)}

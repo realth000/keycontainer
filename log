@@ -123,8 +123,10 @@
 1. 锁屏\超时锁屏（5分钟）
 
 ---------
-20210624:
-1. 修复了eventFilter失效的问题
+20210627:
+1. 新增调整锁屏时间的功能
+2. 修复了eventFilter失效的问题
+3. 修复了锁屏可能多次触发问题
 
 ---------
 FIXME:
@@ -165,4 +167,12 @@ FolderListModel:
 
 2521
 
-
+ui->showInitPageComboBox->setStyleSheet("\
+        QComboBox{color:rgb(102, 231, 236); border:2px solid #ffffff;}\
+        QComboBox{background-color: rgba(37,78,94,70%);}\
+        QComboBox{border-radius:6px;}\
+        QComboBox QAbstractItemView::item{color:rgb(102, 231, 236); height:20px;}\
+        QComboBox QAbstractItemView{outline:1px solid rgb(102, 231, 236)}\
+        QComboBox QAbstractItemView::item{background-color:rgba(44,65,77,90%);}");
+//                 QComboBox::down-arrow{image:url(:/resource/images/down-arraw01.png);}
+//                 QComboBox::drop-down{}");
