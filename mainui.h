@@ -29,6 +29,7 @@ public:
 public slots:
     void log(QString log);
     void switchToRow(int row);
+    void writeInitPw(Estring p);
 
 signals:
     void open2();
@@ -105,6 +106,7 @@ private:
     void showAc();
     void showPw();
     void deleteSingleKey();
+    bool setKcdbKey();
 
     Kcdb *kcdb = nullptr;
     LogIn *logIn = nullptr;
@@ -135,6 +137,8 @@ private:
     bool enableKeyTWContextMenuSearch = false; // 当要搜索的文本为空时，禁用表格右键菜单中的搜索
     int keysShowsNumber = 0; // 记录账户\密码显示的数量，对应控制显示\隐藏密码按钮
     bool autoBackupPath=false; // 跳过选择备份目录的选项
+    const Estring salt1 = Estring("15^vAd[74AC'v7456.sdO&Pv61v铸下这铁链，江东天险牢不可破");
+    const Estring salt2 = Estring("離れない君といた夏のおわりゼロゼロさてんるいこおかえり");
     bool restart=false;
     QEventLoop loginLockLoop;
     QString appPath="";

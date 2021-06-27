@@ -24,6 +24,7 @@ public:
 
 signals:
     void finish(bool r, Estring truePwdHash);
+    void setKcdbKey(Estring k);
 
 protected:
     virtual void closeEvent(QCloseEvent *e) override;

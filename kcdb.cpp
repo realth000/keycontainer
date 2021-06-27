@@ -427,14 +427,14 @@ void Kcdb::setSaveAESKeyPath(Estring path)
     this->saveAESPath = path.getVal();
 }
 
-void Kcdb::setKey(QString k)
+void Kcdb::setKey(Estring k)
 {
-    this->key.setVal(k);
+    this->key = k;
 }
 
-void Kcdb::setKey_in(QString k)
+void Kcdb::setKey_in(Estring k)
 {
-    this->key_in.setVal(k);
+    this->key_in = k;
 }
 
 void Kcdb::setBackupState(bool isBackup)

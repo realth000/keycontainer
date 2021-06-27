@@ -1,4 +1,4 @@
-﻿#include "inputinitkeyui.h"
+#include "inputinitkeyui.h"
 #include "ui_inputinitkeyui.h"
 #include <QCryptographicHash>
 #include "qssinstaller.h"
@@ -151,28 +151,7 @@ void InputInitKeyUi::checkInput()
         ui->hintLabel->setVisible(false);
         // TODO: 写入新密码
         hashFile.setFileName(pwFilePath.getVal());
-        if(hashFile.open(QIODevice::WriteOnly)){
-            QByteArray tmpMD5;
-            QByteArray resultHash;
-            QCryptographicHash hash1(QCryptographicHash::Keccak_512);
-            hash1.addData(ui->inputKey_newPwdLE->text().toUtf8());
-            hash1.addData(salt1.getVal().toUtf8());
-            tmpMD5 = hash1.result().toHex();
-            QCryptographicHash hash2(QCryptographicHash::Keccak_512);
-            hash2.addData(tmpMD5);
-            hash2.addData(salt2.getVal().toUtf8());
-            resultHash = hash2.result().toHex();
-            hashFile.close();
-            QFile hashFile(pwFilePath.getVal());
-            if(hashFile.open(QIODevice::ReadWrite)){
-                QDataStream hashStream(&hashFile);
-                hashStream.setVersion(QDataStream::Qt_5_12);
-                hashStream << resultHash;
-                hashFile.close();
-                this->close();
-            emit changedPw("已更新启动密码。");
-            }
-        }
+        emit writePw(Estring(ui->inputKey_newPwdLE->text()));
     }
 }
 

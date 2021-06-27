@@ -36,6 +36,10 @@ MainUi::MainUi(QWidget *parent)
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
     logIn = new LogIn();
+    connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
+        kcdb = new Kcdb(appPath + "/pw.kcdb", appPath + "/pwbp.kcdb");
+        kcdb->setKey(k);
+    });
     connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
         if(result){
             truePwdHash = pwdHash;
@@ -84,6 +88,44 @@ void MainUi::switchToRow(int row)
 {
     ui->keyTW->selectRow(row);
     ui->keyTW->verticalScrollBar()->setValue(row);
+}
+
+void MainUi::writeInitPw(Estring p)
+{
+    QFile hashFile;
+    currentPath.isEmpty() ? hashFile.setFileName(appPath+"/login.ec") : hashFile.setFileName(currentPath+"/login.ec");
+    if(hashFile.open(QIODevice::WriteOnly)){
+        QByteArray tmpMD5;
+        QByteArray resultHash;
+        QCryptographicHash hash1(QCryptographicHash::Keccak_512);
+        hash1.addData(p.getVal().toUtf8());
+        hash1.addData(salt1.getVal().toUtf8());
+        tmpMD5 = hash1.result().toHex();
+        QCryptographicHash hash2(QCryptographicHash::Keccak_512);
+        hash2.addData(tmpMD5);
+        hash2.addData(salt2.getVal().toUtf8());
+        resultHash = hash2.result().toHex();
+        hashFile.close();
+        QFile hashFile(currentPath.isEmpty() ? appPath+"/login.ec" : currentPath+"/login.ec");
+        if(hashFile.open(QIODevice::ReadWrite)){
+            QDataStream hashStream(&hashFile);
+            hashStream.setVersion(QDataStream::Qt_5_12);
+            hashStream << resultHash;
+            hashFile.close();
+            this->close();
+            kcdb->setKey(p);
+            if(setKcdbKey()){
+                log("已更新启动密码。");
+                return;
+            }
+            else{
+                mb.information("设置失败", "启动失败密码设置失败：更新Kcdb密钥失败");
+                return;
+            }
+
+        }
+    }
+
 }
 
 //void MainUi::closeEvent(QCloseEvent *event)
@@ -588,7 +630,6 @@ void MainUi::initConfig()
 {
     savePath = QDir::toNativeSeparators(appPath + "/pw.kcdb");
     backupPath = QDir::toNativeSeparators(appPath + "/pwbp.kcdb");
-    kcdb = new Kcdb(savePath, backupPath);
 
     if(!QFileInfo(QDir::toNativeSeparators(appPath + "/config.ini")).exists()){
         log("未找到配置文件");
@@ -806,23 +847,8 @@ void MainUi::refreshAESKey()
         str[i] =tmp.at(len);
     }
 #endif
-    kcdb->setKey_in(str);
-    QString aesKeyFilePath = QDir::toNativeSeparators(kcdb->getSaveAESKeyPath().getVal());
-    QFile aesFile(aesKeyFilePath);
-    if(aesFile.open(QIODevice::ReadWrite)){
-        QDataStream aesStream(&aesFile);
-        aesStream.setVersion(QDataStream::Qt_5_12);
-        AesClass *de = new AesClass;
-        de->initTestCase(kcdb->getKey().getVal());
-        QByteArray resultAes = de->CFB256Encrypt(kcdb->getKey_in().getVal());
-        aesStream << resultAes;
-#ifdef DEBUG_SHOW_KEYS
-        qDebug() << "refreshAESKey: write new AES key(Encrypted)=" << resultAes;
-#endif
-        aesFile.close();
-        log("已刷新AES密钥");
-    }
-    else{mb.information("无法保存密码", "密码文件被其他程序占用，请重试。");}
+    kcdb->setKey_in(Estring(str));
+    setKcdbKey() ? log("已刷新AES密钥") : mb.information("无法保存密码", "密码文件被其他程序占用，请重试。");
 }
 
 bool MainUi::checkDb(QString dbPath)
@@ -1075,6 +1101,26 @@ void MainUi::deleteSingleKey()
     }
 }
 
+bool MainUi::setKcdbKey()
+{
+    QString aesKeyFilePath = QDir::toNativeSeparators(kcdb->getSaveAESKeyPath().getVal());
+    QFile aesFile(aesKeyFilePath);
+    if(aesFile.open(QIODevice::ReadWrite)){
+        QDataStream aesStream(&aesFile);
+        aesStream.setVersion(QDataStream::Qt_5_12);
+        AesClass *de = new AesClass;
+        de->initTestCase(kcdb->getKey().getVal());
+        QByteArray resultAes = de->CFB256Encrypt(kcdb->getKey_in().getVal());
+        aesStream << resultAes;
+#ifdef DEBUG_SHOW_KEYS
+        qDebug() << "refreshAESKey: write new AES key(Encrypted)=" << resultAes;
+#endif
+        aesFile.close();
+        return true;
+    }
+    return false;
+}
+
 void MainUi::showKeyTableMenu(QPoint)
 {
     QMenu *menu = new QMenu(ui->keyTW);
@@ -1264,6 +1310,7 @@ void MainUi::on_changeInitKeyBtn_clicked()
         qDebug() << "installed event filter";
     });
     connect(u, &InputInitKeyUi::changedPw, this, &MainUi::log);
+    connect(u, &InputInitKeyUi::writePw, this, &MainUi::writeInitPw);
     connect(u, &InputInitKeyUi::changedPw, this, [this](){
         QString pwPath = QDir::toNativeSeparators(appPath +  "/login.ec");
         QFile hashFile(pwPath);
@@ -1302,6 +1349,7 @@ void MainUi::on_saveKeyBtn_clicked()
             }
             syncKeyMapToKcdb();
             log("正在保存数据...");
+            setKcdbKey();
             if(kcdb->writeKcdb(currentPath)){
                 writeCheckFile(currentPath);
                 log("数据保存完成");
@@ -1327,6 +1375,7 @@ void MainUi::on_saveKeyBtn_clicked()
         }
         syncKeyMapToKcdb();
         log("正在保存数据...");
+        setKcdbKey();
         if(kcdb->writeKcdb(savePath)){
             writeCheckFile(savePath);
             log("数据保存完成");
