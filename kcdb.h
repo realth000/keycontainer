@@ -123,8 +123,8 @@ public:
     Estring getKey_in() const;
     Estring getSaveAESKeyPath() const;
     void setSaveAESKeyPath(Estring path);
-    void setKey(QString k);
-    void setKey_in(QString k);
+    void setKey(Estring k);
+    void setKey_in(Estring k);
     void setBackupState(bool isBackup);
     void setSavePath(QString path);
     void setBackupPath(QString path);

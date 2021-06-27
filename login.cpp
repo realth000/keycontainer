@@ -185,6 +185,7 @@ bool LogIn::checkPwd()
     hash2.addData(tmpMD5);
     hash2.addData(salt2.getVal().toUtf8());
     resultHash = hash2.result().toHex();
+    qDebug() << pwPath.getVal() << resultHash << truePwdHash.getVal();
     if(resultHash == truePwdHash.getVal()){
         return true;
     }
@@ -202,6 +203,7 @@ void LogIn::on_logInB_clicked()
         pwdTruth = true;
 //        emit finish(true, truePwdHash);
         continueStart = true;
+        emit setKcdbKey(Estring(ui->lineEdit->text()));
         this->close();
     }
     else{

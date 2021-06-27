@@ -1,4 +1,4 @@
-﻿#ifndef INPUTINITKEYUI_H
+#ifndef INPUTINITKEYUI_H
 #define INPUTINITKEYUI_H
 
 #include <QDialog>
@@ -19,6 +19,7 @@ public:
     ~InputInitKeyUi();
 signals:
     void changedPw(QString s);
+    void writePw(Estring p);
 
 protected:
     void keyPressEvent(QKeyEvent *e) override;
