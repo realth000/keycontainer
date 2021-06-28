@@ -59,6 +59,8 @@ MainUi::MainUi(QWidget *parent)
     }
 #   else
     this->loginCorrent = true;
+    kcdb = new Kcdb(appPath + "/pw.kcdb", appPath + "/pwbp.kcdb");
+    kcdb->setKey(Estring());
 #   endif
     ui->setupUi(this);
     initUi();
@@ -112,7 +114,8 @@ void MainUi::writeInitPw(Estring p)
             hashStream.setVersion(QDataStream::Qt_5_12);
             hashStream << resultHash;
             hashFile.close();
-            this->close();
+//            this->close();
+            emit writeInitPwSuccess();
             kcdb->setKey(p);
             if(setKcdbKey()){
                 log("已更新启动密码。");
@@ -823,7 +826,8 @@ void MainUi::addKey()
     // INFO: 此处为何不需要析构？
 //    connect(u, &InputKeyUi::destroyed, this, [=](){k->~KeyMap();});
     QApplication::instance()->removeEventFilter(this);
-    u->show();
+    u->exec();
+    delete u;
 }
 
 void MainUi::refreshAESKey()
@@ -1303,33 +1307,34 @@ void MainUi::on_restartProgBtn_clicked()
 
 void MainUi::on_changeInitKeyBtn_clicked()
 {
-    InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(appPath+"/login.ec"));
+    InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(currentPath.isEmpty() ? appPath+"/login.ec" : currentPath+"/login.ec"));
 //    u->installEventFilter(this);
     connect(u, &InputInitKeyUi::finished, this, [this](){
         QApplication::instance()->installEventFilter(this);
         qDebug() << "installed event filter";
     });
-    connect(u, &InputInitKeyUi::changedPw, this, &MainUi::log);
-    connect(u, &InputInitKeyUi::writePw, this, &MainUi::writeInitPw);
-    connect(u, &InputInitKeyUi::changedPw, this, [this](){
-        QString pwPath = QDir::toNativeSeparators(appPath +  "/login.ec");
-        QFile hashFile(pwPath);
-        if(!hashFile.open(QIODevice::ReadOnly)){
-            mb.information("无法读取启动密码", "密码文件可能被其他程序占用。");
-            this->close();
-        }
-        QDataStream hashData(&hashFile);
-        QByteArray hashString;
-        hashData >> hashString;
-        hashFile.close();
-        if(hashString == ""){
-            mb.information("密码错误", "检测到密码为空。");
-            this->close();
-        }
-        truePwdHash.setVal(hashString);
-    });
+    connect(this, &MainUi::writeInitPwSuccess, u, &InputInitKeyUi::close, Qt::UniqueConnection);
+    connect(this, &MainUi::writeInitPwSuccess, this, [this](){
+            QString pwPath = QDir::toNativeSeparators(currentPath.isEmpty() ? appPath+"/login.ec" : currentPath+"/login.ec");
+            QFile hashFile(pwPath);
+            if(!hashFile.open(QIODevice::ReadOnly)){
+                mb.information("无法读取启动密码", "密码文件可能被其他程序占用。");
+                this->close();
+            }
+            QDataStream hashData(&hashFile);
+            QByteArray hashString;
+            hashData >> hashString;
+            hashFile.close();
+            if(hashString == ""){
+                mb.information("密码错误", "检测到密码为空。");
+                this->close();
+            }
+            truePwdHash.setVal(hashString);
+        }, Qt::UniqueConnection);
+    connect(u, &InputInitKeyUi::writePw, this, &MainUi::writeInitPw, Qt::UniqueConnection);
     QApplication::instance()->removeEventFilter(this);
-    u->show();
+    u->exec();
+    delete u;
 }
 
 void MainUi::on_saveKeyBtn_clicked()
@@ -1838,6 +1843,7 @@ void MainUi::lockApp()
         this->setVisible(false);
         logIn->show();
         loginLockLoop.exec();
+        delete logIn;
     }
     loginCorrent ? this->setVisible(true) : exit(0);
 }
