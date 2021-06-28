@@ -38,6 +38,7 @@ signals:
     void sendLogLText(QString s);
     void clearLogL();
     void unfreezeFindBtn();
+    void writeInitPwSuccess();
 //protected:
 //    void closeEvent(QCloseEvent *event) override;
 
