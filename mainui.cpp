@@ -296,8 +296,8 @@ void MainUi::initUi()
 
     // 选项卡样式
     ui->mainTabWidget->setTabText(0, "管理");
-    ui->mainTabWidget->setTabText(1, "设置");
-    ui->mainTabWidget->setTabText(2, "工具");
+    ui->mainTabWidget->setTabText(1, "工具");
+    ui->mainTabWidget->setTabText(2, "设置");
     ui->mainTabWidget->setTabText(3, "关于");
     ui->mainTabWidget->setTabPosition(QTabWidget::West);
     ui->mainTabWidget->setAttribute(Qt::WA_StyledBackground);
@@ -306,8 +306,8 @@ void MainUi::initUi()
     ui->mainTabWidget->setCurrentIndex(0);
     ui->mainTabWidget->setFocusPolicy(Qt::NoFocus);
     // NOTE: enable page 2 in 3.2.0
-    ui->mainTabWidget->setTabEnabled(2, false);
-    ui->mainTabWidget->setTabVisible(2, false);
+//    ui->mainTabWidget->setTabEnabled(2, false);
+//    ui->mainTabWidget->setTabVisible(2, false);
 
     QIcon tabIco0;
     const QPixmap tab0_1 = QPixmap(":/src/manage.png");
@@ -319,24 +319,36 @@ void MainUi::initUi()
     ui->mainTabWidget->tabBar()->setTabIcon(0, tabIco0);
 
     QIcon tabIco1;
-    const QPixmap tab1_1 = QPixmap(":/src/config.png");
-    const QPixmap tab1_2 = QPixmap(":/src/config_reverse.png");
+    const QPixmap tab1_1 = QPixmap(":/src/tools.png");
+    const QPixmap tab1_2 = QPixmap(":/src/tools_reverse.png");
     if(!tab1_1.isNull() && !tab1_2.isNull()){
         tabIco1.addPixmap(tab1_1, QIcon::Selected, QIcon::Off);
         tabIco1.addPixmap(tab1_2, QIcon::Normal, QIcon::Off);
-
     }
     ui->mainTabWidget->tabBar()->setTabIcon(1, tabIco1);
 
     QIcon tabIco2;
-    const QPixmap tab2_1 = QPixmap(":/src/about.png");
-    const QPixmap tab2_2 = QPixmap(":/src/about_reverse.png");
+    const QPixmap tab2_1 = QPixmap(":/src/config.png");
+    const QPixmap tab2_2 = QPixmap(":/src/config_reverse.png");
     if(!tab2_1.isNull() && !tab2_2.isNull()){
-        tabIco1.addPixmap(tab2_1, QIcon::Selected, QIcon::Off);
-        tabIco1.addPixmap(tab2_2, QIcon::Normal, QIcon::Off);
+        tabIco2.addPixmap(tab2_1, QIcon::Selected, QIcon::Off);
+        tabIco2.addPixmap(tab2_2, QIcon::Normal, QIcon::Off);
 
     }
-    ui->mainTabWidget->tabBar()->setTabIcon(3, tabIco1);
+    ui->mainTabWidget->tabBar()->setTabIcon(2, tabIco2);
+
+
+
+
+    QIcon tabIco3;
+    const QPixmap tab3_1 = QPixmap(":/src/about.png");
+    const QPixmap tab3_2 = QPixmap(":/src/about_reverse.png");
+    if(!tab3_1.isNull() && !tab3_2.isNull()){
+        tabIco3.addPixmap(tab3_1, QIcon::Selected, QIcon::Off);
+        tabIco3.addPixmap(tab3_2, QIcon::Normal, QIcon::Off);
+
+    }
+    ui->mainTabWidget->tabBar()->setTabIcon(3, tabIco3);
 
     // TextEdiit
     ui->logTE->setReadOnly(true);
@@ -466,8 +478,25 @@ void MainUi::initUi()
     }
     ui->lockAppBtn->setIcon(lockAppIcon);
 
-    PushButtonStyle *t = new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR);
-    PushButtonStyle *y = new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR);
+    QIcon randomGeneratorIcon;
+    const QPixmap pixmp18 = QPixmap(":/src/dice_reverse.png");
+    if(!pixmp18.isNull()){
+        randomGeneratorIcon.addPixmap(pixmp18, QIcon::Normal, QIcon::Off);
+    }
+    ui->gKeyBtn->setIcon(randomGeneratorIcon);
+
+    QIcon copyGKeyIcon;
+    const QPixmap pixmp19 = QPixmap(":/src/save_reverse.png");
+    if(!pixmp19.isNull()){
+        copyGKeyIcon.addPixmap(pixmp19, QIcon::Normal, QIcon::Off);
+    }
+    ui->gCopyResultBtn->setIcon(copyGKeyIcon);
+
+//    PushButtonStyle *t = new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR);
+//    PushButtonStyle *y = new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR);
+    // 其实这里直接用transparent就好了
+    PushButtonStyle *t = new PushButtonStyle("transparent");
+    PushButtonStyle *y = new PushButtonStyle("transparent");
     ui->addKeyBtn->setStyle(t);
     ui->backupKeyBtn->setStyle(t);
     ui->backupDataKeyBtn->setStyle(t);
@@ -641,6 +670,7 @@ void MainUi::initUi()
 //    ui->lockAppTimingSB->view()->parentWidget()->setAttribute(Qt::WA_TranslucentBackground, false);
 
     ui->gResultLE->setReadOnly(true);
+    ui->gResultLE->setContextMenuPolicy(Qt::NoContextMenu);
     ui->useNumberChB->setChecked(true);
     ui->useAlphaChB->setChecked(false);
     ui->useSymbolChB->setChecked(false);
@@ -1167,7 +1197,7 @@ bool MainUi::setKcdbKey()
 Estring MainUi::randomGenerator()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
-    if(!(useNumbers || useAlphas || (useCustom && !ui->gCustomCharLE->text().isEmpty()))){
+    if(!(useNumbers || useAlphas || useSymbols || (useCustom && !ui->gCustomCharLE->text().isEmpty()))){
         log("Empty input");
         return Estring();
     }

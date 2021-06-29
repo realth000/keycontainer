@@ -38,5 +38,11 @@
         <file>etc/qt.conf</file>
         <file>qss/stylesheet_messageboxexx.qss</file>
         <file>src/lock_reverse.png</file>
+        <file>src/dice_reverse.png</file>
+        <file>src/save_reverse.png</file>
+        <file>src/tools.png</file>
+        <file>src/tools_reverse.png</file>
+        <file>src/count_reverse.png</file>
+        <file>src/rightArrow.png</file>
     </qresource>
 </RCC>

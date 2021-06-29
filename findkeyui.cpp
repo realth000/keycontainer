@@ -1,4 +1,4 @@
-﻿#include "findkeyui.h"
+#include "findkeyui.h"
 #include "ui_findkeyui.h"
 #include "ui/titlebar.h"
 #include "qssinstaller.h"
@@ -145,13 +145,20 @@ void FindKeyUi::initUi()
         findNextBtn.addPixmap(pixm2, QIcon::Normal, QIcon::Off);
     }
     ui->findNextBtn->setIcon(findNextBtn);
-    PushButtonStyle *p = new PushButtonStyle;
+    PushButtonStyle *p = new PushButtonStyle("transparent");
     ui->findPreBtn->setStyle(p);
     ui->findNextBtn->setStyle(p);
+    ui->countBtn->setStyle(p);
     CheckBoxStyle *c = new CheckBoxStyle;
     ui->useRegChB->setStyle(new CheckBoxStyle);
     ui->findCaseSensitivityChB->setStyle(c);
     ui->findAllWordChB->setStyle(c);
+    QIcon countIcon;
+    const QPixmap pixmp1 = QPixmap(":/src/count_reverse.png");
+    if(!pixmp1.isNull()){
+        countIcon.addPixmap(pixmp1, QIcon::Normal, QIcon::Off);
+    }
+    ui->countBtn->setIcon(countIcon);
 }
 
 void FindKeyUi::on_findPreBtn_clicked()

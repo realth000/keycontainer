@@ -1,15 +1,11 @@
-﻿QWidget{font-size:13px}
+QWidget{font-size:15px}
 QWidget#%1{background:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));border:1px solid rgb(64,66,68);}
-QLineEdit{color:rgb(240,255,255);background:%3; border:1px solid %2;selection-background-color:rgb(93,94,95)}
+QLineEdit{font-size:17px; color:rgb(240,255,255);background:%3; border:1px solid %2;selection-background-color:rgb(93,94,95)}
 QLineEdit[echoMode="2"]{lineedit-password-character:10072;}
 QMenu{background:%3; border:2px solid %2;selection-background-color:rgb(93,94,95)}
 QMenu::separator{height:0px; border:1px solid %2}
 QGroupBox{color:rgb(240,255,255);background-color:%3;border:1px solid %2;}
 QGroupBox#securityGB{background-color:rgb(40,40,40)}
-QPushButton{background:transparent;border:1px solid %2;color:rgb(240,255,255)}
-QPushButton:hover{background:rgb(64,64,61)}
-QPushButton:pressed{background:rgb(55,55,55)}
-QPushButton:disabled{background:%4;}
 QLabel{color:rgb(240,255,255)}
 QLabel#warnL{color:rgb(240,80,70)}
 QLabel#capsLockHintL{color:rgb(240,80,70)}

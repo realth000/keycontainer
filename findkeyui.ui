@@ -56,9 +56,9 @@
    <property name="geometry">
     <rect>
      <x>315</x>
-     <y>60</y>
+     <y>55</y>
      <width>40</width>
-     <height>30</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="text">
@@ -69,9 +69,9 @@
    <property name="geometry">
     <rect>
      <x>355</x>
-     <y>60</y>
+     <y>55</y>
      <width>40</width>
-     <height>30</height>
+     <height>40</height>
     </rect>
    </property>
    <property name="text">
@@ -94,10 +94,10 @@
   <widget class="QPushButton" name="countBtn">
    <property name="geometry">
     <rect>
-     <x>330</x>
-     <y>100</y>
-     <width>55</width>
-     <height>30</height>
+     <x>310</x>
+     <y>110</y>
+     <width>80</width>
+     <height>40</height>
     </rect>
    </property>
    <property name="text">

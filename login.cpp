@@ -1,4 +1,4 @@
-﻿#include "login.h"
+#include "login.h"
 #include "ui_login.h"
 #include "qssinstaller.h"
 #include "ui/titlebar.h"
@@ -10,6 +10,7 @@
 #include <QDebug>
 #include <QRandomGenerator>
 #include "debugshowoptions.h"
+#include "uistyle/proxystyle.h"
 
 //83 69 91
 
@@ -121,6 +122,16 @@ void LogIn::initUi()
     ui->backgroundLabel->setPixmap(QPixmap(":/src/initUiBackground.png"));
     ui->lineEdit->setFocus();
     ui->logInB->setFocusPolicy(Qt::ClickFocus);
+
+    QIcon loginIcon;
+    const QPixmap pixmp1 = QPixmap(":/src/rightArrow.png");
+    if(!pixmp1.isNull()){
+        loginIcon.addPixmap(pixmp1, QIcon::Normal, QIcon::Off);
+    }
+    ui->logInB->setIcon(loginIcon);
+
+    PushButtonStyle *p = new PushButtonStyle("transparent");
+    ui->logInB->setStyle(p);
 
 #ifdef Q_OS_WINDOWS
         GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
