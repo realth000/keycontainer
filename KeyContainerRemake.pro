@@ -2,7 +2,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 3.0.1
+VERSION = 3.0.2
 
 # 此处控制在windows下编译qml版还是widget版
 # 被注释时编译widget版
@@ -97,6 +97,7 @@ unix:!android {
     QT += core gui quick qml
     RC_ICONS = "KeyContainer.ico"
     TARGET = "KeyContainer"
+    LIBS += -lX11
     SOURCES += \
         cml/keymapjsonengine.cpp \
         ui/animationrefresh.cpp \
