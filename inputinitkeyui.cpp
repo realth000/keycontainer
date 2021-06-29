@@ -1,4 +1,4 @@
-#include "inputinitkeyui.h"
+﻿#include "inputinitkeyui.h"
 #include "ui_inputinitkeyui.h"
 #include <QCryptographicHash>
 #include "qssinstaller.h"
@@ -45,7 +45,7 @@ void InputInitKeyUi::keyPressEvent(QKeyEvent *e)
         XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
         caps_state = (n & 0x01) == 1;
     }
-    caps_state ? ui->capslockHintL->setVisible(true) : ui->capslockHintL->setVisible(false);
+    caps_state ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
     e->accept();
     return;
 #endif
@@ -121,7 +121,7 @@ void InputInitKeyUi::initUi()
         XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
         caps_state = (n & 0x01) == 1;
     }
-    caps_state ? ui->capslockHintL->setVisible(true) : ui->capslockHintL->setVisible(false);
+    caps_state ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
 #endif
 }
 

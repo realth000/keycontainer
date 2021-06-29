@@ -1623,7 +1623,7 @@ void MainUi::findPreviousKey()
     emit clearLogL();
     int keyTableRowCount_int = static_cast<int>(keyTableRowCount);
     keyTableFindPos--;
-    if(keyTableFindPos>=keyTableRowCount_int){
+    if(keyTableFindPos>=keyTableRowCount_int || keyTableFindPos<0){
         keyTableFindPos=keyTableRowCount_int-1;
     }
     int startPos = keyTableFindPos;

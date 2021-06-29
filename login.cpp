@@ -1,4 +1,4 @@
-#include "login.h"
+﻿#include "login.h"
 #include "ui_login.h"
 #include "qssinstaller.h"
 #include "ui/titlebar.h"
@@ -81,7 +81,7 @@ void LogIn::keyPressEvent(QKeyEvent *e)
         XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
         caps_state = (n & 0x01) == 1;
     }
-    caps_state ? ui->capslockHintL->setVisible(true) : ui->capslockHintL->setVisible(false);
+    caps_state ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
     e->accept();
     return;
 #endif
@@ -132,7 +132,7 @@ void LogIn::initUi()
         XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
         caps_state = (n & 0x01) == 1;
     }
-    caps_state ? ui->capslockHintL->setVisible(true) : ui->capslockHintL->setVisible(false);
+    caps_state ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
 #endif
 }
 
