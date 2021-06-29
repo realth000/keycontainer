@@ -12,10 +12,13 @@
 #include "findkeyui.h"
 //#include <QCloseEvent>
 #include <QTimer>
+#include <QClipboard>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
 QT_END_NAMESPACE
+
+#define GENERATOR_MIN_LENGTH 6
 
 class MainUi : public QWidget
 {
@@ -86,6 +89,13 @@ private slots:
     void on_lockAppBtn_clicked();
     void appStateChanged(Qt::ApplicationState state);
     void on_lockAppTimingSB_currentTextChanged(const QString &arg1);
+    void on_useNumberChB_stateChanged(int arg1);
+    void on_useAlphaChB_stateChanged(int arg1);
+    void on_useSymbolChB_stateChanged(int arg1);
+    void on_gKeyBtn_clicked();
+    void on_gLengthCB_currentTextChanged(const QString &arg1);
+    void on_useCustomCharChB_stateChanged(int arg1);
+    void on_gCopyResultBtn_clicked();
 
 private:
     void initKeyData();
@@ -108,6 +118,7 @@ private:
     void showPw();
     void deleteSingleKey();
     bool setKcdbKey();
+    Estring randomGenerator();
 
     Kcdb *kcdb = nullptr;
     LogIn *logIn = nullptr;
@@ -126,6 +137,8 @@ private:
     Estring truePwdHash = Estring();
     QString savePath = "/pw.kcdb";
     QString backupPath = "/pwbp.kcdb";
+    QString saveName = "/pw.kcdb";
+    QString backupName = "/pwbp.kcdb";
     int rightClickSelectedItemRow = false;
     bool isAcountShowing = false;
     bool isKeyShowing = false;
@@ -150,6 +163,13 @@ private:
     QTimer timeLocker;
     QMap<QString, int> timeLockerTimingMap;
     int timeLockerTiming=300000;
+    int generateLength=6;
+    bool useNumbers=true;
+    bool useAlphas=false;
+    bool useSymbols=false;
+    bool useCustom=false;
+    QClipboard *cboard;
+    Estring initKeyLastWritePath = Estring();
 
 };
 #endif // MAINUI_H

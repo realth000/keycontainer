@@ -437,6 +437,11 @@ void Kcdb::setKey_in(Estring k)
     this->key_in = k;
 }
 
+bool Kcdb::getBackupState() const
+{
+    return this->backupState;
+}
+
 void Kcdb::setBackupState(bool isBackup)
 {
     this->backupState = isBackup;

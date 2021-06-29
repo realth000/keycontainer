@@ -125,6 +125,7 @@ public:
     void setSaveAESKeyPath(Estring path);
     void setKey(Estring k);
     void setKey_in(Estring k);
+    bool getBackupState() const;
     void setBackupState(bool isBackup);
     void setSavePath(QString path);
     void setBackupPath(QString path);
