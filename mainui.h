@@ -117,7 +117,7 @@ private:
     void showAc();
     void showPw();
     void deleteSingleKey();
-    bool setKcdbKey();
+    bool setKcdbKey(QString keyPath = "");
     Estring randomGenerator();
 
     Kcdb *kcdb = nullptr;

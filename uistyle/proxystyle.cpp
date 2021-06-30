@@ -497,7 +497,7 @@ void CheckBoxStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyle
                 painter->setPen(QColor(115,120,140));
                 painter->setBrush(QBrush(QColor(240,255,255)));
                 painter->drawRect(iRect);
-                painter->setBrush(QColor(115,120,140));
+                painter->setBrush(QColor(55,85,100));
                 painter->drawPolygon(check, 6);
 #endif
 //                painter->drawRect(iRect);
