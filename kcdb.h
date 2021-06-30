@@ -8,11 +8,9 @@
 #include "encryption/encrypted.h"
 #include "ui/messageboxexx.h"
 
-#define NEXT_IS_GROUPKEY 0x01
-#define NEXT_IS_MAINTAINKEY 0x02
-#define END_OF_KCDB 0x03
-#define BEGIN_OF_GROUPLEY 0x10
-#define BEGIN_OF_MTKEY 0x11
+#define KCDB_ENGINE_VERSION 0x00000010
+#define KCDB_WRITE_KEY_CONTINUE 0x00000100
+#define KCDB_FILE_END 0x10000000
 
 class kcdbFileDamagedException{
 
@@ -58,15 +56,15 @@ signals:
 #endif
 
 protected:
-    void output(QDataStream &outStream, Estring data, AesClass *code);
-    void output(QDataStream &outStream, quint8 argc, AesClass *code);
-    void outKcdbHead(QDataStream &outStream,quint8 inType, AesClass *code);
-    void outKcdb(QDataStream &outStream, Estring disc, Estring keyNameOrLevel, Estring iKey, Estring iCheckKey, quint8 EOF_, AesClass *code);
-    void input(QDataStream &inStream, QString &data, AesClass *code);
-    void input(QDataStream &inStream, quint8 &argc, AesClass *code);
-    quint8 readKcdbHead(QDataStream &inStream, AesClass *code);
-    QStringList readKeys(QDataStream &inStream, AesClass *code);
-    QList<QList<QStringList>> inKcdb(QDataStream &inStream, AesClass *code);
+    void output(QDataStream &outStream, Estring data, AesClass *AESMachine);
+    void output(QDataStream &outStream, int argc, AesClass *AESMachine);
+    void outKcdbHead(QDataStream &outStream,int data, AesClass *AESMachine);
+    void outKcdb(QDataStream &outStream, Estring disc, Estring account, Estring iKey, Estring iCheckKey, int kcdb_pos, AesClass *AESMachine);
+    void input(QDataStream &inStream, QString &data, AesClass *AESMachine);
+    void input(QDataStream &inStream, int &argc, AesClass *AESMachine);
+    int readKcdbHead(QDataStream &inStream, AesClass *AESMachine);
+    QStringList readKeys(QDataStream &inStream, AesClass *AESMachine);
+    QList<QList<QStringList>> inKcdb(QDataStream &inStream, AesClass *AESMachine);
 
 private:
 //    QFile inFile;

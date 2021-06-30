@@ -790,6 +790,7 @@ void MainUi::keyTW_deleteSeledtedKeys()
     for(quint32 i=0; i<keyTableRowCount;){
         if(checkBoxItem[i]->isChecked()){
             // 单纯的QList.removeAt并不会删除指针，用delete删除
+            keyMap.remove(ui->keyTW->item(i, 1)->text().toInt());
             delete checkBoxItem[i];
             checkBoxItem.removeAt(i);
             discQuickIndex.removeAt(i);
@@ -816,6 +817,7 @@ void MainUi::keyTW_deleteSeledtedKeys()
         }
     }
     keyTW_chkBoxCheckNum = 0;
+    qDebug() << keyMap.count();
     log("删除密码");
 }
 
@@ -952,6 +954,7 @@ bool MainUi::checkDb(QString dbPath)
             // Update(2.1.5): Encryption on *.chf
             Estring key_in;
             QString aesFilePath = QDir::toNativeSeparators(configFileInfo.path().replace("\\", "/") + "/dat.ec");
+
             QFileInfo aes(aesFilePath);
 #ifdef DEBUG_SHOW_IO_PATH
             qDebug() << "checkDb:" << "read kcdb hash data from " << hashFile.fileName();
@@ -978,7 +981,6 @@ bool MainUi::checkDb(QString dbPath)
             ec->initTestCase(key_in.getVal());
             QByteArray hashString_de = ec->CFB256Decrypt(hashString).toUtf8();
             delete ec;
-
             if(hashString_de.compare(resultHash) != 0){
                 mb.information("数据库被篡改", "校验得数据库已被篡改，建议读取备份。");
                 return false;
@@ -1024,10 +1026,13 @@ void MainUi::syncKeyMapToKcdb()
         t++;
     }
     kcdb->setKeys(tmp);
+    qDebug() << "sync to kcdb" << kcdb->getKeys().count();
 }
 
 void MainUi::refreshKeyTW()
 {
+    checkBoxItem.clear();
+    discQuickIndex.clear();
     ui->keyTW->clearContents();
     ui->keyTW->setRowCount(0);
     QMap<int, KeyMap>::const_iterator i  = keyMap.cbegin();
@@ -1167,15 +1172,21 @@ void MainUi::deleteSingleKey()
     }
 }
 
-bool MainUi::setKcdbKey()
+bool MainUi::setKcdbKey(QString keyPath)
 {
     QFile aesFile;
-    if(kcdb->getBackupState()){
+    if(keyPath.isEmpty()){
+        if(kcdb->getBackupState()){
             aesFile.setFileName(QFileInfo(backupPath).path()+"/dat.ec");
         }
         else{
             aesFile.setFileName(QFileInfo(savePath).path()+"/dat.ec");
         }
+    }
+    else{
+        aesFile.setFileName(QFileInfo(keyPath).path()+"/dat.ec");
+    }
+
 //    QString aesKeyFilePath = QDir::toNativeSeparators(kcdb->getSaveAESKeyPath().getVal());
 //    QFile aesFile(aesKeyFilePath);
     if(aesFile.open(QIODevice::ReadWrite)){
@@ -1221,7 +1232,6 @@ Estring MainUi::randomGenerator()
         resultString.insert(QRandomGenerator::securelySeeded().bounded(0,resultString.length()),
                             seedString[QRandomGenerator::securelySeeded().bounded(0,seedString.length())]);
     }
-    qDebug() << "resultString result:" << resultString;
     return Estring(resultString);
 #else
     log("randomGenerator not work when Qt version < 5.10.0");
@@ -1536,10 +1546,10 @@ void MainUi::on_backupKeyBtn_clicked()
     log("正在备份数据...");
     QFile::copy(QFileInfo(initKeyLastWritePath.getVal()).path() + "/login.ec", QFileInfo(finalPath).path() + "/login.ec");
     // NOTE: 这里是手动一次性备份到其他目录，不止需要kcdb->setBackupState(true)，还需要暂时设置backupPath路径，备份完成后改回去
-    QString oldBackupPath = backupPath;
-    backupPath = finalPath;
-    setKcdbKey();
-    backupPath = oldBackupPath;
+//    QString oldBackupPath = backupPath;
+//    backupPath = finalPath;
+    setKcdbKey(finalPath);
+//    backupPath = oldBackupPath;
     if(kcdb->writeKcdb(finalPath)){
         writeCheckFile(finalPath);
         log("数据备份完成");
@@ -1871,6 +1881,10 @@ void MainUi::on_importKeysBtn_clicked()
         }
         loginCorrent=false;
         logIn = new LogIn(nullptr, Estring(datPath));
+        connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
+            kcdb = new Kcdb(appPath + saveName, appPath + backupName);
+            kcdb->setKey(k);
+        });
         connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
             if(result){
                 tmpPwdHash = pwdHash;
@@ -1944,6 +1958,10 @@ void MainUi::lockApp()
 {
     loginCorrent=false;
     logIn = new LogIn();
+    connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
+        kcdb = new Kcdb(appPath + saveName, appPath + backupName);
+        kcdb->setKey(k);
+    });
     connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
         Q_UNUSED(pwdHash)
         loginCorrent=result;

@@ -106,7 +106,7 @@ void LogIn::initUi()
     this->setFixedSize(this->width(), this->height());
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_login.qss").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
-                                 "alternate-background-color:rgb(55,55,55)").arg(PUSHBUTTON_DISABLE_COLOR));
+                                 "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
     ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
     ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);

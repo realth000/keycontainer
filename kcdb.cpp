@@ -43,140 +43,94 @@ Kcdb_io::Kcdb_io()
 
 }
 
-void Kcdb_io::output(QDataStream &outStream, Estring data, AesClass *code)
+void Kcdb_io::output(QDataStream &outStream, Estring data, AesClass *AESMachine)
 {
-    QByteArray outArray = code->CFB256Encrypt(data.getVal());
-    quint8 len = outArray.length();
-    char *a = new char(len);
-    outStream.writeRawData(a,1);
-    outStream.writeRawData(outArray, len);
-    delete a;
+    QByteArray outArray = AESMachine->CFB256Encrypt(data.getVal());
+    outStream << outArray;
 }
 
-void Kcdb_io::output(QDataStream &outStream, quint8 argc, AesClass *code)
+void Kcdb_io::output(QDataStream &outStream, int argc, AesClass *AESMachine)
 {
-    QByteArray outArray = code->CFB256Encrypt(QString::number(argc));
-    quint8 len = outArray.length();
-    char *a = new char(len);
-    outStream.writeRawData(a,1);
-    outStream.writeRawData(outArray, len);
-    delete a;
+    QByteArray outArray = AESMachine->CFB256Encrypt(QString::number(argc));
+    outStream << outArray;
 }
 
-void Kcdb_io::outKcdbHead(QDataStream &outStream, quint8 inType, AesClass *code)
+void Kcdb_io::outKcdbHead(QDataStream &outStream, int data, AesClass *AESMachine)
 {
-    outStream.setVersion(QDataStream::Qt_5_12);
-    output(outStream, inType, code);
+    output(outStream, data, AESMachine);
 }
 
-void Kcdb_io::outKcdb(QDataStream &outStream, Estring disc, Estring keyNameOrLevel, Estring iKey, Estring iCheckKey, quint8 EOF_, AesClass *code)
+void Kcdb_io::outKcdb(QDataStream &outStream, Estring disc, Estring account, Estring iKey, Estring iCheckKey, int kcdb_pos, AesClass *AESMachine)
 {
-    outStream.setVersion(QDataStream::Qt_5_12);
-    output(outStream, disc, code);
-    output(outStream, keyNameOrLevel, code);
-    output(outStream, iKey, code);
-    output(outStream, iCheckKey, code);
-    output(outStream, EOF_, code);
+    output(outStream, disc, AESMachine);
+    output(outStream, account, AESMachine);
+    output(outStream, iKey, AESMachine);
+    output(outStream, iCheckKey, AESMachine);
+    output(outStream, kcdb_pos, AESMachine);
 }
 
-void Kcdb_io::input(QDataStream &inStream, QString &data, AesClass *code)
+void Kcdb_io::input(QDataStream &inStream, QString &data, AesClass *AESMachine)
 {
+
     QByteArray inArray;
-    quint8 len = 0;
-    char *t = new char[1];
-    inStream.readRawData(t, 1);
-    len = t[0];
-    int c = 0;
-    while(c<len){
-        t[0] = '\x00';
-        inStream.readRawData(t, 1);
-        inArray.append(t[0]);
-        c++;
-    }
-    data = code->CFB256Decrypt(inArray);
-    delete [] t;
+    inStream >> inArray;
+    data = AESMachine->CFB256Decrypt(inArray);
 }
 
-void Kcdb_io::input(QDataStream &inStream, quint8 &argc, AesClass *code)
+void Kcdb_io::input(QDataStream &inStream, int &argc, AesClass *AESMachine)
 {
+
     QByteArray inArray;
-    quint8 len = 0;
-    char *t = new char[1];
-    inStream.readRawData(t, 1);
-    len = t[0];
-    int c = 0;
-    while(c<len){
-        t[0] = '\x00';
-        inStream.readRawData(t, 1);
-        inArray.append(t[0]);
-        c++;
-    }
-    argc= (quint8)(code->CFB256Decrypt(inArray)).toInt(nullptr,10);
-    delete [] t;
+    inStream >> inArray;
+    argc= (AESMachine->CFB256Decrypt(inArray)).toInt();
 }
 
-quint8 Kcdb_io::readKcdbHead(QDataStream &inStream, AesClass *code)
+int Kcdb_io::readKcdbHead(QDataStream &inStream, AesClass *AESMachine)
 {
-    quint8 inType;
-    input(inStream, inType, code);
+    int inType;
+    input(inStream, inType, AESMachine);
     return inType;
 }
 
-QStringList Kcdb_io::readKeys(QDataStream &inStream, AesClass *code)
+QStringList Kcdb_io::readKeys(QDataStream &inStream, AesClass *AESMachine)
 {
-    QString disc, keyNameOrLevel, key, checkKey, iKey, iCheckKey;
-    input(inStream, disc, code);
-    input(inStream, keyNameOrLevel, code);
-    input(inStream, iKey, code);
-    input(inStream, iCheckKey, code);
+    QString disc, account, key, checkKey, iKey, iCheckKey;
+    input(inStream, disc, AESMachine);
+    input(inStream, account, AESMachine);
+    input(inStream, iKey, AESMachine);
+    input(inStream, iCheckKey, AESMachine);
     key = iKey;
     checkKey = iCheckKey;
     QStringList readGroupKey ;
-    readGroupKey << disc << keyNameOrLevel<< key<< checkKey<<  iKey<<  iCheckKey;
+    readGroupKey << disc << account<< key<< checkKey<<  iKey<<  iCheckKey;
     return readGroupKey;
 }
 
-QList<QList<QStringList> > Kcdb_io::inKcdb(QDataStream &inStream, AesClass *code)
+QList<QList<QStringList> > Kcdb_io::inKcdb(QDataStream &inStream, AesClass *AESMachine)
 {
-    inStream.setVersion(QDataStream::Qt_5_12);
-    quint8 head =  readKcdbHead(inStream, code);
-    quint8 EOF_ = 0xff;
-    if(head == BEGIN_OF_GROUPLEY){
-        EOF_ =NEXT_IS_GROUPKEY;
-    }
-    else if(head == BEGIN_OF_MTKEY){
-        EOF_ = NEXT_IS_MAINTAINKEY;
-    }
-    else{
-#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
-        emit qml_msg_info("数据损坏,密码文件损坏。");
-#else
-        t.information("数据损坏","密码文件损坏。");
-#endif
-        throw new EOF_Fail_Expection;
+    int head =  readKcdbHead(inStream, AESMachine);
+    int kcdb_pos = 0xdf;
+    if(head == KCDB_ENGINE_VERSION){
+        kcdb_pos =KCDB_WRITE_KEY_CONTINUE;
     }
     QList<QStringList> readGroupKeyList;
-    QList<QStringList> readMaintainKeyList;
-    while (EOF_ != END_OF_KCDB)
-    {
-        if(EOF_ == NEXT_IS_GROUPKEY){
-            readGroupKeyList << readKeys(inStream, code);
-        }
-        else if(EOF_ == NEXT_IS_MAINTAINKEY){
-            readMaintainKeyList << readKeys(inStream, code);
+    while (kcdb_pos != KCDB_FILE_END){
+        if(kcdb_pos == KCDB_WRITE_KEY_CONTINUE){
+            readGroupKeyList << readKeys(inStream, AESMachine);
         }
         else{
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
         emit qml_msg_info("数据损坏,无法读取密码，请清除密码数据。");
 #else
-        t.information("数据损坏","无法读取密码，请清除密码数据。");
+        t.information("数据损坏","无法读取密码，请清除密码数据。" + QString::number(head) + "  " + QString::number(kcdb_pos));
+        qDebug() << 0x00000100;
 #endif
         throw new EOF_Fail_Expection;
         }
-        input(inStream, EOF_, code);
+        input(inStream, kcdb_pos, AESMachine);
     }
     QList<QList<QStringList>> readResult;
-    readResult << readGroupKeyList << readMaintainKeyList;
+    readResult << readGroupKeyList;
     return readResult;
 }
 
@@ -192,12 +146,12 @@ GroupKey::GroupKey(Estring disc, Estring account, Estring keyValue)
 
 GroupKey::GroupKey(QString disc, QString account, QString keyValue)
 {
-        this->disc.setVal(disc);
-        this->account.setVal(account);
-        this->key.setVal(keyValue);
-        this->checkKey.setVal(keyValue);
-        this->iKey.setVal(keyValue);
-        this->iCheckKey.setVal(keyValue);
+    this->disc.setVal(disc);
+    this->account.setVal(account);
+    this->key.setVal(keyValue);
+    this->checkKey.setVal(keyValue);
+    this->iKey.setVal(keyValue);
+    this->iCheckKey.setVal(keyValue);
 }
 
 QString GroupKey::getiKeyValue() const
@@ -289,6 +243,7 @@ bool Kcdb::readKcdb(QString dbPath)
         return false;
     }
     inStream.setDevice(&inFile);
+    inStream.setVersion(QDataStream::Qt_5_15);
     Estring aesKeyFilePath = Estring(QDir::toNativeSeparators(aesPath));
     QFileInfo aes(aesKeyFilePath.getVal());
 #ifdef DEBUG_SHOW_KEYS
@@ -328,9 +283,9 @@ bool Kcdb::readKcdb(QString dbPath)
 #endif
         return false;
     }
-    AesClass *code = new AesClass;
-    code->initTestCase(key_in.getVal());
-    readResult = inKcdb(inStream, code);
+    AesClass *AESMachine = new AesClass;
+    AESMachine->initTestCase(key_in.getVal());
+    readResult = inKcdb(inStream, AESMachine);
     groupKeyList.clear();
     QListIterator<QList<QStringList>> Noptr = readResult;
     if(Noptr.hasNext()){
@@ -353,7 +308,7 @@ bool Kcdb::readKcdb(QString dbPath)
         }
     }
     inFile.close();
-    delete code;
+    delete AESMachine;
     return true;
 }
 
@@ -372,28 +327,29 @@ bool Kcdb::writeKcdb(QString inputPath)
         return false;
     }
     outStream.setDevice(&outFile);
-    AesClass *code = new AesClass;
-    code->initTestCase(key_in.getVal());
+    outStream.setVersion(QDataStream::Qt_5_15);
+    AesClass *AESMachine = new AesClass;
+    AESMachine->initTestCase(key_in.getVal());
 #ifdef DEBUG_SHOW_KEYS
     qDebug() << "writeKcdb: write .kcdb file" << outFile.fileName() << "with key_in:" << key_in.getVal();
 #endif
 #ifdef DEBUG_SHOW_IO_PATH
     qDebug() << "writeKcdb:" << "write data to " << outFile.fileName();
 #endif
+    // 写入Kcdb头部信息
     if(gkptr.hasNext()){
-        quint8 inType = BEGIN_OF_GROUPLEY;
-        outKcdbHead(outStream, inType, code);
+        int kcdbVersion = KCDB_ENGINE_VERSION;
+        outKcdbHead(outStream, kcdbVersion, AESMachine);
     }
-    quint8 EOF_;
-    while(gkptr.hasNext())
-    {
-        GroupKey tempGroupKey = gkptr.next().value();
-        gkptr.hasNext() ? EOF_ = NEXT_IS_GROUPKEY : EOF_ = END_OF_KCDB;
-        outKcdb(outStream, tempGroupKey.disc, tempGroupKey.account,
-                    tempGroupKey.getiKey(), tempGroupKey.getiCheckKey(), EOF_, code);
+    // 写入Keys数据
+    int kcdb_pos;
+    while(gkptr.hasNext()){
+        GroupKey keyToWrite = gkptr.next().value();
+        gkptr.hasNext() ? kcdb_pos = KCDB_WRITE_KEY_CONTINUE : kcdb_pos = KCDB_FILE_END;
+        outKcdb(outStream, keyToWrite.disc, keyToWrite.account, keyToWrite.getiKey(), keyToWrite.getiCheckKey(), kcdb_pos, AESMachine);
     }
     outFile.close();
-    delete code;
+    delete AESMachine;
     return true;
 }
 
@@ -427,6 +383,7 @@ void Kcdb::setSaveAESKeyPath(Estring path)
     this->saveAESPath = path.getVal();
 }
 
+// TODO: 存储密码？
 void Kcdb::setKey(Estring k)
 {
     this->key = k;
