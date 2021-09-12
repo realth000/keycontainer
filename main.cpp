@@ -27,6 +27,7 @@
 int main(int argc, char *argv[])
 {
     debugShowOptions dso;
+    QFont af;
 #ifndef DEBUG_QML_ON_WINDOWS
     // Windows and Linux
 #if defined(Q_OS_WINDOWS) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
@@ -67,7 +68,12 @@ int main(int argc, char *argv[])
 #       endif
 #   endif
     // Windows and Linux
-    QFont af("Consolas");
+#if defined(Q_OS_WINDOWS)
+    af.setFamily("Microsoft YaHei");
+#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
+    af.setFamily("DejaVu Sans Mono");
+#endif
+
     af.setStyleStrategy(QFont::PreferAntialias);
     a.setFont(af);
 

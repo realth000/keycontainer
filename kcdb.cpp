@@ -243,7 +243,7 @@ bool Kcdb::readKcdb(QString dbPath)
         return false;
     }
     inStream.setDevice(&inFile);
-    inStream.setVersion(QDataStream::Qt_5_15);
+    inStream.setVersion(QDataStream::Qt_5_11);
     Estring aesKeyFilePath = Estring(QDir::toNativeSeparators(aesPath));
     QFileInfo aes(aesKeyFilePath.getVal());
 #ifdef DEBUG_SHOW_KEYS
@@ -327,7 +327,7 @@ bool Kcdb::writeKcdb(QString inputPath)
         return false;
     }
     outStream.setDevice(&outFile);
-    outStream.setVersion(QDataStream::Qt_5_15);
+    outStream.setVersion(QDataStream::Qt_5_11);
     AesClass *AESMachine = new AesClass;
     AESMachine->initTestCase(key_in.getVal());
 #ifdef DEBUG_SHOW_KEYS
