@@ -1,4 +1,4 @@
-﻿#include "titlebar.h"
+#include "titlebar.h"
 #include <QEvent>
 
 TitleBar::TitleBar(QWidget *parent):

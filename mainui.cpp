@@ -25,7 +25,7 @@
 #include <QRegularExpression>
 #include "cml/keymapjsonengine.h"
 #include <QListView>
-#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
 #include <QRandomGenerator>
 #endif
 //#include <QWaylandObject>
@@ -116,7 +116,7 @@ void MainUi::writeInitPw(Estring p)
         hash2.addData(salt2.getVal().toUtf8());
         resultHash = hash2.result().toHex();
         QDataStream hashStream(&hashFile);
-        hashStream.setVersion(QDataStream::Qt_5_12);
+        hashStream.setVersion(QDataStream::Qt_5_11);
         hashStream << resultHash;
         hashFile.close();
 //        this->close();
@@ -281,7 +281,7 @@ void MainUi::initKeyData()
 
 void MainUi::initUi()
 {
-    this->setWindowFlag(Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet.qss").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
@@ -946,7 +946,7 @@ bool MainUi::checkDb(QString dbPath)
         QFile hashFile(hashFilePath);
         if(hashFile.open(QIODevice::ReadOnly)){
             QDataStream hashData(&hashFile);
-            hashData.setVersion(QDataStream::Qt_5_12);
+            hashData.setVersion(QDataStream::Qt_5_11);
             QByteArray hashString;
             hashData >> hashString;
             hashFile.close();
@@ -981,7 +981,11 @@ bool MainUi::checkDb(QString dbPath)
             ec->initTestCase(key_in.getVal());
             QByteArray hashString_de = ec->CFB256Decrypt(hashString).toUtf8();
             delete ec;
+#if QT_VERSION >= QT_VERSION_CHECK(5,12,0)
             if(hashString_de.compare(resultHash) != 0){
+#else
+            if(hashString_de == resultHash){
+#endif
                 mb.information("数据库被篡改", "校验得数据库已被篡改，建议读取备份。");
                 return false;
             }
@@ -1078,7 +1082,7 @@ void MainUi::writeCheckFile(QString checkPath)
         QFile hashFile(hashFilePath);
         hashFile.open(QIODevice::WriteOnly);
         QDataStream outData(&hashFile);
-        outData.setVersion(QDataStream::Qt_5_12);
+        outData.setVersion(QDataStream::Qt_5_11);
         outData << resultHash_en;
         hashFile.close();
         log("已生成校验文件");
@@ -1191,7 +1195,7 @@ bool MainUi::setKcdbKey(QString keyPath)
 //    QFile aesFile(aesKeyFilePath);
     if(aesFile.open(QIODevice::ReadWrite)){
         QDataStream aesStream(&aesFile);
-        aesStream.setVersion(QDataStream::Qt_5_12);
+        aesStream.setVersion(QDataStream::Qt_5_11);
         AesClass *de = new AesClass;
         de->initTestCase(kcdb->getKey().getVal());
         QByteArray resultAes = de->CFB256Encrypt(kcdb->getKey_in().getVal());

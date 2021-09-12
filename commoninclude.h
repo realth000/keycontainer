@@ -9,7 +9,7 @@
 #define TO_STR2(I2) TO_STR1(I2)
 
 #define ABOUT_VERSION APP_VERSION
-#define ABOUT_TIME  QDateTime::currentDateTime().toString("yyyy.MM.dd")
+#define ABOUT_TIME  "2021.9.12"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 

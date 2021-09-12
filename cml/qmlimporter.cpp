@@ -316,7 +316,7 @@ bool QmlImporter::checkDb(QString dbPath)
         QFile hashFile(hashFilePath);
         if(hashFile.open(QIODevice::ReadOnly)){
             QDataStream hashData(&hashFile);
-            hashData.setVersion(QDataStream::Qt_5_12);
+            hashData.setVersion(QDataStream::Qt_5_11);
             QByteArray hashString;
             hashData >> hashString;
             hashFile.close();
@@ -391,7 +391,7 @@ void QmlImporter::refreshAESKey()
     QFile aesFile(aesKeyFilePath);
     if(aesFile.open(QIODevice::ReadWrite)){
         QDataStream aesStream(&aesFile);
-        aesStream.setVersion(QDataStream::Qt_5_12);
+        aesStream.setVersion(QDataStream::Qt_5_11);
         AesClass *de = new AesClass;
         de->initTestCase(kcdb->getKey().getVal());
         QByteArray resultAes = de->CFB256Encrypt(kcdb->getKey_in().getVal());
@@ -467,7 +467,7 @@ void QmlImporter::writeCheckFile(QString checkPath)
         QFile hashFile(hashFilePath);
         hashFile.open(QIODevice::WriteOnly);
         QDataStream outData(&hashFile);
-        outData.setVersion(QDataStream::Qt_5_12);
+        outData.setVersion(QDataStream::Qt_5_11);
         outData << resultHash_en;
         hashFile.close();
         emit qml_msg_info("已生成校验文件");
@@ -650,7 +650,7 @@ void QmlImporter::checkInputInitKey(QString oldPw, QString newPw)
         QFile hashFile(pwPath.getVal());
         if(hashFile.open(QIODevice::ReadWrite)){
             QDataStream hashStream(&hashFile);
-            hashStream.setVersion(QDataStream::Qt_5_12);
+            hashStream.setVersion(QDataStream::Qt_5_11);
             hashStream << resultHash;
             hashFile.close();
             truePwdHash = Estring(resultHash);
