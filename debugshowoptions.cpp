@@ -1,6 +1,6 @@
 #include "debugshowoptions.h"
 
-debugShowOptions::debugShowOptions()
+DebugShowOptions::DebugShowOptions()
 {
 #ifdef DEBUG_SHOW_KEYS
     qDebug() << "DebugShowOptions: DEBUG_SHOW_KEYS enabled";

@@ -39,10 +39,10 @@
 
 
 
-class debugShowOptions
+class DebugShowOptions
 {
 public:
-    debugShowOptions();
+    DebugShowOptions();
 };
 
 #endif // DEBUGSHOWOPTIONS_H

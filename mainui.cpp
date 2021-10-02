@@ -1230,7 +1230,9 @@ Estring MainUi::randomGenerator()
     if(useSymbols){
         seedString+=symbols;
     }
-    seedString+=ui->gCustomCharLE->text();
+    if(useCustom){
+        seedString+=ui->gCustomCharLE->text();
+    }
     generateLength=qMax(generateLength, GENERATOR_MIN_LENGTH);
     while (resultString.length() < generateLength) {
         resultString.insert(QRandomGenerator::securelySeeded().bounded(0,resultString.length()),
@@ -1741,6 +1743,11 @@ bool MainUi::findCheckKey()
 
 void MainUi::findPreviousKey()
 {
+    if(keyTableRowCount <= 0){
+        emit sendLogLText("列表为空");
+        emit unfreezeFindBtn();
+        return;
+    }
     if(findText == ""){
         emit sendLogLText("搜索内容为空");
         emit unfreezeFindBtn();
@@ -1786,6 +1793,11 @@ void MainUi::findPreviousKey()
 
 void MainUi::findNextKey()
 {
+    if(keyTableRowCount <= 0){
+        emit sendLogLText("列表为空");
+        emit unfreezeFindBtn();
+        return;
+    }
     if(findText == ""){
         emit sendLogLText("搜索内容为空");
         emit unfreezeFindBtn();
@@ -1846,6 +1858,11 @@ void MainUi::changeFindText(QString s)
 
 void MainUi::countAll()
 {
+    if(keyTableRowCount <= 0){
+        emit sendLogLText("列表为空");
+        emit unfreezeFindBtn();
+        return;
+    }
     if(findText == ""){
         return;
     }
