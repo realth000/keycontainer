@@ -1,4 +1,4 @@
-﻿#ifndef KEYMAPJSONENGINE_H
+#ifndef KEYMAPJSONENGINE_H
 #define KEYMAPJSONENGINE_H
 
 #include "../commoninclude.h"

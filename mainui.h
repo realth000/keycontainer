@@ -18,7 +18,7 @@ QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
 QT_END_NAMESPACE
 
-#define GENERATOR_MIN_LENGTH 6
+#define GENERATOR_MIN_LENGTH 4
 
 class MainUi : public QWidget
 {

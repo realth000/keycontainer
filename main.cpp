@@ -4,6 +4,10 @@
 #include <QFont>
 #include "debugshowoptions.h"
 
+#if defined(Q_OS_WINDOWS) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
+#include <QSharedMemory>
+#endif
+
 #if defined(Q_OS_WINDOWS) && !defined(DEBUG_QML_ON_WINDOWS)
 #include <QApplication>
 #include <QObject>
@@ -26,60 +30,32 @@
 
 int main(int argc, char *argv[])
 {
-    debugShowOptions dso;
+    DebugShowOptions dso;
     QFont af;
-#ifndef DEBUG_QML_ON_WINDOWS
-    // Windows and Linux
-#if defined(Q_OS_WINDOWS) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
-    // Windows only
-#   if defined(Q_OS_WINDOWS)/* && !defined(DEBUG_DISABLE_SINGLE_DETECTION)*/
-#       ifndef DEBUG_DISABLE_SINGLE_DETECTION
-       HWND pwnd = FindWindow(NULL,QString::fromUtf8(TITLEBAR_TITLETEXT).toStdWString().c_str());
-        if(pwnd){
-            if(IsIconic(pwnd)){
-                ShowWindow(pwnd, SW_RESTORE);
-            }
-            SetForegroundWindow(pwnd);
-            return 0;
-        }
-#       endif
-        QApplication a(argc, argv);
-
-    // Linux only
-#   elif defined(Q_OS_LINUX)
-         QProcess p;
-        // 特殊符号，start()会有\n，execute()的\n会解释为换行，execute()的输出直接输出到程序控制台，没法捕获
-        p.start("pgrep " + QString(TITLEBAR_TITLETEXT));
-        p.waitForFinished();
-        QByteArray all_pids = p.readAllStandardOutput();
-        QApplication a(argc, argv);
-#       ifndef DEBUG_DISABLE_SINGLE_DETECTION
-        if(QString(all_pids).count("\n") != 1){
-            QProcess q;
-            // 带管道的需要使用(QString programPath, QStringList args);
-            QStringList t;
-            // grep的是.pro文件中的程序名TARGET，对wmctrl的x选项服务，防止错误激活名字为KeyContainer的其他同名窗口
-            // 经验证，最小化时、在其他桌面时也可以正确激活
-            t << "-c" << "wmctrl -lx | grep \" KeyContainer.KeyContainer \" | awk -F \" \" '{print $1}' | xargs wmctrl -ia";
-            // q.start("/bin/bash", t);
-            q.execute("/bin/bash", t);
-            return 0;
-        }
-#       endif
-#   endif
-    // Windows and Linux
 #if defined(Q_OS_WINDOWS)
     af.setFamily("Microsoft YaHei");
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     af.setFamily("DejaVu Sans Mono");
 #endif
-
     af.setStyleStrategy(QFont::PreferAntialias);
-    a.setFont(af);
 
     QCoreApplication::setApplicationName(TITLEBAR_TITLETEXT);
     QCoreApplication::setApplicationVersion(ABOUT_VERSION);
-
+#ifndef DEBUG_QML_ON_WINDOWS
+    // Windows and Linux
+#if defined(Q_OS_WINDOWS) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
+    QApplication a(argc, argv);
+    a.setFont(af);
+#ifndef DEBUG_DISABLE_SINGLE_DETECTION
+    QSharedMemory sharedMem("key_container_shared_memory");
+    if(sharedMem.attach()){
+        qDebug() << "already started";
+        MessageBoxExX mb;
+        mb.information("", "程序已经启动，同时只能运行一个" + QString(TITLEBAR_TITLETEXT), "退出");
+        return -1;
+    }
+    sharedMem.create(1);
+#endif
     MessageBoxExX w;
     MainUi MU;
     if(!MU.loginCorrent){

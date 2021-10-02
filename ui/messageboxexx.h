@@ -1,4 +1,4 @@
-﻿#ifndef MessageBoxExX_H
+#ifndef MessageBoxExX_H
 #define MessageBoxExX_H
 
 #include <QDialog>
