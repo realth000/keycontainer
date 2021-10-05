@@ -1,4 +1,4 @@
-#ifndef QLINEEDITPRO_H
+﻿#ifndef QLINEEDITPRO_H
 #define QLINEEDITPRO_H
 
 #include <QLineEdit>

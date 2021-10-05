@@ -1,4 +1,4 @@
-#include "mainui.h"
+﻿#include "mainui.h"
 #include "ui_mainui.h"
 #include "qssinstaller.h"
 #include "ui/titlebar.h"
@@ -96,13 +96,13 @@ void MainUi::writeInitPw(Estring p)
 {
     QFile hashFile;
     if(!currentPath.isEmpty()){
-        hashFile.setFileName(currentPath+"/login.ec");
+        hashFile.setFileName(currentPath + LOGIN_PASSWD_FILE_NAME);
     }
     else if(kcdb->getBackupState()){
-        hashFile.setFileName(QFileInfo(backupPath).path()+"/login.ec");
+        hashFile.setFileName(QFileInfo(backupPath).path() + LOGIN_PASSWD_FILE_NAME);
     }
     else{
-        hashFile.setFileName(QFileInfo(savePath).path()+"/login.ec");
+        hashFile.setFileName(QFileInfo(savePath).path() + LOGIN_PASSWD_FILE_NAME);
     }
     if(hashFile.open(QIODevice::WriteOnly)){
         QByteArray tmpMD5;
@@ -337,23 +337,26 @@ void MainUi::initUi()
     }
     ui->mainTabWidget->tabBar()->setTabIcon(2, tabIco2);
 
-
-
-
     QIcon tabIco3;
     const QPixmap tab3_1 = QPixmap(":/src/about.png");
     const QPixmap tab3_2 = QPixmap(":/src/about_reverse.png");
     if(!tab3_1.isNull() && !tab3_2.isNull()){
         tabIco3.addPixmap(tab3_1, QIcon::Selected, QIcon::Off);
         tabIco3.addPixmap(tab3_2, QIcon::Normal, QIcon::Off);
-
     }
     ui->mainTabWidget->tabBar()->setTabIcon(3, tabIco3);
 
+    // styles
+    PushButtonStyle *t = new PushButtonStyle("transparent");
+    PushButtonStyle *y = new PushButtonStyle("transparent");
+    HorizontalScrollBarStyle *hScrollBarStyle = new HorizontalScrollBarStyle;
+    VerticalScrollBarStyle   *vScrollBarStyle = new VerticalScrollBarStyle;
+    RadioButtonStyle *rbs = new RadioButtonStyle;
+    CheckBoxStyle  *chbs = new CheckBoxStyle;
     // TextEdiit
     ui->logTE->setReadOnly(true);
-    ui->logTE->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
-    ui->logTE->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
+    ui->logTE->horizontalScrollBar()->setStyle(hScrollBarStyle);
+    ui->logTE->verticalScrollBar()->setStyle(vScrollBarStyle);
     ui->hintTE->setEnabled(false);
 
     // PushButton style
@@ -495,8 +498,7 @@ void MainUi::initUi()
 //    PushButtonStyle *t = new PushButtonStyle(TABWIDGET_MENU_BACKGROUND_COLOR);
 //    PushButtonStyle *y = new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR);
     // 其实这里直接用transparent就好了
-    PushButtonStyle *t = new PushButtonStyle("transparent");
-    PushButtonStyle *y = new PushButtonStyle("transparent");
+
     ui->addKeyBtn->setStyle(t);
     ui->backupKeyBtn->setStyle(t);
     ui->backupDataKeyBtn->setStyle(t);
@@ -542,9 +544,6 @@ void MainUi::initUi()
     ui->key_clickRB->setFocusPolicy(Qt::NoFocus);
     ui->key_doubleClickRB->setFocusPolicy(Qt::NoFocus);
     ui->lockAppBtn->setFocusPolicy(Qt::NoFocus);
-//    ui->key_check_defaultRB->setFocusPolicy(Qt::NoFocus);
-//    ui->key_click_defaultRB->setFocusPolicy(Qt::NoFocus);
-//    ui->key_doubleClick_defaultRB->setFocusPolicy(Qt::NoFocus);
 
     ui->savePathLE->setReadOnly(true);
     ui->backupPathLE->setReadOnly(true);
@@ -571,10 +570,12 @@ void MainUi::initUi()
     // TODO: keyTW右键菜单
     connect(ui->keyTW, &QTableWidget::customContextMenuRequested, this, &MainUi::showKeyTableMenu, Qt::UniqueConnection);
 
-    ui->keyTW->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
-    ui->keyTW->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
+    ui->keyTW->horizontalScrollBar()->setStyle(hScrollBarStyle);
+    ui->keyTW->verticalScrollBar()->setStyle(vScrollBarStyle);
+    mb.setVerticalScrollBarStyle(vScrollBarStyle);
+    mb.setHorizontalScrollBarStyle(hScrollBarStyle);
 
-    RadioButtonStyle *rbs = new RadioButtonStyle;
+
     ui->key_checkRB->setStyle(rbs);
     ui->key_clickRB->setStyle(rbs);
     ui->key_doubleClickRB->setStyle(rbs);
@@ -582,8 +583,8 @@ void MainUi::initUi()
     ui->key_click_defaultRB->setStyle(rbs);
     ui->key_doubleClick_defaultRB->setStyle(rbs);
 
-    ui->autoChangeAESKeyChB->setStyle(new CheckBoxStyle);
-    ui->autoBackupPathChB->setStyle(new CheckBoxStyle);
+    ui->autoChangeAESKeyChB->setStyle(chbs);
+    ui->autoBackupPathChB->setStyle(chbs);
 
     QPixmap* about_logo_pix = new QPixmap(":/src/Key Container.jpeg");
     about_logo_pix->scaled(ui->about_logoL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
@@ -617,8 +618,8 @@ void MainUi::initUi()
     ui->about_baseTB->setContextMenuPolicy(Qt::NoContextMenu);
     ui->about_baseTB->setOpenExternalLinks(true);
 //    ui->about_baseTB->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-    ui->about_baseTB->horizontalScrollBar()->setStyle(new HorizontalScrollBarStyle);
-    ui->about_baseTB->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
+    ui->about_baseTB->horizontalScrollBar()->setStyle(hScrollBarStyle);
+    ui->about_baseTB->verticalScrollBar()->setStyle(vScrollBarStyle);
     ui->about_baseTB->setText(aboutText);
 
     fkui = new FindKeyUi(this);
@@ -651,12 +652,9 @@ void MainUi::initUi()
     // 设置锁屏
     timeLocker.setSingleShot(true);
     connect(&timeLocker, &QTimer::timeout, this, &MainUi::lockApp);
-
-
-    //
-    QStringList lockAppTimingSBItems{"1分钟", "5分钟", "10分钟", "30分钟", "1小时", "3小时", "5小时"};
+    QStringList lockAppTimingSBItems{"1分钟", DEFAULT_LOCK_APP_TIME, "10分钟", "30分钟", "1小时", "3小时", "5小时"};
     timeLockerTimingMap["1分钟"]=60000;
-    timeLockerTimingMap["5分钟"]=300000;
+    timeLockerTimingMap[DEFAULT_LOCK_APP_TIME]=300000;
     timeLockerTimingMap["10分钟"]=600000;
     timeLockerTimingMap["30分钟"]=1800000;
     timeLockerTimingMap["1小时"]=3600000;
@@ -664,8 +662,8 @@ void MainUi::initUi()
     timeLockerTimingMap["5小时"]=18000000;
     ui->lockAppTimingSB->addItems(lockAppTimingSBItems);
     ui->lockAppTimingSB->setView(new QListView());
-    ui->lockAppTimingSB->setCurrentText("5分钟");
-    ui->lockAppTimingSB->view()->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
+    ui->lockAppTimingSB->setCurrentText(DEFAULT_LOCK_APP_TIME);
+    ui->lockAppTimingSB->view()->verticalScrollBar()->setStyle(vScrollBarStyle);
 //    ui->lockAppTimingSB->view()->setWindowOpacity(1);
 //    ui->lockAppTimingSB->view()->parentWidget()->setAttribute(Qt::WA_TranslucentBackground, false);
 
@@ -675,37 +673,58 @@ void MainUi::initUi()
     ui->useAlphaChB->setChecked(false);
     ui->useSymbolChB->setChecked(false);
     ui->useCustomCharChB->setChecked(true);
-    ui->useNumberChB->setStyle(new CheckBoxStyle);
-    ui->useAlphaChB->setStyle(new CheckBoxStyle);
-    ui->useSymbolChB->setStyle(new CheckBoxStyle);
-    ui->useCustomCharChB->setStyle(new CheckBoxStyle);
+    ui->useNumberChB->setStyle(chbs);
+    ui->useAlphaChB->setStyle(chbs);
+    ui->useSymbolChB->setStyle(chbs);
+    ui->useCustomCharChB->setStyle(chbs);
     QStringList generateLengthList={"4", "5", "6", "7", "8", "10", "16", "20", "32", "64", "128", "256"};
     ui->gLengthCB->addItems(generateLengthList);
-    ui->gLengthCB->setCurrentText(QString::number(GENERATOR_MIN_LENGTH));
     ui->gLengthCB->setView(new QListView());
-    ui->gLengthCB->view()->verticalScrollBar()->setStyle(new VerticalScrollBarStyle);
+    ui->gLengthCB->view()->verticalScrollBar()->setStyle(vScrollBarStyle);
     cboard = QApplication::clipboard();
 }
+
 void MainUi::initConfig()
 {
     savePath = QDir::toNativeSeparators(appPath + saveName);
     initKeyLastWritePath.setVal(savePath);
+    ui->savePathLE->setText(savePath);
+    kcdb->setSavePath(savePath);
     backupPath = QDir::toNativeSeparators(appPath + backupName);
+    ui->backupPathLE->setText(backupPath);
+    kcdb->setBackupPath(backupPath);
+    ui->key_checkRB->setChecked(true);
+    ui->key_check_defaultRB->setChecked(true);
+    autoChangeAES = false;
+    ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
+    autoBackupPath = true;
+    ui->autoBackupPathChB->setChecked(autoBackupPath);
+    timeLockerTiming = timeLockerTimingMap[DEFAULT_LOCK_APP_TIME];
+    ui->lockAppTimingSB->setCurrentText(DEFAULT_LOCK_APP_TIME);
+    generateLength = DEFAULT_STR_GEN_LENGTH;
+    ui->gLengthCB->setCurrentText(QString::number(generateLength));
 
     if(!QFileInfo(QDir::toNativeSeparators(appPath + "/config.ini")).exists()){
         log("未找到配置文件");
         return;
     }
     QSettings *ini = new QSettings(QDir::toNativeSeparators(appPath + "/config.ini"), QSettings::IniFormat);
-    ui->savePathLE->setText(ini->value("/Path/SavePath").toString());
-    kcdb->setSavePath(ui->savePathLE->text());
-    saveName = "/" + QFileInfo(ini->value("/Path/SavePath").toString()).fileName();
-    savePath = ui->savePathLE->text();
-    initKeyLastWritePath.setVal(savePath);
-    ui->backupPathLE->setText(ini->value("/Path/BackupPath").toString());
-    kcdb->setBackupPath(ui->backupPathLE->text());
-    backupName = "/" + QFileInfo(ini->value("/Path/BackupPath").toString()).fileName();
-    backupPath = ui->backupPathLE->text();
+    QFileInfo saveFile(ini->value("/Path/SavePath").toString());
+    if(saveFile.exists() && saveFile.isFile()){
+        savePath = saveFile.absoluteFilePath();
+        saveName = "/" + saveFile.fileName();
+        initKeyLastWritePath.setVal(savePath);
+        ui->savePathLE->setText(savePath);
+        kcdb->setSavePath(savePath);
+    }
+
+    QFileInfo backupFile(ini->value("/Path/BackupPath").toString());
+    if(backupFile.exists() && backupFile.isFile()){
+        backupPath = backupFile.absoluteFilePath();
+        backupName = "/" + backupFile.fileName();
+        ui->backupPathLE->setText(backupPath);
+        kcdb->setBackupPath(backupPath);
+    }
     int selectMode = ini->value("/Common/DefaultSelectMode").toUInt();
     switch(selectMode){
     case 0:
@@ -736,6 +755,8 @@ void MainUi::initConfig()
         ui->lockAppTimingSB->setCurrentText(lockAppTimingTmp);
     }
     generateLength = qMax(ini->value("/Tool/GeneratorGenerateLength").toInt(), GENERATOR_MIN_LENGTH);
+    ui->gLengthCB->setCurrentText(QString::number(generateLength));
+
     delete ini;
     log("读取配置");
 }
@@ -953,12 +974,12 @@ bool MainUi::checkDb(QString dbPath)
 
             // Update(2.1.5): Encryption on *.chf
             Estring key_in;
-            QString aesFilePath = QDir::toNativeSeparators(configFileInfo.path().replace("\\", "/") + "/dat.ec");
+            QString aesFilePath = QDir::toNativeSeparators(configFileInfo.path().replace("\\", "/") + KEYDB_PASSWD_FILE_NAME);
 
             QFileInfo aes(aesFilePath);
 #ifdef DEBUG_SHOW_IO_PATH
-            qDebug() << "checkDb:" << "read kcdb hash data from " << hashFile.fileName();
-            qDebug() << "checkDb:" << "read dat.ec data from " << aes.filePath();
+            qDebug() << "checkDb:" << "read " << KEYDB_PASSWD_FILE_NAME << " hash data from " << hashFile.fileName();
+            qDebug() << "checkDb:" << "read " << KEYDB_PASSWD_FILE_NAME << " data from " << aes.filePath();
 #endif
             if(aes.exists()){
                 QFile aesHashFile(aesFilePath);
@@ -986,7 +1007,9 @@ bool MainUi::checkDb(QString dbPath)
 #else
             if(hashString_de == resultHash){
 #endif
-                mb.information("数据库被篡改", "校验得数据库已被篡改，建议读取备份。");
+                mb.information("数据库被篡改", QString("校验得数据库已被篡改，建议读取备份。\n"
+                                               "file:%1\n"
+                                               "check_file:%2").arg(dbPath).arg(hashFilePath));
                 return false;
             }
             return true;
@@ -1052,43 +1075,45 @@ void MainUi::refreshKeyTW()
 void MainUi::writeCheckFile(QString checkPath)
 {
     QFileInfo configFileInfo(checkPath);
-    if(configFileInfo.exists()){
-        QByteArray tmpMD5;
-        QByteArray resultHash;
-        QFile dbFile(checkPath);
-        dbFile.open(QIODevice::ReadOnly);
-        QCryptographicHash hash1(QCryptographicHash::Keccak_512);
-        hash1.addData(&dbFile);
-        QString salt1 = "撒差盐可空拟中";
-        hash1.addData(salt1.toUtf8());
-        tmpMD5 = hash1.result().toHex();
-        dbFile.close();
-        QCryptographicHash hash2(QCryptographicHash::Keccak_512);
-        hash2.addData(tmpMD5);
-        QString salt2 = "未因若风柳起絮";
-        hash2.addData(salt2.toUtf8());
-        resultHash = hash2.result().toHex();
+    QByteArray tmpMD5;
+    QByteArray resultHash;
+    QFile dbFile(checkPath);
+    dbFile.open(QIODevice::ReadOnly);
+    QCryptographicHash hash1(QCryptographicHash::Keccak_512);
+    hash1.addData(&dbFile);
+    QString salt1 = "撒差盐可空拟中";
+    hash1.addData(salt1.toUtf8());
+    tmpMD5 = hash1.result().toHex();
+    dbFile.close();
+    QCryptographicHash hash2(QCryptographicHash::Keccak_512);
+    hash2.addData(tmpMD5);
+    QString salt2 = "未因若风柳起絮";
+    hash2.addData(salt2.toUtf8());
+    resultHash = hash2.result().toHex();
 
-        // Update(2.1.5): Encryption on *.chf
-        AesClass *ec = new AesClass;
-        ec->initTestCase(kcdb->getKey_in().getVal());
-        QByteArray resultHash_en = ec->CFB256Encrypt(resultHash);
-        delete ec;
+    // Update(2.1.5): Encryption on *.chf
+    AesClass *ec = new AesClass;
+    ec->initTestCase(kcdb->getKey_in().getVal());
+    QByteArray resultHash_en = ec->CFB256Encrypt(resultHash);
+    delete ec;
 
-        QString hashFilePath = checkPath + ".chf";
+    QString hashFilePath = checkPath + ".chf";
 #ifdef DEBUG_SHOW_IO_PATH
-        qDebug() << "writeCheckFile:" << "write check data to " << hashFilePath;
+    qDebug() << "writeCheckFile:" << "write check data to " << hashFilePath;
 #endif
-        QFile hashFile(hashFilePath);
-        hashFile.open(QIODevice::WriteOnly);
-        QDataStream outData(&hashFile);
-        outData.setVersion(QDataStream::Qt_5_11);
-        outData << resultHash_en;
-        hashFile.close();
+    QFile hashFile(hashFilePath);
+    hashFile.open(QIODevice::WriteOnly);
+    QDataStream outData(&hashFile);
+    outData.setVersion(QDataStream::Qt_5_11);
+    outData << resultHash_en;
+    hashFile.close();
+
+    if(configFileInfo.exists() && configFileInfo.isFile()){
         log("已生成校验文件");
     }
-    else{mb.information("无法生成校验文件", "无法生成校验文件，建议重新保存");}
-
+    else{
+        mb.information("无法生成校验文件", "无法生成校验文件，建议重新保存");
+    }
 }
 
 void MainUi::showAcPw()
@@ -1181,14 +1206,14 @@ bool MainUi::setKcdbKey(QString keyPath)
     QFile aesFile;
     if(keyPath.isEmpty()){
         if(kcdb->getBackupState()){
-            aesFile.setFileName(QFileInfo(backupPath).path()+"/dat.ec");
+            aesFile.setFileName(QFileInfo(backupPath).path() + KEYDB_PASSWD_FILE_NAME);
         }
         else{
-            aesFile.setFileName(QFileInfo(savePath).path()+"/dat.ec");
+            aesFile.setFileName(QFileInfo(savePath).path() + KEYDB_PASSWD_FILE_NAME);
         }
     }
     else{
-        aesFile.setFileName(QFileInfo(keyPath).path()+"/dat.ec");
+        aesFile.setFileName(QFileInfo(keyPath).path() + KEYDB_PASSWD_FILE_NAME);
     }
 
 //    QString aesKeyFilePath = QDir::toNativeSeparators(kcdb->getSaveAESKeyPath().getVal());
@@ -1245,15 +1270,18 @@ Estring MainUi::randomGenerator()
 #endif
 }
 
-void MainUi::showKeyTableMenu(QPoint)
+void MainUi::showKeyTableMenu(QPoint pos)
 {
+    if(ui->keyTW->itemAt(pos) == nullptr){
+        return;
+    }
+
     QMenu *menu = new QMenu(ui->keyTW);
     connect(menu, &QMenu::triggered, menu, &QMenu::deleteLater);
     QAction *pnew0 = new QAction("删除",ui->keyTW);
     QAction *pnew1;
     QAction *pnew2;
     QAction *pnew3;
-
     rightClickSelectedItemRow = (ui->keyTW->selectedItems()[0])->row();
     bool show1 = ui->keyTW->item(rightClickSelectedItemRow, 3)->text() == pwdCharacterString ? false : true;
     bool show2 = ui->keyTW->item(rightClickSelectedItemRow, 4)->text() == pwdCharacterString ? false : true;
@@ -1276,7 +1304,6 @@ void MainUi::showKeyTableMenu(QPoint)
             isKeyShowing = false;
             pnew3 = new QAction("显示密码", menu);
         }
-
     }
     else {
         isAcountShowing = false;
@@ -1428,7 +1455,7 @@ void MainUi::on_restartProgBtn_clicked()
 
 void MainUi::on_changeInitKeyBtn_clicked()
 {
-    InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(currentPath.isEmpty() ? appPath+"/login.ec" : currentPath+"/login.ec"));
+    InputInitKeyUi *u = new InputInitKeyUi(this, truePwdHash, Estring(currentPath.isEmpty() ? appPath + LOGIN_PASSWD_FILE_NAME : currentPath + LOGIN_PASSWD_FILE_NAME));
 //    u->installEventFilter(this);
     connect(u, &InputInitKeyUi::finished, this, [this](){
         QApplication::instance()->installEventFilter(this);
@@ -1436,7 +1463,7 @@ void MainUi::on_changeInitKeyBtn_clicked()
     });
     connect(this, &MainUi::writeInitPwSuccess, u, &InputInitKeyUi::close, Qt::UniqueConnection);
     connect(this, &MainUi::writeInitPwSuccess, this, [this](){
-            QString pwPath = QDir::toNativeSeparators(currentPath.isEmpty() ? appPath+"/login.ec" : currentPath+"/login.ec");
+            QString pwPath = QDir::toNativeSeparators(currentPath.isEmpty() ? appPath + LOGIN_PASSWD_FILE_NAME : currentPath + LOGIN_PASSWD_FILE_NAME);
             QFile hashFile(pwPath);
             if(!hashFile.open(QIODevice::ReadOnly)){
                 mb.information("无法读取启动密码", "密码文件可能被其他程序占用。");
@@ -1475,15 +1502,15 @@ void MainUi::on_saveKeyBtn_clicked()
             }
             syncKeyMapToKcdb();
             log("正在保存数据...");
-            QFile::copy(QFileInfo(initKeyLastWritePath.getVal()).path() + "/login.ec", QFileInfo(savePath).path() + "/login.ec");
-            setKcdbKey();
+            QFile::copy(QFileInfo(initKeyLastWritePath.getVal()).path() + LOGIN_PASSWD_FILE_NAME, QFileInfo(savePath).path() + LOGIN_PASSWD_FILE_NAME);
+            setKcdbKey(currentPath);
             if(kcdb->writeKcdb(currentPath)){
                 writeCheckFile(currentPath);
                 log("数据保存完成");
-                bool autoBackupPathOld=autoBackupPath;
-                autoBackupPath=true;
-                on_backupKeyBtn_clicked();
-                autoBackupPath=autoBackupPathOld;
+//                bool autoBackupPathOld=autoBackupPath;
+//                autoBackupPath=true;
+//                on_backupKeyBtn_clicked();
+//                autoBackupPath=autoBackupPathOld;
             }
             else{
                 log("保存失败");
@@ -1502,7 +1529,7 @@ void MainUi::on_saveKeyBtn_clicked()
         }
         syncKeyMapToKcdb();
         log("正在保存数据...");
-        QFile::copy(QFileInfo(initKeyLastWritePath.getVal()).path() + "/login.ec", QFileInfo(savePath).path() + "/login.ec");
+        QFile::copy(QFileInfo(initKeyLastWritePath.getVal()).path() + LOGIN_PASSWD_FILE_NAME, QFileInfo(savePath).path() + LOGIN_PASSWD_FILE_NAME);
         setKcdbKey();
         if(kcdb->writeKcdb(savePath)){
             writeCheckFile(savePath);
@@ -1550,7 +1577,7 @@ void MainUi::on_backupKeyBtn_clicked()
     QDir saveDir(saveInfo.path());
     syncKeyMapToKcdb();
     log("正在备份数据...");
-    QFile::copy(QFileInfo(initKeyLastWritePath.getVal()).path() + "/login.ec", QFileInfo(finalPath).path() + "/login.ec");
+    QFile::copy(QFileInfo(initKeyLastWritePath.getVal()).path() + LOGIN_PASSWD_FILE_NAME, QFileInfo(finalPath).path() + LOGIN_PASSWD_FILE_NAME);
     // NOTE: 这里是手动一次性备份到其他目录，不止需要kcdb->setBackupState(true)，还需要暂时设置backupPath路径，备份完成后改回去
 //    QString oldBackupPath = backupPath;
 //    backupPath = finalPath;
@@ -1568,9 +1595,10 @@ void MainUi::on_backupKeyBtn_clicked()
 
 void MainUi::on_selectSavePathBtn_clicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "选择目录", savePath);
+    QString path = QFileDialog::getSaveFileName(this, "保存到", savePath + saveName, PASSWD_FILE_FORM_KCDB);
     if(path != ""){
-        savePath = path + saveName;
+        savePath = path;
+        saveName = QFileInfo(path).fileName();
         kcdb->setSavePath(savePath);
         ui->savePathLE->setText(savePath);
         ui->savePathLE->setCursorPosition(0);
@@ -1579,9 +1607,10 @@ void MainUi::on_selectSavePathBtn_clicked()
 
 void MainUi::on_selectBackupPathBtn_clicked()
 {
-    QString path = QFileDialog::getExistingDirectory(this, "选择目录", backupPath);
+    QString path = QFileDialog::getSaveFileName(this, "备份到", backupPath + backupName, PASSWD_FILE_FORM_KCDB);
     if(path != ""){
-        backupPath = path+ backupName;
+        backupPath = path;
+        backupName = QFileInfo(path).fileName();
         kcdb->setBackupPath(backupPath);
         ui->backupPathLE->setText(backupPath);
         ui->backupPathLE->setCursorPosition(0);
@@ -1592,7 +1621,7 @@ void MainUi::on_changeAESKeyBtn_clicked()
 {
     int re = mb.warning("重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？");
     if(re == MessageBoxExX::Yes){
-        if(!ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
+        if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
         on_saveKeyBtn_clicked();
     }
     else{
@@ -1614,7 +1643,7 @@ void MainUi::on_exportKeyBtn_clicked()
         return;
     }
     QString exportPath = QFileDialog::getSaveFileName(this, "导出文件",
-                             appPath + "/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".kcdj", "KeyContainerDataJson(*.kcdj)");
+                             appPath + "/" + QDateTime::currentDateTime().toString("yyyyMMddHHmmss") + ".kcdj", PASSWD_FILE_FORM_JSON);
     if(exportPath.isEmpty()){
        return;
     }
@@ -1680,10 +1709,10 @@ void MainUi::on_backupDataKeyBtn_clicked()
         log("无效路径");
         return;
     }
-    QFile newDatFile(QDir::toNativeSeparators(newPath + "/dat.ec"));
-    QFile oldDatFile(QDir::toNativeSeparators(savePath + "/dat.ec"));
-    QFile newLoginFIle(QDir::toNativeSeparators(newPath + "/login.ec"));
-    QFile oldLoginFile(QDir::toNativeSeparators(savePath + "/login.ec"));
+    QFile newDatFile(QDir::toNativeSeparators(newPath + KEYDB_PASSWD_FILE_NAME));
+    QFile oldDatFile(QDir::toNativeSeparators(savePath + KEYDB_PASSWD_FILE_NAME));
+    QFile newLoginFIle(QDir::toNativeSeparators(newPath + LOGIN_PASSWD_FILE_NAME));
+    QFile oldLoginFile(QDir::toNativeSeparators(savePath + LOGIN_PASSWD_FILE_NAME));
     if(newDatFile.exists()){
         if(!newDatFile.remove()){
             log("文件已存在且无法删除: " + (QFileInfo(newDatFile)).filePath());
@@ -1887,14 +1916,14 @@ void MainUi::countAll()
 void MainUi::on_importKeysBtn_clicked()
 {
     QString importPath = QFileDialog::getOpenFileName(this, "导入数据", savePath,
-                            "全部格式 (*.kcdb *.kcdj);;"
-                            "KeyContainerDataBase (*.kcdb);;"
-                            "KeyContainerDataJson (*.kcdj)", nullptr ,QFileDialog::DontResolveSymlinks);
+                            PASSWD_FILE_FORM_ALL";;"
+                            PASSWD_FILE_FORM_KCDB";;"
+                            PASSWD_FILE_FORM_JSON, nullptr ,QFileDialog::DontResolveSymlinks);
     if(importPath.isEmpty()){
         return;
     }
     QFileInfo dataFileInfo(importPath);
-    QString datPath = QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + "/login.ec");
+    QString datPath = QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + LOGIN_PASSWD_FILE_NAME);
     if(dataFileInfo.suffix() == "kcdb"){
         if(!QFileInfo::exists(importPath+".chf")){
             log("检验文件丢失，无法读取");

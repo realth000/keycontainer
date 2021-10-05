@@ -1,4 +1,4 @@
-#include "mainui.h"
+﻿#include "mainui.h"
 #include <QDebug>
 #include "commoninclude.h"
 #include <QFont>

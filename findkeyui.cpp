@@ -1,4 +1,4 @@
-#include "findkeyui.h"
+﻿#include "findkeyui.h"
 #include "ui_findkeyui.h"
 #include "ui/titlebar.h"
 #include "qssinstaller.h"

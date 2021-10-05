@@ -1,4 +1,4 @@
-#ifndef DEBUGSHOWOPTIONS_H
+﻿#ifndef DEBUGSHOWOPTIONS_H
 #define DEBUGSHOWOPTIONS_H
 #include <QDebug>
 

@@ -1,4 +1,4 @@
-#ifndef QAESENCRYPTION_H
+﻿#ifndef QAESENCRYPTION_H
 #define QAESENCRYPTION_H
 
 #include <QObject>

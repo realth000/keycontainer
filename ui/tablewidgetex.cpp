@@ -7,6 +7,7 @@ TableWidgetEx::TableWidgetEx(QWidget *parent):
     QTableWidget(parent)
 {
     connect(this, &TableWidgetEx::currentCellChanged, this ,[this](int currentRowNumber, int currentColumn, int previousRow, int previousColumn){
+            qDebug() << "this->currentRowNumber =" << currentRowNumber;
         Q_UNUSED(currentColumn)
         Q_UNUSED(previousRow)
         Q_UNUSED(previousColumn)
@@ -15,7 +16,20 @@ TableWidgetEx::TableWidgetEx(QWidget *parent):
 
     connect(this, &TableWidgetEx::rowInserted, this, [this](){this->rowCountNumber++;});
     connect(this, &TableWidgetEx::rowRemoved, this, [this](){this->rowCountNumber--;});
+    connect(this, &QTableWidget::cellEntered, this, [this](int row, int column){qDebug() << "cellEntered" << row << column << this->sizeHint();}, Qt::UniqueConnection);
+    connect(this, &QTableWidget::cellActivated, this, [this](int row, int column){qDebug() << "cellActivated" << row << column << this->sizeHint();}, Qt::UniqueConnection);
+    connect(this, &QTableWidget::cellClicked, this, [this](int row, int column){qDebug() << "cellClicked" << row << column << this->sizeHint();}, Qt::UniqueConnection);
 }
+
+//TableWidgetItemEx *TableWidgetEx::item(int row, int column) const
+//{
+//    return dynamic_cast<TableWidgetItemEx *>(this->QTableWidget::item(row, column));
+//}
+
+//TableWidgetItemEx *TableWidgetEx::takeItem(int row, int column)
+//{
+//    return dynamic_cast<TableWidgetItemEx *>(this->QTableWidget::takeItem(row, column));
+//}
 
 void TableWidgetEx::switchToRow(int row)
 {
@@ -69,4 +83,20 @@ void TableWidgetEx::keyPressEvent(QKeyEvent *e)
     }
     // 其他，忽略
     e->ignore();
+}
+
+TableWidgetItemEx::TableWidgetItemEx(const QString &text, int type):
+    QTableWidgetItem(text, type)
+{
+
+}
+
+QString TableWidgetItemEx::text() const
+{
+    return this->QTableWidgetItem::text();
+}
+
+void TableWidgetItemEx::setText(const QString text)
+{
+    this->QTableWidgetItem::setText(text);
 }

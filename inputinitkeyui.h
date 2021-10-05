@@ -1,4 +1,4 @@
-#ifndef INPUTINITKEYUI_H
+﻿#ifndef INPUTINITKEYUI_H
 #define INPUTINITKEYUI_H
 
 #include <QDialog>
