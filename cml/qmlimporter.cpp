@@ -1,4 +1,4 @@
-#include "qmlimporter.h"
+﻿#include "qmlimporter.h"
 #include <QDir>
 #include <QCoreApplication>
 #include <QFileInfo>

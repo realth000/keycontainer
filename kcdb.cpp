@@ -1,10 +1,11 @@
-#include "kcdb.h"
+﻿#include "kcdb.h"
 #include "encryption/qaesencryption.h"
 #include <QCryptographicHash>
 #include <QIODevice>
 #include <QDir>
 #include <QDebug>
 #include "debugshowoptions.h"
+#include "commoninclude.h"
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
 #else
 #include "qssinstaller.h"
@@ -178,8 +179,8 @@ Kcdb::Kcdb(QString savePath, QString backupPath)
 {
     this->savePath = QDir::toNativeSeparators(savePath);
     this->backupPath = QDir::toNativeSeparators(backupPath);
-    this->saveAESPath = QDir::toNativeSeparators(QFileInfo(savePath).path() + "/dat.ec");
-    this->backupAESPath = QDir::toNativeSeparators(QFileInfo(backupPath).path() + "/dat.ec");
+    this->saveAESPath = QDir::toNativeSeparators(QFileInfo(savePath).path() + KEYDB_PASSWD_FILE_NAME);
+    this->backupAESPath = QDir::toNativeSeparators(QFileInfo(backupPath).path() + KEYDB_PASSWD_FILE_NAME);
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
     connect(&ko, &Kcdb_io::qml_msg_info, this, &Kcdb::qml_msg_info);
 #endif
@@ -236,7 +237,7 @@ bool Kcdb::readKcdb(QString dbPath)
 #endif
             return false;
         }
-        aesPath = QDir::toNativeSeparators(QFileInfo(inFile).path().replace("\\", "/") + "/dat.ec");
+        aesPath = QDir::toNativeSeparators(QFileInfo(inFile).path().replace("\\", "/") + KEYDB_PASSWD_FILE_NAME);
     }
     QList<QList<QStringList>> readResult;
     if(!inFile.open(QIODevice::ReadOnly)){

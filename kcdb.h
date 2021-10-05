@@ -1,4 +1,4 @@
-#ifndef KCDB_H
+﻿#ifndef KCDB_H
 #define KCDB_H
 #include <QWidget>
 #include <QFile>

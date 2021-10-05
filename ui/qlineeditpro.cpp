@@ -1,4 +1,4 @@
-#include "qlineeditpro.h"
+﻿#include "qlineeditpro.h"
 #include <QEvent>
 QLineEditPro::QLineEditPro(QWidget *parent):
     QLineEdit (parent)

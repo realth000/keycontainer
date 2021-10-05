@@ -1,4 +1,4 @@
-#ifndef COMMONINCLUDE_H
+﻿#ifndef COMMONINCLUDE_H
 #define COMMONINCLUDE_H
 
 //#include <QWidget>
@@ -9,7 +9,7 @@
 #define TO_STR2(I2) TO_STR1(I2)
 
 #define ABOUT_VERSION APP_VERSION
-#define ABOUT_TIME  "2021.10.3"
+#define ABOUT_TIME  "2021.10.5"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
@@ -76,6 +76,14 @@
 #define PADDING_DOWN  4
 
 #define KEYMAP_JSON_ENGINE_VERSION "1.0"
+
+#define LOGIN_PASSWD_FILE_NAME "/login.ec"
+#define KEYDB_PASSWD_FILE_NAME "/dat.ec"
+#define DEFAULT_LOCK_APP_TIME  "5分钟"
+#define DEFAULT_STR_GEN_LENGTH 6
+#define PASSWD_FILE_FORM_ALL   "全部格式 (*.kcdb *.kcdj)"
+#define PASSWD_FILE_FORM_KCDB  "KeyContainerDataBase (*.kcdb)"
+#define PASSWD_FILE_FORM_JSON  "KeyContainerDataJson (*.kcdj)"
 
 namespace CI{
     class KeyMap;

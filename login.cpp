@@ -1,4 +1,4 @@
-#include "login.h"
+﻿#include "login.h"
 #include "ui_login.h"
 #include "qssinstaller.h"
 #include "ui/titlebar.h"
@@ -32,7 +32,7 @@ LogIn::LogIn(QWidget *parent, Estring keyFilePath) :
     ui->setupUi(this);
     initUi();
     if(keyFilePath.getVal().isEmpty()){
-        pwPath = Estring(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  "/login.ec"));
+        pwPath = Estring(QDir::toNativeSeparators(QCoreApplication::applicationDirPath() +  LOGIN_PASSWD_FILE_NAME));
     }
     else{
         pwPath = keyFilePath;

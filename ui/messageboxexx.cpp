@@ -3,6 +3,7 @@
 #include "ui/titlebar.h"
 #include "commoninclude.h"
 #include "qssinstaller.h"
+#include <QScrollBar>
 
 MessageBoxExX::MessageBoxExX(QWidget *parent) :
     QDialog(parent),
@@ -25,7 +26,9 @@ MessageBoxExX::MessageBoxExX(QWidget *parent) :
             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                  "alternate-background-color:rgb(55,55,55)"));
     ui->infoTE->setReadOnly(true);
-
+    ui->infoTE->setLineWrapColumnOrWidth(ui->infoTE->width() - 30);
+    ui->infoTE->setLineWrapMode(QTextEdit::WidgetWidth);
+    ui->infoTE->setWordWrapMode(QTextOption::WrapAnywhere);
 }
 
 MessageBoxExX::~MessageBoxExX()
@@ -87,6 +90,16 @@ int MessageBoxExX::question(QString titleText, QString text, QString yesText, QS
     connect(ui->button2, &QPushButton::clicked, this, &MessageBoxExX::resultToNo);
     this->exec();
     return result;
+}
+
+void MessageBoxExX::setVerticalScrollBarStyle(VerticalScrollBarStyle *style)
+{
+    ui->infoTE->verticalScrollBar()->setStyle(style);
+}
+
+void MessageBoxExX::setHorizontalScrollBarStyle(HorizontalScrollBarStyle *style)
+{
+    ui->infoTE->horizontalScrollBar()->setStyle(style);
 }
 
 void MessageBoxExX::resultToYes()

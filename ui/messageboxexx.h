@@ -1,8 +1,9 @@
-#ifndef MessageBoxExX_H
+﻿#ifndef MessageBoxExX_H
 #define MessageBoxExX_H
 
 #include <QDialog>
 #include <QMessageBox>
+#include "uistyle/proxystyle.h"
 
 namespace Ui {
 class MessageBoxExX;
@@ -80,6 +81,8 @@ public:
     void information(QString titleText = "提示", QString text = "", QString buttonText = "确定");
     int warning(QString titleText = "警告", QString text = "", QString yesText = "确定", QString noText = "取消");
     int question(QString titleText = "?", QString text = "", QString yesText = "是", QString noText = "否");
+    void setVerticalScrollBarStyle(VerticalScrollBarStyle *style);
+    void setHorizontalScrollBarStyle(HorizontalScrollBarStyle *style);
 
 private:
     Ui::MessageBoxExX *ui;

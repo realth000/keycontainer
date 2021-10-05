@@ -1,4 +1,4 @@
-#include "debugshowoptions.h"
+﻿#include "debugshowoptions.h"
 
 DebugShowOptions::DebugShowOptions()
 {

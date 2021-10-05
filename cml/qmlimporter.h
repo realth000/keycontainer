@@ -1,4 +1,4 @@
-#ifndef QMLIMPORTER_H
+﻿#ifndef QMLIMPORTER_H
 #define QMLIMPORTER_H
 
 #include <QObject>
