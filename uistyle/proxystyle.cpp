@@ -198,8 +198,8 @@ void PushButtonStyle::drawControl(QStyle::ControlElement element, const QStyleOp
                     QPen emptyPen;
                     emptyPen.setWidth(0);
                     // 不要用painter->setCompositionMode(QPainter::CompositionMode_Clear);，会把border的setPen覆盖掉使之失效
-//                    painter->setCompositionMode(QPainter::CompositionMode_Clear);
-//                    painter->setBackgroundMode(Qt::TransparentMode);
+                    //                    painter->setCompositionMode(QPainter::CompositionMode_Clear);
+                    //                    painter->setBackgroundMode(Qt::TransparentMode);
                     painter->drawRect(labelRect);
                     painter->restore();
                 }
@@ -315,8 +315,8 @@ void HorizontalScrollBarStyle::drawComplexControl(ComplexControl control, const 
             painter->drawPolygon(down,4);
             painter->restore();
 
-            // arrow的颜色和形状
-            painter->save();
+                // arrow的颜色和形状
+                painter->save();
             painter->setPen(QColor(240,255,255));
             painter->setBrush(QColor(51,51,51));
             int topRightY = upRect.bottomLeft().y();
@@ -407,8 +407,8 @@ void VerticalScrollBarStyle::drawComplexControl(QStyle::ComplexControl control, 
             painter->drawPolygon(down,4);
             painter->restore();
 
-            // arrow的颜色和形状
-            painter->save();
+                // arrow的颜色和形状
+                painter->save();
             painter->setPen(QColor(240,255,255));
             painter->setBrush(QColor(51,51,51));
             // VerticalScrollBar，坐标轴原点在所在方框的左上角，x轴水平向右，y轴竖直向下
@@ -467,17 +467,17 @@ void CheckBoxStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyle
 #else
                 // 方框内打对勾，而不是使用圆形渐变
                 // 将整个方框的长和宽分别六等分，对勾的下边缘线条所在位置为(1,3) -> (2,5) -> (5,1)，按设定的宽度向上拓宽一个宽度（x轴水平向右，y轴竖直向下）
-//                QRect checkRect = QRect(iRect.topLeft().x()*0.5 + iRect.bottomRight().x()*0.5, iRect.topLeft().y()*0.5 + iRect.bottomRight().y()*0.5, 15, 15);
+                //                QRect checkRect = QRect(iRect.topLeft().x()*0.5 + iRect.bottomRight().x()*0.5, iRect.topLeft().y()*0.5 + iRect.bottomRight().y()*0.5, 15, 15);
                 // NOTE: 我也不知道为什么要用这个比例，根据QRect(0,0 16x16)
                 qreal w6 = iRect.width()/5;
                 qreal h6 = iRect.height()/5;
-//                qreal downLeftX = iRect.bottomLeft().x()*0.5;
+                //                qreal downLeftX = iRect.bottomLeft().x()*0.5;
                 qreal downLeftY = iRect.topLeft().y();
 
                 // 用drowPolygon沿着下边缘画
-//                QPointF check[6] = {
-//                    // 下边缘从左到右三个点
-//                    QPointF(downLeftX+w6, downLeftY+h6*4), QPointF(downLeftX+w6*3, downLeftY+h6*6), QPointF(downLeftX+w6*6, downLeftY+h6*3),
+                //                QPointF check[6] = {
+                //                    // 下边缘从左到右三个点
+                //                    QPointF(downLeftX+w6, downLeftY+h6*4), QPointF(downLeftX+w6*3, downLeftY+h6*6), QPointF(downLeftX+w6*6, downLeftY+h6*3),
                 //                    // 上边缘从左到右三个点，多向上一个CHECKBOX_CHECK_WIDTH
                 //                    QPointF(downLeftX+w6*6, downLeftY+h6*3-CHECKBOX_CHECK_WIDTH),  QPointF(downLeftX+w6*3, downLeftY+h6*6-CHECKBOX_CHECK_WIDTH), QPointF(downLeftX+w6, downLeftY+h6*4-CHECKBOX_CHECK_WIDTH)
                 //                };
@@ -500,7 +500,7 @@ void CheckBoxStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyle
                 painter->setBrush(QColor(55,85,100));
                 painter->drawPolygon(check, 6);
 #endif
-//                painter->drawRect(iRect);
+                //                painter->drawRect(iRect);
                 painter->restore();
             }
             else{
@@ -539,3 +539,144 @@ void RadioButtonStyle::drawPrimitive(QStyle::PrimitiveElement element, const QSt
     }
     return;
 }
+
+void ComboBoxStyle::drawControl(QStyle::ControlElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+{
+    if(element == CE_ComboBoxLabel){
+        if(const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)){
+            QRect labelRect = cb->rect;
+            painter->setRenderHint(QPainter::Antialiasing);
+
+            painter->save();
+            painter->setBrush(QColor(Qt::transparent));
+            painter->setPen(QPen(QColor(55,85,100), 2));
+            painter->drawRect(labelRect);
+            painter->restore();
+
+            painter->save();
+            QTextOption optionS;
+            optionS.setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+            painter->setPen(QPen(QColor(240,255,255)));
+            painter->drawText(labelRect.adjusted(4,0,0,0), cb->currentText, optionS);
+            painter->restore();
+
+            return;
+        }
+    }
+    else if(element == CE_ItemViewItem){
+        if(const QStyleOptionViewItem *vi = qstyleoption_cast<const QStyleOptionViewItem *>(option)){
+            QRect itemRect = vi->rect;
+            painter->setRenderHint(QPainter::Antialiasing);
+            painter->save();
+            painter->setPen(Qt::transparent);
+            if(vi->state & State_MouseOver){
+                painter->setBrush(QColor(55,85,100));
+            }
+            else{
+                // comboBox设置背景为透明时，如果其下拉列表的item的背景也要设置成透明，
+                // 则需要从comboBox的parent的pallete处获取background的颜色。
+                // 千里追魂：ViewItem -> QComboBoxPrivateContainer -> ComboBox -> ComboBox的parent
+                // 设置下拉列表背景为透明：
+                // （1）若comboBox位置的背景颜色为固定颜色，直接获取该颜色并设置即可
+                // （2）若comboBox位置的背景颜色为渐变颜色，只能取该渐变的中间色近似模拟
+                // （3）若comboBox位置的背景颜色既不固定也不是渐变，那么？？
+                //
+                // FIXME：
+                // 目前只考虑comboBox的parent背景有颜色的情况，如果parent也没颜色（透明）
+                // 是否需要再往上找？
+                const QBrush parentPainter = widget->parentWidget()->parentWidget()->parentWidget()->palette().background();
+                if(parentPainter.style() == Qt::LinearGradientPattern
+                    || parentPainter.style() == Qt::ConicalGradientPattern
+                    || parentPainter.style() == Qt::RadialGradientPattern){
+                    QGradientStops stops = parentPainter.gradient()->stops();
+                    const QColor startColor = stops.first().second;
+                    const QColor stopColor  = stops.last().second;
+                    painter->setBrush(QColor((startColor.red()   + stopColor.red())*0.5,
+                                             (startColor.green() + stopColor.green())*0.5,
+                                             (startColor.blue()  + stopColor.blue())*0.5));
+                }
+                else{
+                    painter->setBrush(parentPainter.color());
+                }
+            }
+            painter->drawRect(itemRect);
+            painter->restore();
+
+            painter->save();
+            QTextOption optionS;
+            optionS.setAlignment(Qt::AlignVCenter | Qt::AlignLeft);
+            painter->setPen(QPen(QColor(240,255,255)));
+            painter->drawText(itemRect.adjusted(4,0,0,0), vi->text, optionS);
+            painter->restore();
+
+//            QRect c = widget->parentWidget()->rect();
+////            painter->setPen(QPen(QColor(255,0,0), 5));
+//            painter->setPen(QColor(55,85,100));
+//            painter->drawRect(c);
+
+
+            return;
+        }
+    }
+    else{
+        QProxyStyle::drawControl(element, option, painter, widget);
+    }
+}
+
+
+void ComboBoxStyle::drawComplexControl(QStyle::ComplexControl control, const QStyleOptionComplex *option, QPainter *painter, const QWidget *widget) const
+{
+    if(control == CC_ComboBox){
+        if(const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(option)){
+//            QRect focusRect = subControlRect(CC_ComboBox, option, SC_ComboBoxFrame, widget);
+//            QRect editRect = subControlRect(CC_ComboBox, option, SC_ComboBoxEditField, widget);
+//            QRect listPopupRect = subControlRect(CC_ComboBox, option, SC_ComboBoxListBoxPopup, widget);
+            QRect arrowRect = subControlRect(CC_ComboBox, option, SC_ComboBoxArrow, widget);
+            painter->setRenderHint(QPainter::Antialiasing);
+
+//            painter->save();
+//            painter->setBackgroundMode(Qt::TransparentMode);
+//            painter->setPen(QPen(QColor(255,0,0), 4));
+//            painter->drawRect(focusRect);
+//            painter->restore();
+
+//            painter->save();
+//            painter->setBackgroundMode(Qt::TransparentMode);
+//            painter->drawRect(editRect);
+//            painter->restore();
+
+//            painter->save();
+//            painter->setBackgroundMode(Qt::TransparentMode);
+//            painter->setPen(QPen(QColor(255,0,0), 4));
+//            painter->drawRect(listPopupRect);
+//            painter->restore();
+//            qDebug() << listPopupRect;
+
+            painter->save();
+            painter->setPen(QPen(QColor(240,255,255), 2));
+            int topHeight = arrowRect.height();
+            QPoint downArr[3] = {
+                QPoint(arrowRect.x() + PADDING_LEFT                    , topHeight*0.5 - 2),
+                QPoint(arrowRect.x() + arrowRect.width() * 0.5         , topHeight*0.5 + 2),
+                QPoint(arrowRect.x() + arrowRect.width() - PADDING_LEFT, topHeight*0.5 - 2)
+            };
+            painter->drawPolyline(downArr,3);
+            painter->restore();
+
+//            painter->save();
+//            QRect popupRect = cb->popupRect;
+//            qDebug() << popupRect;
+//            painter->setPen(QPen(QColor(255,0,0),4));
+//            painter->setBrush(QColor(0,255,0));
+//            painter->drawRect(popupRect);
+//            painter->restore();
+            return;
+        }
+    }
+    QProxyStyle::drawComplexControl(control, option, painter, widget);
+}
+
+//void ComboBoxStyle::drawPrimitive(QStyle::PrimitiveElement element, const QStyleOption *option, QPainter *painter, const QWidget *widget) const
+//{
+
+//}

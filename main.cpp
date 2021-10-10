@@ -4,6 +4,8 @@
 #include <QFont>
 #include "debugshowoptions.h"
 
+//#include "vld.h"
+
 #if defined(Q_OS_WINDOWS) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
 #include <QSharedMemory>
 #endif
@@ -51,7 +53,7 @@ int main(int argc, char *argv[])
     if(sharedMem.attach()){
         qDebug() << "already started";
         MessageBoxExX mb;
-        mb.information("", "程序已经启动，同时只能运行一个" + QString(TITLEBAR_TITLETEXT), "退出");
+        MessageBoxExY::information("", "程序已经启动，同时只能运行一个" + QString(TITLEBAR_TITLETEXT), "退出");
         return -1;
     }
     sharedMem.create(1);
@@ -85,7 +87,6 @@ int main(int argc, char *argv[])
 // else OS
 #if !defined(Q_OS_WINDOWS) && !defined(Q_OS_LINUX)
         QApplication a(argc, argv);
-        MessageBoxExX t;
-        t.information("无法启动", "程序已在运行中");
+        MessageBoxExY::information("无法启动", "程序已在运行中");
 #endif
 }

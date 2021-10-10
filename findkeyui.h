@@ -4,6 +4,7 @@
 #include <QDialog>
 #include "commoninclude.h"
 #include <QKeyEvent>
+#include "uistyle/proxystyle.h"
 
 namespace Ui {
 class FindKeyUi;
@@ -54,6 +55,8 @@ private:
     bool findDirection = true; // =true，快捷键F3控制向下搜索，=false，快捷键F3控制向上搜索
     bool findAllWord = false; // 全词查找
     Qt::CaseSensitivity findCaseSen = Qt::CaseInsensitive; // 匹配大小写，默认不敏感(false, =0)
+    PushButtonStyle *pBStyle;
+    CheckBoxStyle *chBStyle;
 
     void initUi();
 };

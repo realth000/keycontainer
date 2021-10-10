@@ -19,6 +19,7 @@ class AnimationRefresh : public QGroupBox
 
 public:
     AnimationRefresh(QWidget *parent = nullptr);
+    ~AnimationRefresh();
     void start(qreal durationtime = 0);
     void setColor(QColor color1, QColor color2, QColor color3);
     QColor getColor(int pos) const;

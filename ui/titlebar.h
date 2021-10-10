@@ -21,6 +21,7 @@ public:
     };
 
     TitleBar(QWidget *parent = nullptr);
+    ~TitleBar();
     void initUi(enum TitleBarMode mode = DefaultStyle, QString textColor = "black", QString hover_textColor = "white", QString background = "white", QString hover_backgroundColor = "black");
     void setTitleText(QString title) const;
     void setTitleStyleSheet(QString styleSheet) const;

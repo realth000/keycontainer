@@ -19,6 +19,11 @@ QGroupBox(parent)
     }, Qt::UniqueConnection);
 }
 
+AnimationRefresh::~AnimationRefresh()
+{
+    delete painter;
+}
+
 void AnimationRefresh::start(qreal durationtime)
 {
     initUi();

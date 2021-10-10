@@ -44,6 +44,7 @@ LogIn::LogIn(QWidget *parent, Estring keyFilePath) :
 LogIn::~LogIn()
 {
     delete ui;
+    delete p;
 }
 
 bool LogIn::getContinueStart() const
@@ -104,7 +105,7 @@ void LogIn::initUi()
 {
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
-    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_login.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_login.css").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
@@ -130,7 +131,7 @@ void LogIn::initUi()
     }
     ui->logInB->setIcon(loginIcon);
 
-    PushButtonStyle *p = new PushButtonStyle("transparent");
+    p = new PushButtonStyle("transparent");
     ui->logInB->setStyle(p);
 
 #ifdef Q_OS_WINDOWS
@@ -151,7 +152,7 @@ void LogIn::readPwd()
 {
     QFileInfo fileInfo(pwPath.getVal());
     if(!fileInfo.exists()){
-        mb.information("无法启动", "密码文件丢失，无法启动。", " 退出 ");
+        MessageBoxExY::information("无法启动", "密码文件丢失，无法启动。", " 退出 ");
 //        emit finish(false, Estring(""));
         continueStart = false;
         return;
@@ -160,7 +161,7 @@ void LogIn::readPwd()
     if(!hashFile.open(QIODevice::ReadOnly)){
         bool existance = (QFileInfo(hashFile)).exists();
         bool readable = hashFile.isReadable();
-        mb.information("无法读取启动密码", "密码文件可能被其他程序占用。\n" + QString::number(existance) + QString::number(readable), " 退出 ");
+        MessageBoxExY::information("无法读取启动密码", "密码文件可能被其他程序占用。\n" + QString::number(existance) + QString::number(readable), " 退出 ");
 //        emit finish(false, Estring(""));
         continueStart = false;
         return;
@@ -170,7 +171,7 @@ void LogIn::readPwd()
     hashData >> hashString;
     hashFile.close();
     if(hashString == ""){
-        mb.information("密码错误", "检测到密码为空。", " 退出 ");
+        MessageBoxExY::information("密码错误", "检测到密码为空。", " 退出 ");
 //        emit finish(false, Estring(""));
         continueStart = false;
         return;

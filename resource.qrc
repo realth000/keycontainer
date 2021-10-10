@@ -1,6 +1,6 @@
 <RCC>
     <qresource prefix="/">
-        <file>qss/stylesheet.qss</file>
+        <file>qss/stylesheet.css</file>
         <file>src/close.png</file>
         <file>src/config.png</file>
         <file>src/addKey.png</file>
@@ -19,24 +19,24 @@
         <file>src/saveConfig.png</file>
         <file>src/changeInitKey.png</file>
         <file>src/changeAESKey.png</file>
-        <file>qss/stylesheet_inputkeyui.qss</file>
+        <file>qss/stylesheet_inputkeyui.css</file>
         <file>src/title.png</file>
         <file>src/initUiBackground.png</file>
-        <file>qss/stylesheet_login.qss</file>
-        <file>qss/stylesheet_inputinitkeyui.qss</file>
+        <file>qss/stylesheet_login.css</file>
+        <file>qss/stylesheet_inputinitkeyui.css</file>
         <file>src/about.png</file>
         <file>src/about_reverse.png</file>
         <file>src/Key Container.jpeg</file>
         <file>src/Key Container.ico</file>
         <file>src/KeyContainer.ico</file>
         <file>src/backupKeys.png</file>
-        <file>qss/stylesheet_findkeyui.qss</file>
+        <file>qss/stylesheet_findkeyui.css</file>
         <file>src/arrow_left_30.png</file>
         <file>src/arrow_right_30.png</file>
         <file>src/findKey_reverse.png</file>
         <file>src/importKeys.png</file>
         <file>etc/qt.conf</file>
-        <file>qss/stylesheet_messageboxexx.qss</file>
+        <file>qss/stylesheet_messageboxexx.css</file>
         <file>src/lock_reverse.png</file>
         <file>src/dice_reverse.png</file>
         <file>src/save_reverse.png</file>

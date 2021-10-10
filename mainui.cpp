@@ -55,7 +55,16 @@ MainUi::MainUi(QWidget *parent)
     }
 
     if(!loginCorrent){
+        delete logIn;
+        logIn = nullptr;
+        delete kcdb;
+        kcdb = nullptr;
         return;
+    }
+    delete logIn;
+    logIn = nullptr;
+    if(truePwdHash.getVal() == LOGIN_PASSWD_HASH_STR){
+        MessageBoxExY::warning("需要修改密码", "检测到当前密码为默认密码，建议尽快在设置内修改", " 确定 ", "");
     }
 #   else
     this->loginCorrent = true;
@@ -68,6 +77,7 @@ MainUi::MainUi(QWidget *parent)
     initKeyData();
     QApplication::instance()->installEventFilter(this);
     connect(qApp, &QGuiApplication::applicationStateChanged, this, &MainUi::appStateChanged);
+
 }
 
 MainUi::~MainUi()
@@ -79,6 +89,19 @@ MainUi::~MainUi()
     delete ui;
     delete kcdb;
     delete fkui;
+    if(logIn != nullptr){delete logIn; logIn = nullptr;}
+    delete about_logo_pix;
+
+    // delete styles
+    delete pBStyleH;
+    delete pBStyleY;
+    delete hScrollBarStyle;
+    delete vScrollBarStyle;
+    delete rBStyle;
+    delete chBStyle;
+    delete cBStyle;
+    delete tBStyle;
+    delete tWStyle;
 }
 
 void MainUi::log(QString log)
@@ -128,7 +151,7 @@ void MainUi::writeInitPw(Estring p)
             return;
         }
         else{
-            mb.information("设置失败", "启动失败密码设置失败：更新Kcdb密钥失败");
+            MessageBoxExY::information("设置失败", "启动失败密码设置失败：更新Kcdb密钥失败");
             return;
         }
     }
@@ -281,9 +304,20 @@ void MainUi::initKeyData()
 
 void MainUi::initUi()
 {
+    // styles
+    pBStyleH = new PushButtonStyle("transparent");
+    pBStyleY = new PushButtonStyle("transparent");
+    hScrollBarStyle = new HorizontalScrollBarStyle;
+    vScrollBarStyle = new VerticalScrollBarStyle;
+    rBStyle = new RadioButtonStyle;
+    chBStyle = new CheckBoxStyle;
+    cBStyle = new ComboBoxStyle;
+    tBStyle = new TabBarStyle;
+    tWStyle = new TabWidgetStyle;
+
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
-    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet.css").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
@@ -301,8 +335,8 @@ void MainUi::initUi()
     ui->mainTabWidget->setTabText(3, "关于");
     ui->mainTabWidget->setTabPosition(QTabWidget::West);
     ui->mainTabWidget->setAttribute(Qt::WA_StyledBackground);
-    ui->mainTabWidget->tabBar()->setStyle(new TabBarStyle);
-    ui->mainTabWidget->setStyle(new TabWidgetStyle);
+    ui->mainTabWidget->tabBar()->setStyle(tBStyle);
+    ui->mainTabWidget->setStyle(tWStyle);
     ui->mainTabWidget->setCurrentIndex(0);
     ui->mainTabWidget->setFocusPolicy(Qt::NoFocus);
     // NOTE: enable page 2 in 3.2.0
@@ -345,14 +379,9 @@ void MainUi::initUi()
         tabIco3.addPixmap(tab3_2, QIcon::Normal, QIcon::Off);
     }
     ui->mainTabWidget->tabBar()->setTabIcon(3, tabIco3);
+    ui->lockAppTimingSB->setStyle(cBStyle);
+    ui->gLengthCB->setStyle(cBStyle);
 
-    // styles
-    PushButtonStyle *t = new PushButtonStyle("transparent");
-    PushButtonStyle *y = new PushButtonStyle("transparent");
-    HorizontalScrollBarStyle *hScrollBarStyle = new HorizontalScrollBarStyle;
-    VerticalScrollBarStyle   *vScrollBarStyle = new VerticalScrollBarStyle;
-    RadioButtonStyle *rbs = new RadioButtonStyle;
-    CheckBoxStyle  *chbs = new CheckBoxStyle;
     // TextEdiit
     ui->logTE->setReadOnly(true);
     ui->logTE->horizontalScrollBar()->setStyle(hScrollBarStyle);
@@ -499,26 +528,26 @@ void MainUi::initUi()
 //    PushButtonStyle *y = new PushButtonStyle(PUSHBUTTON_ON_WIDGET_BACKGROUND_COLOR);
     // 其实这里直接用transparent就好了
 
-    ui->addKeyBtn->setStyle(t);
-    ui->backupKeyBtn->setStyle(t);
-    ui->backupDataKeyBtn->setStyle(t);
-    ui->delSelectKeyBtn->setStyle(y);
-    ui->exportKeyBtn->setStyle(t);
-    ui->showKeyBtn->setStyle(t);
-    ui->selectAllKeyBtn->setStyle(y);
-    ui->selectInverseKeyBtn->setStyle(y);
+    ui->addKeyBtn->setStyle(pBStyleH);
+    ui->backupKeyBtn->setStyle(pBStyleH);
+    ui->backupDataKeyBtn->setStyle(pBStyleH);
+    ui->delSelectKeyBtn->setStyle(pBStyleY);
+    ui->exportKeyBtn->setStyle(pBStyleH);
+    ui->showKeyBtn->setStyle(pBStyleH);
+    ui->selectAllKeyBtn->setStyle(pBStyleY);
+    ui->selectInverseKeyBtn->setStyle(pBStyleY);
 //    ui->clearLogBtn->setStyle(new PushButtonStyle);
-    ui->saveKeyBtn->setStyle(t);
-    ui->saveConfigBtn->setStyle(t);
-    ui->restartProgBtn->setStyle(t);
-    ui->changeInitKeyBtn->setStyle(t);
-    ui->changeAESKeyBtn->setStyle(t);
-    ui->findKeyBtn->setStyle(t);
-    ui->about_aboutQtB->setStyle(t);
-    ui->importKeysBtn->setStyle(t);
-    ui->lockAppBtn->setStyle(y);
-    ui->gKeyBtn->setStyle(y);
-    ui->gCopyResultBtn->setStyle(y);
+    ui->saveKeyBtn->setStyle(pBStyleH);
+    ui->saveConfigBtn->setStyle(pBStyleH);
+    ui->restartProgBtn->setStyle(pBStyleH);
+    ui->changeInitKeyBtn->setStyle(pBStyleH);
+    ui->changeAESKeyBtn->setStyle(pBStyleH);
+    ui->findKeyBtn->setStyle(pBStyleH);
+    ui->about_aboutQtB->setStyle(pBStyleH);
+    ui->importKeysBtn->setStyle(pBStyleH);
+    ui->lockAppBtn->setStyle(pBStyleY);
+    ui->gKeyBtn->setStyle(pBStyleY);
+    ui->gCopyResultBtn->setStyle(pBStyleY);
 
     ui->addKeyBtn->setFocusPolicy(Qt::NoFocus);
     ui->backupKeyBtn->setFocusPolicy(Qt::NoFocus);
@@ -572,21 +601,21 @@ void MainUi::initUi()
 
     ui->keyTW->horizontalScrollBar()->setStyle(hScrollBarStyle);
     ui->keyTW->verticalScrollBar()->setStyle(vScrollBarStyle);
-    mb.setVerticalScrollBarStyle(vScrollBarStyle);
-    mb.setHorizontalScrollBarStyle(hScrollBarStyle);
+//    mb.setVerticalScrollBarStyle(vScrollBarStyle);
+//    mb.setHorizontalScrollBarStyle(hScrollBarStyle);
 
 
-    ui->key_checkRB->setStyle(rbs);
-    ui->key_clickRB->setStyle(rbs);
-    ui->key_doubleClickRB->setStyle(rbs);
-    ui->key_check_defaultRB->setStyle(rbs);
-    ui->key_click_defaultRB->setStyle(rbs);
-    ui->key_doubleClick_defaultRB->setStyle(rbs);
+    ui->key_checkRB->setStyle(rBStyle);
+    ui->key_clickRB->setStyle(rBStyle);
+    ui->key_doubleClickRB->setStyle(rBStyle);
+    ui->key_check_defaultRB->setStyle(rBStyle);
+    ui->key_click_defaultRB->setStyle(rBStyle);
+    ui->key_doubleClick_defaultRB->setStyle(rBStyle);
 
-    ui->autoChangeAESKeyChB->setStyle(chbs);
-    ui->autoBackupPathChB->setStyle(chbs);
+    ui->autoChangeAESKeyChB->setStyle(chBStyle);
+    ui->autoBackupPathChB->setStyle(chBStyle);
 
-    QPixmap* about_logo_pix = new QPixmap(":/src/Key Container.jpeg");
+    about_logo_pix = new QPixmap(":/src/Key Container.jpeg");
     about_logo_pix->scaled(ui->about_logoL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     ui->about_logoL->setScaledContents(true);
     ui->about_logoL->setPixmap(*about_logo_pix);
@@ -673,10 +702,10 @@ void MainUi::initUi()
     ui->useAlphaChB->setChecked(false);
     ui->useSymbolChB->setChecked(false);
     ui->useCustomCharChB->setChecked(true);
-    ui->useNumberChB->setStyle(chbs);
-    ui->useAlphaChB->setStyle(chbs);
-    ui->useSymbolChB->setStyle(chbs);
-    ui->useCustomCharChB->setStyle(chbs);
+    ui->useNumberChB->setStyle(chBStyle);
+    ui->useAlphaChB->setStyle(chBStyle);
+    ui->useSymbolChB->setStyle(chBStyle);
+    ui->useCustomCharChB->setStyle(chBStyle);
     QStringList generateLengthList={"4", "5", "6", "7", "8", "10", "16", "20", "32", "64", "128", "256"};
     ui->gLengthCB->addItems(generateLengthList);
     ui->gLengthCB->setView(new QListView());
@@ -768,7 +797,7 @@ QWidget* MainUi::addCheckBox(int height)
 //    check->setFixedSize(height, height);
 
 //    check->installEventFilter(this);
-    check->setStyle(new CheckBoxStyle);
+    check->setStyle(chBStyle);
     checkBoxItem.append(check);
     QHBoxLayout *hb = new QHBoxLayout(ui->keyTW);
     hb->addWidget(check);
@@ -937,7 +966,7 @@ void MainUi::refreshAESKey()
     }
 #endif
     kcdb->setKey_in(Estring(str));
-    setKcdbKey() ? log("已刷新AES密钥") : mb.information("无法保存密码", "密码文件被其他程序占用，请重试。");
+    setKcdbKey() ? log("已刷新AES密钥") : MessageBoxExY::information("无法保存密码", "密码文件被其他程序占用，请重试。");
 }
 
 bool MainUi::checkDb(QString dbPath)
@@ -995,7 +1024,7 @@ bool MainUi::checkDb(QString dbPath)
                 }
             }
             else{
-                mb.information("无法读取数据库密码", "密码文件可能被其他程序占用。");
+                MessageBoxExY::information("无法读取数据库密码", "密码文件可能被其他程序占用。");
                 return false;
             }
             AesClass *ec = new AesClass;
@@ -1007,7 +1036,7 @@ bool MainUi::checkDb(QString dbPath)
 #else
             if(hashString_de == resultHash){
 #endif
-                mb.information("数据库被篡改", QString("校验得数据库已被篡改，建议读取备份。\n"
+                MessageBoxExY::information("数据库被篡改", QString("校验得数据库已被篡改，建议读取备份。\n"
                                                "file:%1\n"
                                                "check_file:%2").arg(dbPath).arg(hashFilePath));
                 return false;
@@ -1015,12 +1044,12 @@ bool MainUi::checkDb(QString dbPath)
             return true;
         }
         else{
-            mb.information("无法校验数据库", "数据库校验文件无法打开。");
+            MessageBoxExY::information("无法校验数据库", "数据库校验文件无法打开。");
             return false;
         }
     }
     else{
-        mb.information("数据库可能已被篡改", "检测不到数据库的校验文件。");
+        MessageBoxExY::information("数据库可能已被篡改", "检测不到数据库的校验文件。");
         return false;
     }
 
@@ -1112,7 +1141,7 @@ void MainUi::writeCheckFile(QString checkPath)
         log("已生成校验文件");
     }
     else{
-        mb.information("无法生成校验文件", "无法生成校验文件，建议重新保存");
+        MessageBoxExY::information("无法生成校验文件", "无法生成校验文件，建议重新保存");
     }
 }
 
@@ -1229,6 +1258,7 @@ bool MainUi::setKcdbKey(QString keyPath)
         qDebug() << "refreshAESKey: write new AES key(Encrypted)=" << resultAes;
 #endif
         aesFile.close();
+        delete de;
         return true;
     }
     return false;
@@ -1259,9 +1289,10 @@ Estring MainUi::randomGenerator()
         seedString+=ui->gCustomCharLE->text();
     }
     generateLength=qMax(generateLength, GENERATOR_MIN_LENGTH);
+    resultString += seedString[QRandomGenerator::securelySeeded().bounded(0, seedString.length())];
     while (resultString.length() < generateLength) {
-        resultString.insert(QRandomGenerator::securelySeeded().bounded(0,resultString.length()),
-                            seedString[QRandomGenerator::securelySeeded().bounded(0,seedString.length())]);
+        resultString.insert(QRandomGenerator::securelySeeded().bounded(0, resultString.length()),
+                            seedString[QRandomGenerator::securelySeeded().bounded(0, seedString.length())]);
     }
     return Estring(resultString);
 #else
@@ -1466,7 +1497,7 @@ void MainUi::on_changeInitKeyBtn_clicked()
             QString pwPath = QDir::toNativeSeparators(currentPath.isEmpty() ? appPath + LOGIN_PASSWD_FILE_NAME : currentPath + LOGIN_PASSWD_FILE_NAME);
             QFile hashFile(pwPath);
             if(!hashFile.open(QIODevice::ReadOnly)){
-                mb.information("无法读取启动密码", "密码文件可能被其他程序占用。");
+                MessageBoxExY::information("无法读取启动密码", "密码文件可能被其他程序占用。");
                 this->close();
             }
             QDataStream hashData(&hashFile);
@@ -1474,7 +1505,7 @@ void MainUi::on_changeInitKeyBtn_clicked()
             hashData >> hashString;
             hashFile.close();
             if(hashString == ""){
-                mb.information("密码错误", "检测到密码为空。");
+                MessageBoxExY::information("密码错误", "检测到密码为空。");
                 this->close();
             }
             truePwdHash.setVal(hashString);
@@ -1492,7 +1523,7 @@ void MainUi::on_saveKeyBtn_clicked()
         return;
     }
     if((!currentPath.isEmpty()) && (currentPath != savePath)){
-        int result = mb.question("保存路径非默认", "当前导入数据库不是设置中的数据库，是否继续保存到当前位置？\n当前位置: " + currentPath);
+        int result = MessageBoxExY::question("保存路径非默认", "当前导入数据库不是设置中的数据库，是否继续保存到当前位置？\n当前位置: " + currentPath);
         if(result == MessageBoxExX::Yes){
             kcdb->setBackupState(false);
             QFileInfo saveInfo(currentPath);
@@ -1554,7 +1585,7 @@ void MainUi::on_backupKeyBtn_clicked()
     QString finalPath;
     // 是否跳过选择备份目录
     if(!autoBackupPath){
-        int result = mb.question("备份密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
+        int result = MessageBoxExY::question("备份密码", "可以选择其他的位置保存数据，是否要选其他位置保存？", "换个位置", "不换了");
         if(result == MessageBoxExX::Yes){
             QString newPath = QFileDialog::getExistingDirectory(this, "选择路径", appPath, QFileDialog::ShowDirsOnly);
             if(newPath.isEmpty()){
@@ -1619,7 +1650,7 @@ void MainUi::on_selectBackupPathBtn_clicked()
 
 void MainUi::on_changeAESKeyBtn_clicked()
 {
-    int re = mb.warning("重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？");
+    int re = MessageBoxExY::warning("重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？");
     if(re == MessageBoxExX::Yes){
         if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
         on_saveKeyBtn_clicked();
@@ -1930,8 +1961,16 @@ void MainUi::on_importKeysBtn_clicked()
             return;
         }
         loginCorrent=false;
+        if(logIn != nullptr){
+            delete logIn;
+            logIn = nullptr;
+        }
         logIn = new LogIn(nullptr, Estring(datPath));
         connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
+            if(kcdb != nullptr){
+                delete kcdb;
+                kcdb = nullptr;
+            }
             kcdb = new Kcdb(appPath + saveName, appPath + backupName);
             kcdb->setKey(k);
         });
@@ -2007,8 +2046,14 @@ void MainUi::on_autoBackupPathChB_stateChanged(int arg1)
 void MainUi::lockApp()
 {
     loginCorrent=false;
+    if(logIn != nullptr){
+        delete logIn;
+    }
     logIn = new LogIn();
     connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
+        if(kcdb != nullptr){
+            delete kcdb;
+        }
         kcdb = new Kcdb(appPath + saveName, appPath + backupName);
         kcdb->setKey(k);
     });
@@ -2024,6 +2069,7 @@ void MainUi::lockApp()
         logIn->show();
         loginLockLoop.exec();
         delete logIn;
+        logIn = nullptr;
     }
     loginCorrent ? this->setVisible(true) : exit(0);
 }

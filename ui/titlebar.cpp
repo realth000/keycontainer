@@ -15,6 +15,16 @@ TitleBar::TitleBar(QWidget *parent):
     closeB->setFocusPolicy(Qt::NoFocus);
 }
 
+TitleBar::~TitleBar()
+{
+    p = nullptr;
+    delete icoL;
+    delete titleL;
+    delete minB;
+    delete maxB;
+    delete closeB;
+}
+
 void TitleBar::initUi(TitleBar::TitleBarMode mode, QString textColor, QString hover_textColor, QString background, QString hover_backgroundColor)
 {
     if(useGradient){

@@ -7,6 +7,7 @@
 
 namespace Ui {
 class MessageBoxExX;
+class MessageBoxExY;
 }
 
 class MessageBoxExX : public QDialog
@@ -87,11 +88,22 @@ public:
 private:
     Ui::MessageBoxExX *ui;
     int result = 0x00000000;
+    HorizontalScrollBarStyle *hScrollBarStyle;
+    VerticalScrollBarStyle   *vScrollBarStyle;
 
 private slots:
     void resultToYes();
     void resultToNo();
 
+};
+
+class MessageBoxExY : public MessageBoxExX
+{
+    Q_OBJECT
+public:
+    static void information(QString titleText = "提示", QString text = "", QString buttonText = "确定");
+    static int warning(QString titleText = "警告", QString text = "", QString yesText = "确定", QString noText = "取消");
+    static int question(QString titleText = "?", QString text = "", QString yesText = "是", QString noText = "否");
 };
 
 #endif // MessageBoxExX_H
