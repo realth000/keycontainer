@@ -170,6 +170,16 @@ private:
     bool useCustom=false;
     QClipboard *cboard;
     Estring initKeyLastWritePath = Estring();
+    PushButtonStyle *pBStyleH;
+    PushButtonStyle *pBStyleY;
+    HorizontalScrollBarStyle *hScrollBarStyle;
+    VerticalScrollBarStyle   *vScrollBarStyle;
+    RadioButtonStyle *rBStyle;
+    CheckBoxStyle  *chBStyle;
+    ComboBoxStyle *cBStyle;
+    TabBarStyle *tBStyle;
+    TabWidgetStyle *tWStyle;
+    QPixmap* about_logo_pix;
 
 };
 #endif // MAINUI_H

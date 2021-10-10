@@ -46,6 +46,7 @@ private:
     Estring truePwdHash = Estring("");
     Ui::LogIn *ui;
     MessageBoxExX mb;
+    PushButtonStyle *p;
 };
 
 #endif // LOGIN_H

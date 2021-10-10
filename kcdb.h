@@ -49,7 +49,6 @@ class Kcdb_io
 {
 #endif
 public:
-    Kcdb_io();
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
 signals:
     void qml_msg_info(QString msg);

@@ -3,8 +3,12 @@
 #include <QDebug>
 #include <QTime>
 #include <type_traits>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
 #include <QRandomGenerator>
 #include <QRandomGenerator64>
+#endif
+
 #include "debugshowoptions.h"
 
 #ifdef Q_OS_LINUX
@@ -54,7 +58,7 @@ Type EncryptedClass<Type>::Decrypt(Type val, Type check) const
 template<typename Type>
 void EncryptedClass<Type>::initKey(int initType)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(5,0,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
     switch (initType) {
 
     case 1:

@@ -38,12 +38,6 @@ QString AesClass::CFB256Decrypt(QByteArray inputStr)
     return  result;
 }
 
-
-Kcdb_io::Kcdb_io()
-{
-
-}
-
 void Kcdb_io::output(QDataStream &outStream, Estring data, AesClass *AESMachine)
 {
     QByteArray outArray = AESMachine->CFB256Encrypt(data.getVal());
@@ -110,9 +104,12 @@ QStringList Kcdb_io::readKeys(QDataStream &inStream, AesClass *AESMachine)
 QList<QList<QStringList> > Kcdb_io::inKcdb(QDataStream &inStream, AesClass *AESMachine)
 {
     int head =  readKcdbHead(inStream, AESMachine);
-    int kcdb_pos = 0xdf;
+    int kcdb_pos = KCDB_FILE_END;
     if(head == KCDB_ENGINE_VERSION){
         kcdb_pos =KCDB_WRITE_KEY_CONTINUE;
+    }
+    else{
+        MessageBoxExY::information("数据版本错误", "密码数据记录格式版本不正确，无法读取");
     }
     QList<QStringList> readGroupKeyList;
     while (kcdb_pos != KCDB_FILE_END){
@@ -123,8 +120,9 @@ QList<QList<QStringList> > Kcdb_io::inKcdb(QDataStream &inStream, AesClass *AESM
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
         emit qml_msg_info("数据损坏,无法读取密码，请清除密码数据。");
 #else
-        t.information("数据损坏","无法读取密码，请清除密码数据。" + QString::number(head) + "  " + QString::number(kcdb_pos));
-        qDebug() << 0x00000100;
+            MessageBoxExY::information("数据损坏",QString("无法读取密码，请清除密码数据。\n"
+                                              "readhead=0x%1\n"
+                                              "datapose=0x%2").arg(head, 8, 16, QLatin1Char('0')).arg(kcdb_pos, 8, 16, QLatin1Char('0')));
 #endif
         throw new EOF_Fail_Expection;
         }
@@ -212,7 +210,7 @@ bool Kcdb::readKcdb(QString dbPath)
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
             emit qml_msg_info("数据库不存在,切换读取备份数据: " + inFile.fileName());
 #else
-            t.information("数据库不存在","切换读取备份数据");
+            MessageBoxExY::information("数据库不存在","切换读取备份数据");
 #endif
             inFile.setFileName(backupPath);
             aesPath = backupAESPath;
@@ -220,7 +218,7 @@ bool Kcdb::readKcdb(QString dbPath)
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
                 emit qml_msg_info("找不到数据库,找不到数据库及数据库备份，无法读取密码。");
 #else
-                t.information("找不到数据库","找不到数据库及数据库备份，无法读取密码。");
+                MessageBoxExY::information("找不到数据库","找不到数据库及数据库备份，无法读取密码。");
 #endif
                 return false;
             }
@@ -233,7 +231,7 @@ bool Kcdb::readKcdb(QString dbPath)
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
             emit qml_msg_info("找不到数据库,找不到数据库及数据库备份，无法读取密码。");
 #else
-            t.information("找不到数据库","找不到数据库及数据库备份，无法读取密码。");
+            MessageBoxExY::information("找不到数据库","找不到数据库及数据库备份，无法读取密码。");
 #endif
             return false;
         }
@@ -271,7 +269,7 @@ bool Kcdb::readKcdb(QString dbPath)
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
             emit qml_msg_info("无法读取数据库密码,密码文件可能被其他程序占用。");
 #else
-            t.information("无法读取数据库密码", "密码文件可能被其他程序占用。");
+            MessageBoxExY::information("无法读取数据库密码", "密码文件可能被其他程序占用。");
 #endif
             return false;
         }
@@ -280,7 +278,7 @@ bool Kcdb::readKcdb(QString dbPath)
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
             emit qml_msg_info("无法读取数据库密码,密码丢失。");
 #else
-            t.information("无法读取数据库密码", "密码丢失。");
+            MessageBoxExY::information("无法读取数据库密码", "密码丢失。");
 #endif
         return false;
     }

@@ -81,7 +81,7 @@ void InputKeyUi::initUi()
 {
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
-    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_inputkeyui.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_inputkeyui.css").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
     // 标题栏样式
@@ -174,8 +174,7 @@ void InputKeyUi::on_inputKey_saveB_clicked()
     existPos = -1;
     // 检查对应说明的密码是否已经存在，如果在，选择是否更新其账号和密码（选否则返回）
     if(checkExistence()){
-        MessageBoxExX m;
-        int result = m.warning("密码已存在", "已经存在与该说明相同的密码，是否将该密码及其更新为刚输入的值？", "确认更改", "不做更改");
+        int result = MessageBoxExY::warning("密码已存在", "已经存在与该说明相同的密码，是否将该密码及其更新为刚输入的值？", "确认更改", "不做更改");
         if(result != MessageBoxExX::Yes){
             return;
         }

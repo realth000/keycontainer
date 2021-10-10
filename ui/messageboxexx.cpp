@@ -4,13 +4,14 @@
 #include "commoninclude.h"
 #include "qssinstaller.h"
 #include <QScrollBar>
+#include "uistyle/proxystyle.h"
 
 MessageBoxExX::MessageBoxExX(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MessageBoxExX)
 {
     ui->setupUi(this);
-    this->setWindowFlag(Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
 
     // 标题栏样式
@@ -22,18 +23,24 @@ MessageBoxExX::MessageBoxExX(QWidget *parent) :
     ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
 
     // 样式
-    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_messageboxexx.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_messageboxexx.css").arg(this->objectName()).arg("rgb(55,85,100)")
             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                  "alternate-background-color:rgb(55,55,55)"));
     ui->infoTE->setReadOnly(true);
     ui->infoTE->setLineWrapColumnOrWidth(ui->infoTE->width() - 30);
     ui->infoTE->setLineWrapMode(QTextEdit::WidgetWidth);
     ui->infoTE->setWordWrapMode(QTextOption::WrapAnywhere);
+    hScrollBarStyle = new HorizontalScrollBarStyle;
+    vScrollBarStyle = new VerticalScrollBarStyle;
+    setHorizontalScrollBarStyle(hScrollBarStyle);
+    setVerticalScrollBarStyle(vScrollBarStyle);
 }
 
 MessageBoxExX::~MessageBoxExX()
 {
     delete ui;
+    delete hScrollBarStyle;
+    delete vScrollBarStyle;
 }
 
 void MessageBoxExX::information(QString titleText, QString text, QString buttonText)
@@ -66,9 +73,15 @@ int MessageBoxExX::warning(QString titleText, QString text, QString yesText, QSt
     ui->infoTE->setText(text);
 //    ui->infoTE->setAlignment(Qt::AlignHCenter);
     ui->button->setText(yesText);
-    ui->button2->setText(noText);
     connect(ui->button, &QPushButton::clicked, this, &MessageBoxExX::resultToYes);
-    connect(ui->button2, &QPushButton::clicked, this, &MessageBoxExX::resultToNo);
+    if(noText.isEmpty()){
+        ui->button2->setEnabled(false);
+        ui->button2->setVisible(false);
+    }
+    else{
+        ui->button2->setText(noText);
+        connect(ui->button2, &QPushButton::clicked, this, &MessageBoxExX::resultToNo);
+    }
     this->exec();
     return result;
 }
@@ -86,6 +99,7 @@ int MessageBoxExX::question(QString titleText, QString text, QString yesText, QS
     ui->infoTE->setText(text);
     ui->button->setText(yesText);
     ui->button2->setText(noText);
+    ui->button2->setVisible(true);
     connect(ui->button, &QPushButton::clicked, this, &MessageBoxExX::resultToYes);
     connect(ui->button2, &QPushButton::clicked, this, &MessageBoxExX::resultToNo);
     this->exec();
@@ -112,4 +126,27 @@ void MessageBoxExX::resultToNo()
 {
     this->result = No;
     this->close();
+}
+
+void MessageBoxExY::information(QString titleText, QString text, QString buttonText)
+{
+    MessageBoxExX *x = new MessageBoxExX;
+    x->information(titleText, text, buttonText);
+    delete x;
+}
+
+int MessageBoxExY::warning(QString titleText, QString text, QString yesText, QString noText)
+{
+    MessageBoxExX *x = new MessageBoxExX;
+    int ret = x->warning(titleText, text, yesText, noText);
+    delete x;
+    return ret;
+}
+
+int MessageBoxExY::question(QString titleText, QString text, QString yesText, QString noText)
+{
+    MessageBoxExX *x = new MessageBoxExX;
+    int ret = x->question(titleText, text, yesText, noText);
+    delete x;
+    return ret;
 }

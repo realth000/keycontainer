@@ -3,7 +3,6 @@
 #include "ui/titlebar.h"
 #include "qssinstaller.h"
 #include <QDebug>
-#include "uistyle/proxystyle.h"
 
 FindKeyUi::FindKeyUi(QWidget *parent) :
     QDialog(parent),
@@ -16,6 +15,8 @@ FindKeyUi::FindKeyUi(QWidget *parent) :
 FindKeyUi::~FindKeyUi()
 {
     delete ui;
+    delete pBStyle;
+    delete chBStyle;
 }
 
 void FindKeyUi::setInputFocus()
@@ -109,7 +110,7 @@ void FindKeyUi::initUi()
 {
     this->setWindowFlag(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
-    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_findkeyui.qss").arg(this->objectName()).arg("rgb(55,85,100)")
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/qss/stylesheet_findkeyui.css").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
                                  "alternate-background-color:rgb(55,55,55)"));
 
@@ -145,14 +146,14 @@ void FindKeyUi::initUi()
         findNextBtn.addPixmap(pixm2, QIcon::Normal, QIcon::Off);
     }
     ui->findNextBtn->setIcon(findNextBtn);
-    PushButtonStyle *p = new PushButtonStyle("transparent");
-    ui->findPreBtn->setStyle(p);
-    ui->findNextBtn->setStyle(p);
-    ui->countBtn->setStyle(p);
-    CheckBoxStyle *c = new CheckBoxStyle;
-    ui->useRegChB->setStyle(new CheckBoxStyle);
-    ui->findCaseSensitivityChB->setStyle(c);
-    ui->findAllWordChB->setStyle(c);
+    pBStyle = new PushButtonStyle("transparent");
+    ui->findPreBtn->setStyle(pBStyle);
+    ui->findNextBtn->setStyle(pBStyle);
+    ui->countBtn->setStyle(pBStyle);
+    chBStyle = new CheckBoxStyle;
+    ui->useRegChB->setStyle(chBStyle);
+    ui->findCaseSensitivityChB->setStyle(chBStyle);
+    ui->findAllWordChB->setStyle(chBStyle);
     QIcon countIcon;
     const QPixmap pixmp1 = QPixmap(":/src/count_reverse.png");
     if(!pixmp1.isNull()){
