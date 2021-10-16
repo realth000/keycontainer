@@ -9,7 +9,7 @@
 #define TO_STR2(I2) TO_STR1(I2)
 
 #define ABOUT_VERSION APP_VERSION
-#define ABOUT_TIME  "2021.10.10"
+#define ABOUT_TIME  "2021.10.16"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
@@ -80,9 +80,9 @@
 // password defines
 
 #define LOGIN_PASSWD_FILE_NAME "/login.ec"
-#define LOGIN_PASSWD_HASH_STR  "79b521b4199b360f18b299bbe7b1300c9c4389552631c4f8ea3607970d6ed1aa478aca65f27584b7f4740f8402d00920db2099ce391556983971345b0517f8f8"
+#define LOGIN_PASSWD_HASH_DEF  "24972516c095bc4c5c916c9eb9c6b01d99939bcc600b8261bbb63df1baf56289ac292f847a9b28141ca91b5c4a26f4e799df6eeef5547df09d00d8c5f1d857e2"
 #define KEYDB_PASSWD_FILE_NAME "/dat.ec"
-#define DEFAULT_LOCK_APP_TIME  "5分钟"
+#define DEFAULT_LOCK_APP_TIME  "5分钟" // 要保证timeLockerTimingMap里有DEFAULT_LOCK_APP_TIME
 #define DEFAULT_STR_GEN_LENGTH 6
 #define PASSWD_FILE_FORM_ALL   "全部格式 (*.kcdb *.kcdj)"
 #define PASSWD_FILE_FORM_KCDB  "KeyContainerDataBase (*.kcdb)"

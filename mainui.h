@@ -100,7 +100,8 @@ private slots:
 private:
     void initKeyData();
     void initUi();
-    void initConfig();
+    Estring initConfig();
+    void setupConfigToUi();
     QWidget* addCheckBox(int height);
     void keyTW_addNewRow(int rowIndex, Estring disc, Estring account, Estring key, int rowHeight, bool show=true);
     void keyTW_deleteSeledtedKeys();
@@ -119,6 +120,7 @@ private:
     void deleteSingleKey();
     bool setKcdbKey(QString keyPath = "");
     Estring randomGenerator();
+    void loginReset();
 
     Kcdb *kcdb = nullptr;
     LogIn *logIn = nullptr;
@@ -180,6 +182,9 @@ private:
     TabBarStyle *tBStyle;
     TabWidgetStyle *tWStyle;
     QPixmap* about_logo_pix;
+
+    // config
+    int selectMode = -1;
 
 };
 #endif // MAINUI_H
