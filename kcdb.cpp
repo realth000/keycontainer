@@ -406,9 +406,11 @@ void Kcdb::setBackupState(bool isBackup)
 void Kcdb::setSavePath(QString path)
 {
     this->savePath = path;
+    this->saveAESPath =QDir::toNativeSeparators((QFileInfo(path)).path().replace("\\", "/") + KEYDB_PASSWD_FILE_NAME);
 }
 
 void Kcdb::setBackupPath(QString path)
 {
     this->backupPath = path;
+    this->backupAESPath =QDir::toNativeSeparators((QFileInfo(path)).path().replace("\\", "/") + KEYDB_PASSWD_FILE_NAME);
 }

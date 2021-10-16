@@ -35,24 +35,8 @@ MainUi::MainUi(QWidget *parent)
 {
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
-    logIn = new LogIn();
-    connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
-        kcdb = new Kcdb(appPath + saveName, appPath + backupName);
-        kcdb->setKey(k);
-    });
-    connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
-        if(result){
-            truePwdHash = pwdHash;
-            loginCorrent = true;
-        }
-        emit open2();
-    });
-    connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit);
-    if(logIn->getContinueStart()){
-        logIn->setContinueStart(false);
-        logIn->show();
-        loginLockLoop.exec();
-    }
+    logIn = new LogIn(this, initConfig());
+    loginReset();
 
     if(!loginCorrent){
         delete logIn;
@@ -63,17 +47,22 @@ MainUi::MainUi(QWidget *parent)
     }
     delete logIn;
     logIn = nullptr;
-    if(truePwdHash.getVal() == LOGIN_PASSWD_HASH_STR){
+    if(truePwdHash.getVal() == LOGIN_PASSWD_HASH_DEF){
         MessageBoxExY::warning("需要修改密码", "检测到当前密码为默认密码，建议尽快在设置内修改", " 确定 ", "");
     }
 #   else
     this->loginCorrent = true;
+    if(kcdb != nullptr){
+        delete kcdb;
+    }
     kcdb = new Kcdb(appPath + saveName, appPath + backupName);
+    kcdb->setSavePath(savePath);
+    kcdb->setBackupPath(backupPath);
     kcdb->setKey(Estring());
 #   endif
     ui->setupUi(this);
     initUi();
-    initConfig();
+    setupConfigToUi();
     initKeyData();
     QApplication::instance()->installEventFilter(this);
     connect(qApp, &QGuiApplication::applicationStateChanged, this, &MainUi::appStateChanged);
@@ -713,29 +702,20 @@ void MainUi::initUi()
     cboard = QApplication::clipboard();
 }
 
-void MainUi::initConfig()
+Estring MainUi::initConfig()
 {
+    Estring ret("");
     savePath = QDir::toNativeSeparators(appPath + saveName);
     initKeyLastWritePath.setVal(savePath);
-    ui->savePathLE->setText(savePath);
-    kcdb->setSavePath(savePath);
     backupPath = QDir::toNativeSeparators(appPath + backupName);
-    ui->backupPathLE->setText(backupPath);
-    kcdb->setBackupPath(backupPath);
-    ui->key_checkRB->setChecked(true);
-    ui->key_check_defaultRB->setChecked(true);
     autoChangeAES = false;
-    ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
     autoBackupPath = true;
-    ui->autoBackupPathChB->setChecked(autoBackupPath);
     timeLockerTiming = timeLockerTimingMap[DEFAULT_LOCK_APP_TIME];
-    ui->lockAppTimingSB->setCurrentText(DEFAULT_LOCK_APP_TIME);
     generateLength = DEFAULT_STR_GEN_LENGTH;
-    ui->gLengthCB->setCurrentText(QString::number(generateLength));
 
     if(!QFileInfo(QDir::toNativeSeparators(appPath + "/config.ini")).exists()){
-        log("未找到配置文件");
-        return;
+        MessageBoxExY::information("未找到配置文件", "未找到配置文件，加载默认配置");
+        return ret;
     }
     QSettings *ini = new QSettings(QDir::toNativeSeparators(appPath + "/config.ini"), QSettings::IniFormat);
     QFileInfo saveFile(ini->value("/Path/SavePath").toString());
@@ -743,18 +723,34 @@ void MainUi::initConfig()
         savePath = saveFile.absoluteFilePath();
         saveName = "/" + saveFile.fileName();
         initKeyLastWritePath.setVal(savePath);
-        ui->savePathLE->setText(savePath);
-        kcdb->setSavePath(savePath);
+        ret.setVal(QDir::toNativeSeparators((QFileInfo(savePath)).path().replace("\\", "/") + LOGIN_PASSWD_FILE_NAME));
     }
 
     QFileInfo backupFile(ini->value("/Path/BackupPath").toString());
     if(backupFile.exists() && backupFile.isFile()){
         backupPath = backupFile.absoluteFilePath();
         backupName = "/" + backupFile.fileName();
-        ui->backupPathLE->setText(backupPath);
-        kcdb->setBackupPath(backupPath);
+        if(ret.getVal().isEmpty()){
+            ret.setVal(QDir::toNativeSeparators((QFileInfo(backupPath)).path().replace("\\", "/") + LOGIN_PASSWD_FILE_NAME));
+        }
     }
-    int selectMode = ini->value("/Common/DefaultSelectMode").toUInt();
+    selectMode = ini->value("/Common/DefaultSelectMode").toUInt();
+    autoChangeAES = ini->value("/Security/AutoChangeAESKey").toBool();
+    autoBackupPath = ini->value("/Common/AutoBackupPath").toBool();
+    QString lockAppTimingTmp = ini->value("/Security/LockAppTiming").toString().replace("m", "分钟").replace("h", "小时");
+    if(timeLockerTimingMap.contains(lockAppTimingTmp)){
+        timeLockerTiming = timeLockerTimingMap[lockAppTimingTmp];
+    }
+    generateLength = qMax(ini->value("/Tool/GeneratorGenerateLength").toInt(), GENERATOR_MIN_LENGTH);
+
+    delete ini;
+    return ret;
+}
+
+void MainUi::setupConfigToUi()
+{
+    ui->savePathLE->setText(savePath);
+    ui->backupPathLE->setText(backupPath);
     switch(selectMode){
     case 0:
         ui->key_checkRB->setChecked(true);
@@ -774,19 +770,10 @@ void MainUi::initConfig()
         ui->key_checkRB->setChecked(true);
         ui->key_check_defaultRB->setChecked(true);
     }
-    autoChangeAES = ini->value("/Security/AutoChangeAESKey").toBool();
     ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
-    autoBackupPath = ini->value("/Common/AutoBackupPath").toBool();
     ui->autoBackupPathChB->setChecked(autoBackupPath);
-    QString lockAppTimingTmp = ini->value("/Security/LockAppTiming").toString().replace("m", "分钟").replace("h", "小时");
-    if(timeLockerTimingMap.contains(lockAppTimingTmp)){
-        timeLockerTiming = timeLockerTimingMap[lockAppTimingTmp];
-        ui->lockAppTimingSB->setCurrentText(lockAppTimingTmp);
-    }
-    generateLength = qMax(ini->value("/Tool/GeneratorGenerateLength").toInt(), GENERATOR_MIN_LENGTH);
+    ui->lockAppTimingSB->setCurrentText(timeLockerTimingMap.key(timeLockerTiming));
     ui->gLengthCB->setCurrentText(QString::number(generateLength));
-
-    delete ini;
     log("读取配置");
 }
 
@@ -1034,7 +1021,7 @@ bool MainUi::checkDb(QString dbPath)
 #if QT_VERSION >= QT_VERSION_CHECK(5,12,0)
             if(hashString_de.compare(resultHash) != 0){
 #else
-            if(hashString_de == resultHash){
+            if(hashString_de != resultHash){
 #endif
                 MessageBoxExY::information("数据库被篡改", QString("校验得数据库已被篡改，建议读取备份。\n"
                                                "file:%1\n"
@@ -1267,10 +1254,6 @@ bool MainUi::setKcdbKey(QString keyPath)
 Estring MainUi::randomGenerator()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
-    if(!(useNumbers || useAlphas || useSymbols || (useCustom && !ui->gCustomCharLE->text().isEmpty()))){
-        log("Empty input");
-        return Estring();
-    }
     QString numbers="0123456789";
     QString alphas="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     QString symbols="~!@#$%^&*()_+`-={}|[]:,./<>?;'\\\"";
@@ -1299,6 +1282,34 @@ Estring MainUi::randomGenerator()
     log("randomGenerator not work when Qt version < 5.10.0");
     return Estring();
 #endif
+}
+
+void MainUi::loginReset()
+{
+    connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
+        if(kcdb != nullptr){
+            delete kcdb;
+            kcdb = nullptr;
+        }
+        kcdb = new Kcdb(appPath + saveName, appPath + backupName);
+        kcdb->setSavePath(savePath);
+        kcdb->setBackupPath(backupPath);
+        kcdb->setKey(k);
+    });
+    connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
+        if(result){
+            tmpPwdHash = pwdHash;
+            loginCorrent = true;
+        }
+        emit open2();
+    });
+    connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit);
+    if(logIn->getContinueStart()){
+        logIn->setContinueStart(false);
+        this->setVisible(false);
+        logIn->show();
+        loginLockLoop.exec();
+    }
 }
 
 void MainUi::showKeyTableMenu(QPoint pos)
@@ -1423,7 +1434,7 @@ void MainUi::on_key_checkRB_clicked()
     bool a = disconnect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox);
     bool b = disconnect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox);
     if( a || b ){
-        log("勾选选择");
+//        log("勾选选择");
     }
 }
 
@@ -1432,7 +1443,7 @@ void MainUi::on_key_clickRB_clicked()
     bool a = connect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox, Qt::UniqueConnection);
     bool b = disconnect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox);
     if( a || b){
-        log("单击选择");
+//        log("单击选择");
     }
 }
 
@@ -1441,7 +1452,7 @@ void MainUi::on_key_doubleClickRB_clicked()
     bool a = disconnect(ui->keyTW, &QTableWidget::cellClicked, this, &MainUi::selectCheckBox);
     bool b = connect(ui->keyTW, &QTableWidget::cellDoubleClicked, this, &MainUi::selectCheckBox, Qt::UniqueConnection);
     if( a || b ){
-        log("双击选择");
+//        log("双击选择");
     }
 }
 
@@ -1650,7 +1661,7 @@ void MainUi::on_selectBackupPathBtn_clicked()
 
 void MainUi::on_changeAESKeyBtn_clicked()
 {
-    int re = MessageBoxExY::warning("重要提示", "重置后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？");
+    int re = MessageBoxExY::warning("重要提示", "更新后自动保存表格中的密码数据(覆盖旧数据)，并且会导致旧备份无法读取，是否继续？");
     if(re == MessageBoxExX::Yes){
         if(ui->autoChangeAESKeyChB->isChecked()){refreshAESKey();}
         on_saveKeyBtn_clicked();
@@ -1954,7 +1965,7 @@ void MainUi::on_importKeysBtn_clicked()
         return;
     }
     QFileInfo dataFileInfo(importPath);
-    QString datPath = QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + LOGIN_PASSWD_FILE_NAME);
+    QString loginPath = QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + LOGIN_PASSWD_FILE_NAME);
     if(dataFileInfo.suffix() == "kcdb"){
         if(!QFileInfo::exists(importPath+".chf")){
             log("检验文件丢失，无法读取");
@@ -1965,29 +1976,8 @@ void MainUi::on_importKeysBtn_clicked()
             delete logIn;
             logIn = nullptr;
         }
-        logIn = new LogIn(nullptr, Estring(datPath));
-        connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
-            if(kcdb != nullptr){
-                delete kcdb;
-                kcdb = nullptr;
-            }
-            kcdb = new Kcdb(appPath + saveName, appPath + backupName);
-            kcdb->setKey(k);
-        });
-        connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
-            if(result){
-                tmpPwdHash = pwdHash;
-                loginCorrent = true;
-            }
-            emit open2();
-        });
-        connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit);
-        if(logIn->getContinueStart()){
-            logIn->setContinueStart(false);
-            this->setVisible(false);
-            logIn->show();
-            loginLockLoop.exec();
-        }
+        logIn = new LogIn(nullptr, Estring(loginPath));
+        loginReset();
         this->setVisible(true);
         // FIXME: 不安全，需要绑定login.ec与dat.ec
         if(!loginCorrent){
@@ -2007,7 +1997,7 @@ void MainUi::on_importKeysBtn_clicked()
         refreshKeyTW();
         currentPath = importPath;
         truePwdHash = tmpPwdHash;
-        kcdb->setSaveAESKeyPath(Estring(datPath));
+        kcdb->setSaveAESKeyPath(Estring(QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + KEYDB_PASSWD_FILE_NAME)));
         log("导入成功");
     }
     else if(dataFileInfo.suffix() == "kcdj"){
@@ -2050,27 +2040,7 @@ void MainUi::lockApp()
         delete logIn;
     }
     logIn = new LogIn();
-    connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
-        if(kcdb != nullptr){
-            delete kcdb;
-        }
-        kcdb = new Kcdb(appPath + saveName, appPath + backupName);
-        kcdb->setKey(k);
-    });
-    connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
-        Q_UNUSED(pwdHash)
-        loginCorrent=result;
-        emit open2();
-    });
-    connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit);
-    if(logIn->getContinueStart()){
-        logIn->setContinueStart(false);
-        this->setVisible(false);
-        logIn->show();
-        loginLockLoop.exec();
-        delete logIn;
-        logIn = nullptr;
-    }
+    loginReset();
     loginCorrent ? this->setVisible(true) : exit(0);
 }
 
@@ -2111,6 +2081,10 @@ void MainUi::on_useSymbolChB_stateChanged(int arg1)
 
 void MainUi::on_gKeyBtn_clicked()
 {
+    if(!(useNumbers || useAlphas || useSymbols || (useCustom && !ui->gCustomCharLE->text().isEmpty()))){
+        log("Empty input");
+        return;
+    }
     ui->gResultLE->setText(randomGenerator().getVal());
 }
 
