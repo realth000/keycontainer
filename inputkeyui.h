@@ -17,8 +17,9 @@ public:
     ~InputKeyUi();
 
 protected:
-    void keyPressEvent(QKeyEvent *e) override;
+    virtual void keyPressEvent(QKeyEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *e) override;
 
 signals:
     void inputFinish(bool result, int existPos);

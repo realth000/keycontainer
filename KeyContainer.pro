@@ -2,7 +2,14 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 3.1.6
+VERSION = 3.1.7
+
+##########################
+# COMPILE_QML
+# COMPILE_VID
+
+#DEFINES += COMPILE_VID
+##########################
 
 # common config
 QT += core
@@ -37,7 +44,11 @@ win32 {
     CONFIG(debug,debug|release){
         INCLUDEPATH += C:\VisualLeakDetector\include
         DEPENDPATH += C:\VisualLeakDetector\include
-        LIBS += -LC:/VisualLeakDetector/lib/Win64 -lvld
+        if(contains(DEFINES, COMPILE_VID)) {
+            LIBS += -LC:/VisualLeakDetector/lib/Win64 -lvld
+            DEFINES += ENABLE_VID
+        }
+
     }
 }
 

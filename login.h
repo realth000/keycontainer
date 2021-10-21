@@ -29,6 +29,7 @@ signals:
 protected:
     virtual void closeEvent(QCloseEvent *e) override;
     virtual void keyPressEvent(QKeyEvent *e) override;
+    virtual void keyReleaseEvent(QKeyEvent *e) override;
 
 private slots:
     void on_logInB_clicked();

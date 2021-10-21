@@ -22,8 +22,9 @@ signals:
     void writePw(Estring p);
 
 protected:
-    void keyPressEvent(QKeyEvent *e) override;
+    virtual void keyPressEvent(QKeyEvent *e) override;
     virtual void mouseReleaseEvent(QMouseEvent *event) override;
+    virtual void keyReleaseEvent(QKeyEvent *e) override;
 
 private slots:
     void on_inputKey_saveB_clicked();
