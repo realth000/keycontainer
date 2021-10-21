@@ -1304,6 +1304,7 @@ void MainUi::loginReset()
     connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
         if(result){
             tmpPwdHash = pwdHash;
+            truePwdHash = pwdHash;
             loginCorrent = true;
         }
         emit open2();
