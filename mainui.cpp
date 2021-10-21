@@ -35,7 +35,7 @@ MainUi::MainUi(QWidget *parent)
 {
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
-    logIn = new LogIn(this, initConfig());
+    logIn = new LogIn(nullptr, initConfig());
     loginReset();
 
     if(!loginCorrent){
@@ -78,7 +78,12 @@ MainUi::~MainUi()
     delete ui;
     delete kcdb;
     delete fkui;
-    if(logIn != nullptr){delete logIn; logIn = nullptr;}
+    if(logIn != nullptr){
+        delete logIn; logIn = nullptr;
+    }
+    else{
+        return;
+    }
     delete about_logo_pix;
 
     // delete styles

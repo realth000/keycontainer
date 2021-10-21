@@ -39,24 +39,6 @@ InputKeyUi::~InputKeyUi()
 
 void InputKeyUi::keyPressEvent(QKeyEvent *e)
 {
-    if(e->modifiers() == Qt::NoModifier && e->key() == Qt::Key_CapsLock){
-#ifdef Q_OS_WINDOWS
-        GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
-        e->accept();
-        return;
-#elif defined(Q_OS_LINUX)  && !defined(Q_OS_ANDROID)// X11 version (Linux/Unix/Mac OS X/etc...)
-    Display *d = XOpenDisplay((char*)0);
-    bool caps_state = false;
-    if (d) {
-        unsigned n;
-        XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
-        caps_state = (n & 0x01) == 1;
-    }
-    caps_state ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
-    e->accept();
-    return;
-#endif
-    }
     if((e->modifiers() == Qt::KeypadModifier && e->key() == Qt::Key_Enter)
             || (e->modifiers() == Qt::NoModifier && e->key() == Qt::Key_Return)){
         qDebug() << "Key_Enter" << e->modifiers() << e->key();
@@ -74,6 +56,28 @@ void InputKeyUi::mouseReleaseEvent(QMouseEvent *event)
         ui->inputKey_conPwdLE->setEchoMode(QLineEdit::Password);
         showing = false;
         event->accept();
+    }
+}
+
+void InputKeyUi::keyReleaseEvent(QKeyEvent *e)
+{
+    if(e->modifiers() == Qt::NoModifier && e->key() == Qt::Key_CapsLock){
+#ifdef Q_OS_WINDOWS
+        GetKeyState(VK_CAPITAL) & 1 ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
+        e->accept();
+        return;
+#elif defined(Q_OS_LINUX)  && !defined(Q_OS_ANDROID)// X11 version (Linux/Unix/Mac OS X/etc...)
+        Display *d = XOpenDisplay((char*)0);
+        bool caps_state = false;
+        if (d) {
+            unsigned n;
+            XkbGetIndicatorState(d, XkbUseCoreKbd, &n);
+            caps_state = (n & 0x01) == 1;
+        }
+        caps_state ? ui->capsLockHintL->setVisible(true) : ui->capsLockHintL->setVisible(false);
+        e->accept();
+        return;
+#endif
     }
 }
 

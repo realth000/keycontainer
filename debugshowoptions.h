@@ -16,6 +16,10 @@
 #define DEBUG_QML_ON_WINDOWS
 #endif
 
+#ifdef ENABLE_VID
+#define DEBUG_USE_VID
+#endif
+
 #ifdef Q_OS_ANDROID
 #define ANDROID_PACKAGE_NAME "com.th000.keycontainer"
 //#define ANDROID_PRIVATE_STORAGE

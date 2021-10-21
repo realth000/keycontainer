@@ -4,7 +4,9 @@
 #include <QFont>
 #include "debugshowoptions.h"
 
-//#include "vld.h"
+#ifdef DEBUG_USE_VID
+#include "vld.h"
+#endif
 
 #if defined(Q_OS_WINDOWS) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
 #include <QSharedMemory>
@@ -32,7 +34,9 @@
 
 int main(int argc, char *argv[])
 {
+    // 勿删
     DebugShowOptions dso;
+
     QFont af;
 #if defined(Q_OS_WINDOWS)
     af.setFamily("Microsoft YaHei");
@@ -52,7 +56,6 @@ int main(int argc, char *argv[])
     QSharedMemory sharedMem("key_container_shared_memory");
     if(sharedMem.attach()){
         qDebug() << "already started";
-        MessageBoxExX mb;
         MessageBoxExY::information("", "程序已经启动，同时只能运行一个" + QString(TITLEBAR_TITLETEXT), "退出");
         return -1;
     }

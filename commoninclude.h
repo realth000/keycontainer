@@ -9,7 +9,7 @@
 #define TO_STR2(I2) TO_STR1(I2)
 
 #define ABOUT_VERSION APP_VERSION
-#define ABOUT_TIME  "2021.10.16"
+#define ABOUT_TIME  "2021.10.21"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
