@@ -20,15 +20,10 @@
         <file>src/changeInitKey.png</file>
         <file>src/changeAESKey.png</file>
         <file>qss/stylesheet_inputkeyui.css</file>
-        <file>src/title.png</file>
-        <file>src/initUiBackground.png</file>
         <file>qss/stylesheet_login.css</file>
         <file>qss/stylesheet_inputinitkeyui.css</file>
         <file>src/about.png</file>
         <file>src/about_reverse.png</file>
-        <file>src/Key Container.jpeg</file>
-        <file>src/Key Container.ico</file>
-        <file>src/KeyContainer.ico</file>
         <file>src/backupKeys.png</file>
         <file>qss/stylesheet_findkeyui.css</file>
         <file>src/arrow_left_30.png</file>
@@ -44,5 +39,8 @@
         <file>src/tools_reverse.png</file>
         <file>src/count_reverse.png</file>
         <file>src/rightArrow.png</file>
+        <file>src/Icon2.png</file>
+        <file>src/IconWide.png</file>
+        <file>src/Key Container.ico</file>
     </qresource>
 </RCC>

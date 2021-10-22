@@ -2,7 +2,8 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++17 no_batch
 # 防止linux下程序名中空格造成的问题，分开处理
-VERSION = 3.1.8
+VERSION = 3.1.9
+RC_ICONS = "Key Container.ico"
 
 ##########################
 # COMPILE_QML
@@ -38,7 +39,6 @@ DISTFILES += \
 
 # windows config
 win32 {
-    RC_ICONS = "Key Container.ico"
     TARGET = "Key Container"
     LIBS +=  "C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64\User32.Lib"
     CONFIG(debug,debug|release){

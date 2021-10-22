@@ -64,3 +64,7 @@ QMessageBox QPushButton{
     color:rgb(240,255,255);
 }
 
+QDialog#Login{
+    border: 1px solid rgb(255,0,0);
+}
+

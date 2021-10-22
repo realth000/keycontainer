@@ -8,8 +8,10 @@
 #define TO_STR1(I1) #I1
 #define TO_STR2(I2) TO_STR1(I2)
 
+#define TITLEBAR_TITLETEXT "Key Container"
+#define TITLEBAR_TITLEICON ":/src/Key Container.ico"
 #define ABOUT_VERSION APP_VERSION
-#define ABOUT_TIME  "2021.10.22"
+#define ABOUT_TIME  "2021.10.23"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
@@ -38,12 +40,8 @@
 
 #if defined(Q_OS_LINUX)  && !defined(Q_OS_ANDROID)
 #   define ABOUT_PLANTFORM "For Linux"
-#   define TITLEBAR_TITLEICON ":/src/KeyContainer.ico"
-#   define TITLEBAR_TITLETEXT "KeyContainer"
 #elif defined(Q_OS_WINDOWS)
 #   define ABOUT_PLANTFORM "For Windows"
-#   define TITLEBAR_TITLEICON ":/src/Key Container.ico"
-#   define TITLEBAR_TITLETEXT "Key Container"
 #elif defined (Q_OS_ANDROID)
 #   define ABOUT_PLANTFORM "For Android"
 #else

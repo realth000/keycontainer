@@ -84,7 +84,7 @@ MainUi::~MainUi()
     else{
         return;
     }
-    delete about_logo_pix;
+//    delete about_logo_pix;
 
     // delete styles
     delete pBStyleH;
@@ -609,10 +609,11 @@ void MainUi::initUi()
     ui->autoChangeAESKeyChB->setStyle(chBStyle);
     ui->autoBackupPathChB->setStyle(chBStyle);
 
-    about_logo_pix = new QPixmap(":/src/Key Container.jpeg");
-    about_logo_pix->scaled(ui->about_logoL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-    ui->about_logoL->setScaledContents(true);
-    ui->about_logoL->setPixmap(*about_logo_pix);
+//    about_logo_pix = new QPixmap(":/src/Key Container.jpeg");
+//    about_logo_pix->scaled(ui->about_logoL->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+//    ui->about_logoL->setScaledContents(true);
+//    ui->about_logoL->setPixmap(*about_logo_pix);
+
 //    QFont *about_title_font = new QFont("");
 //    about_title_font->setPointSize(20);
 //    about_title_font->setBold(true);

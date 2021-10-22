@@ -16,9 +16,9 @@ TableWidgetEx::TableWidgetEx(QWidget *parent):
 
     connect(this, &TableWidgetEx::rowInserted, this, [this](){this->rowCountNumber++;});
     connect(this, &TableWidgetEx::rowRemoved, this, [this](){this->rowCountNumber--;});
-    connect(this, &QTableWidget::cellEntered, this, [this](int row, int column){qDebug() << "cellEntered" << row << column << this->sizeHint();}, Qt::UniqueConnection);
-    connect(this, &QTableWidget::cellActivated, this, [this](int row, int column){qDebug() << "cellActivated" << row << column << this->sizeHint();}, Qt::UniqueConnection);
-    connect(this, &QTableWidget::cellClicked, this, [this](int row, int column){qDebug() << "cellClicked" << row << column << this->sizeHint();}, Qt::UniqueConnection);
+//    connect(this, &QTableWidget::cellEntered, this, [this](int row, int column){qDebug() << "cellEntered" << row << column << this->sizeHint();}, Qt::UniqueConnection);
+//    connect(this, &QTableWidget::cellActivated, this, [this](int row, int column){qDebug() << "cellActivated" << row << column << this->sizeHint();}, Qt::UniqueConnection);
+//    connect(this, &QTableWidget::cellClicked, this, [this](int row, int column){qDebug() << "cellClicked" << row << column << this->sizeHint();}, Qt::UniqueConnection);
 }
 
 //TableWidgetItemEx *TableWidgetEx::item(int row, int column) const
