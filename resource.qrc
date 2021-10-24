@@ -42,5 +42,8 @@
         <file>src/Icon2.png</file>
         <file>src/IconWide.png</file>
         <file>src/Key Container.ico</file>
+        <file>screenshots/readme-001.png</file>
+        <file>screenshots/readme-002.png</file>
+        <file>screenshots/readme-003.png</file>
     </qresource>
 </RCC>

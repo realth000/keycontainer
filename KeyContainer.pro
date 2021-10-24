@@ -35,6 +35,7 @@ RESOURCES += \
     resource.qrc
 
 DISTFILES += \
+    README.md \
     log
 
 # windows config
