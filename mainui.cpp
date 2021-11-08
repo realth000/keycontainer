@@ -574,10 +574,10 @@ void MainUi::initUi()
     ui->keyTW->setColumnCount(5);
     ui->keyTW->setHorizontalHeaderLabels({"选择", "id", "说明","账户", "密码"});
     ui->keyTW->setColumnWidth(0,40);
-    ui->keyTW->setColumnWidth(1,60);
-    ui->keyTW->setColumnWidth(2,150);
-    ui->keyTW->setColumnWidth(3,180);
-    ui->keyTW->setColumnWidth(4,200);
+    ui->keyTW->setColumnWidth(1,70);
+    ui->keyTW->setColumnWidth(2,230);
+    ui->keyTW->setColumnWidth(3,260);
+    ui->keyTW->setColumnWidth(4,260);
     ui->keyTW->horizontalHeader()->setFixedHeight(40);
 
     ui->keyTW->setEditTriggers(QTableWidget::NoEditTriggers);
