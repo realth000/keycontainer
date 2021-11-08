@@ -40,7 +40,7 @@ QTableWidget{
     font:17px;
     border:1px solid %2;
     outline:2xp solid rgb(255,0,0);
-    gridline-color:%2;
+    gridline-color:transparent;
     color:rgb(230,230,230);
     background:%3
 }
@@ -50,7 +50,7 @@ QTableWidget::item{
 
 QTableWidget::item:selected{
     color:rgb(240,255,255);
-    background-color:rgb(105,145,145);
+    background-color:rgb(33,65,78);
     outline:none;
 }
 
@@ -87,7 +87,7 @@ QMenu{
     color:rgb(240,255,255);
     background:%3;
     border:1px solid %2;
-    selection-background-color:rgb(105,145,145);
+    selection-background-color:rgb(33,65,78);
 }
 
 QMenu::separator{
