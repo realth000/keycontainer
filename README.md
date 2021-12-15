@@ -1,4 +1,5 @@
 ﻿# KeyContainer
+[中文文档](https://github.com/realth000/keycontainer/blob/master/README_zh_CN.md)
 + Password container application based on Qt5.
 + Do NOT need network accessibility.
 + Avaliable on Windows and Linux.
@@ -21,6 +22,7 @@ Suppot build KeyContainer using both QMake and CMake.
 3. Export Qt modules path ``QT_CMAKE_PATH``(e.g.``export QT_CMAKE_PATH=/opt/Qt5.15.2/5.15.2/gcc_64/bin/cmake``), this step is not need when building in QtCreator.
 4. ``cmake ../``
 5. ``make``
+6. Copy the login file ``login.ec`` to the output directory.
 ## License
 KeyContainer use the following third-party repos:
 ### [Qt-AES](https://github.com/bricke/Qt-AES/)
