@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.13)
+﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 3.1.9)
+set(APP_VERSION 3.1.10)
 
 project(KeyContainer
 	VERSION ${APP_VERSION}
@@ -64,12 +64,20 @@ include_directories(src/)
 include_directories(src/core)
 include_directories(src/utils)
 
-add_executable(KeyContainer)
+if(WIN32)
+    add_executable(KeyContainer WIN32)
+else()
+    add_executable(KeyContainer)
+endif()
 
 add_subdirectory(src)
 
 if(COMPILE_QML)
-	target_link_libraries(${PROJECT_NAME} X11 Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
+    target_link_libraries(${PROJECT_NAME} optimized Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
 else()
-	target_link_libraries(${PROJECT_NAME} X11 Qt5::Core Qt5::Gui Qt5::Widgets)
+    target_link_libraries(${PROJECT_NAME} optimized Qt5::Core Qt5::Gui Qt5::Widgets)
+endif()
+
+if(UNIX)
+    target_link_libraries(${PROJECT_NAME} optimized X11)
 endif()
