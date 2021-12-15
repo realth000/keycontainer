@@ -1,0 +1,5 @@
+if(NOT COMPILE_QML)
+	target_sources(KeyContainer PRIVATE animationrefresh.cpp qssinstaller.cpp)
+	add_subdirectory(style)
+	add_subdirectory(widget)
+endif()
