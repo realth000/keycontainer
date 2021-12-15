@@ -1,0 +1,40 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pic/IconWide.png</file>
+        <file>pic/close.png</file>
+        <file>pic/arrow_right_30.png</file>
+        <file>pic/arrow_left_30.png</file>
+        <file>pic/saveConfig.png</file>
+        <file>pic/about_reverse.png</file>
+        <file>pic/selectInverseKey.png</file>
+        <file>pic/selectAll.png</file>
+        <file>pic/restart.png</file>
+        <file>pic/findKey_reverse.png</file>
+        <file>pic/changeInitKey.png</file>
+        <file>pic/changeAESKey.png</file>
+        <file>pic/backupKeys.png</file>
+        <file>pic/Key Container.ico</file>
+        <file>pic/KeyContainer.ico</file>
+        <file>pic/saveKey.png</file>
+        <file>pic/delKey.png</file>
+        <file>pic/Icon2.png</file>
+        <file>pic/rightArrow.png</file>
+        <file>pic/dice_reverse.png</file>
+        <file>pic/tools_reverse.png</file>
+        <file>pic/count_reverse.png</file>
+        <file>pic/save_reverse.png</file>
+        <file>pic/config_reverse.png</file>
+        <file>pic/config.png</file>
+        <file>pic/showKey.png</file>
+        <file>pic/about.png</file>
+        <file>pic/refresh.png</file>
+        <file>pic/lock_reverse.png</file>
+        <file>pic/manage_reverse.png</file>
+        <file>pic/tools.png</file>
+        <file>pic/addKey.png</file>
+        <file>pic/manage.png</file>
+        <file>pic/backupKey.png</file>
+        <file>pic/exportKey.png</file>
+        <file>pic/importKeys.png</file>
+    </qresource>
+</RCC>

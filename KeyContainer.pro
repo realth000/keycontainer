@@ -3,7 +3,9 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 CONFIG += c++17 no_batch
 # 防止linux下程序名中空格造成的问题，分开处理
 VERSION = 3.1.9
-RC_ICONS = "Key Container.ico"
+RC_ICONS = "KeyContainer.ico"
+
+INCLUDEPATH += src src/core src/utils
 
 ##########################
 # COMPILE_QML
@@ -14,25 +16,28 @@ RC_ICONS = "Key Container.ico"
 
 # common config
 QT += core
+
 SOURCES += \
-    cml/keymapjsonengine.cpp \
-    commoninclude.cpp \
-    debugshowoptions.cpp \
-    encryption/encrypted.cpp \
-    encryption/qaesencryption.cpp \
-    kcdb.cpp \
-    main.cpp
+    src/core/keymapjsonengine.cpp \
+    src/core/commoninclude.cpp \
+    src/core/debugshowoptions.cpp \
+    src/core/encryption/encrypted.cpp \
+    src/core/encryption/qaesencryption.cpp \
+    src/core/kcdb.cpp \
+    src/core/main.cpp
 
 HEADERS += \
-    cml/keymapjsonengine.h \
-    commoninclude.h \
-    debugshowoptions.h \
-    encryption/encrypted.h \
-    encryption/qaesencryption.h \
-    kcdb.h
+    src/core/keymapjsonengine.h \
+    src/core/commoninclude.h \
+    src/core/debugshowoptions.h \
+    src/core/encryption/encrypted.h \
+    src/core/encryption/qaesencryption.h \
+    src/core/kcdb.h
 
 RESOURCES += \
-    resource.qrc
+    src/resource/config.qrc \
+    src/resource/pic.qrc \
+    src/resource/stylesheet.qrc
 
 DISTFILES += \
     README.md \
@@ -64,8 +69,8 @@ unix:!android {
 if(contains(DEFINES, COMPILE_QML)) {
     # QML config
     QT += quick qml
-    SOURCES += cml/qmlimporter.cpp
-    HEADERS += cml/qmlimporter.h
+    SOURCES += src/core/qmlimporter.cpp
+    HEADERS += src/core/qmlimporter.h
     RESOURCES += qmlresource.qrc
     DEFINES += ENABLE_QML
 }
@@ -73,40 +78,40 @@ else {
     # Wigets config
     QT += gui
     SOURCES += \
-        ui/animationrefresh.cpp \
-        findkeyui.cpp \
-        inputinitkeyui.cpp \
-        inputkeyui.cpp \
-        login.cpp \
-        mainui.cpp \
-        qssinstaller.cpp \
-        ui/messageboxexx.cpp \
-        ui/qlineeditpro.cpp \
-        ui/tablewidgetex.cpp \
-        ui/titlebar.cpp \
-        uistyle/proxystyle.cpp
+        src/utils/animationrefresh.cpp \
+        src/gui/findkeyui.cpp \
+        src/gui/inputinitkeyui.cpp \
+        src/gui/inputkeyui.cpp \
+        src/gui/login.cpp \
+        src/gui/mainui.cpp \
+        src/utils/qssinstaller.cpp \
+        src/utils/widget/messageboxexx.cpp \
+        src/utils/widget/qlineeditpro.cpp \
+        src/utils/widget/tablewidgetex.cpp \
+        src/utils/widget/titlebar.cpp \
+        src/utils/style/proxystyle.cpp
 
     HEADERS += \
-        ui/animationrefresh.h \
-        findkeyui.h \
-        inputinitkeyui.h \
-        inputkeyui.h \
-        login.h \
-        mainui.h \
-        qssinstaller.h \
-        ui/messageboxexx.h \
-        ui/qlineeditpro.h \
-        ui/tablewidgetex.h \
-        ui/titlebar.h \
-        uistyle/proxystyle.h
+        src/utils/animationrefresh.h \
+        src/gui/findkeyui.h \
+        src/gui/inputinitkeyui.h \
+        src/gui/inputkeyui.h \
+        src/gui/login.h \
+        src/gui/mainui.h \
+        src/utils/qssinstaller.h \
+        src/utils/widget/messageboxexx.h \
+        src/utils/widget/qlineeditpro.h \
+        src/utils/widget/tablewidgetex.h \
+        src/utils/widget/titlebar.h \
+        src/utils/style/proxystyle.h
 
     FORMS += \
-        findkeyui.ui \
-        inputinitkeyui.ui \
-        inputkeyui.ui \
-        login.ui \
-        mainui.ui \
-        ui/messageboxexx.ui
+        src/gui/findkeyui.ui \
+        src/gui/inputinitkeyui.ui \
+        src/gui/inputkeyui.ui \
+        src/gui/login.ui \
+        src/gui/mainui.ui \
+        src/utils/widget/messageboxexx.ui
 }
 
 win32-msvc* {
