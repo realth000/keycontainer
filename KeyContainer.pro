@@ -1,5 +1,5 @@
-VERSION = 3.1.9
-RC_ICONS = "KeyContainer.ico"
+VERSION = 3.1.10
+RC_ICONS = "src/resource/pic/KeyContainer.ico"
 
 CONFIG += c++17 no_batch
 
@@ -40,7 +40,15 @@ RESOURCES += \
 
 DISTFILES += \
     README.md \
-    log
+    log \
+    src/android/AndroidManifest.xml \
+    src/android/build.gradle \
+    src/android/gradle.properties \
+    src/android/gradle/wrapper/gradle-wrapper.jar \
+    src/android/gradle/wrapper/gradle-wrapper.properties \
+    src/android/gradlew \
+    src/android/gradlew.bat \
+    src/android/res/values/libs.xml
 
 # windows config
 win32 {
@@ -113,6 +121,10 @@ else {
         src/utils/widget/messageboxexx.ui
 }
 
+android:{
+    QT += androidextras
+}
+
 win32-msvc* {
   QMAKE_CXXFLAGS += /utf-8
 # use -j N in project settings when using jom instead
@@ -152,4 +164,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #    ANDROID_PACKAGE_SOURCE_DIR = \
 #        $$PWD/android
 #}
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/src/android
 

@@ -159,8 +159,9 @@ Item {
                                 height: 30
                                 anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
+                                enablePressWave: false
                             }
-                            TextInputEx{
+                            TextFieldEx{
                                 id: oldPwInput
                                 height: 30
                                 anchors.left: b1.right
@@ -188,8 +189,9 @@ Item {
                                 height: 30
                                 anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
+                                enablePressWave: false
                             }
-                            TextInputEx{
+                            TextFieldEx{
                                 id: pwInput
                                 height: 30
                                 anchors.left: b2.right
@@ -218,8 +220,9 @@ Item {
                                 height: 30
                                 anchors.left: parent.left
                                 anchors.verticalCenter: parent.verticalCenter
+                                enablePressWave: false
                             }
-                            TextInputEx{
+                            TextFieldEx{
                                 id: pwConfirmInput
                                 height: 30
                                 anchors.left: b3.right
@@ -240,6 +243,7 @@ Item {
                             bottomMargin: 10
                             bgColor: "transparent"
                             textsSize: 17
+                            enablePressWave: false
                             onClicked: {
                                 if(oldPwInput.text === ""){
                                     changeInitKeyBtn.dtests = "旧密码为空";

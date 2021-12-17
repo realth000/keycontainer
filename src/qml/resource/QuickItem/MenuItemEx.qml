@@ -1,7 +1,7 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
 
 ButtonEx {
-    bgColor: "#375564"
+    bgColor: "#222222"
     textsUncheckedColor: "#f0ffff"
     borderBottom: true
     borderBottomColor: "#f0ffff"
