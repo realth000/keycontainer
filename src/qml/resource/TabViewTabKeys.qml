@@ -83,7 +83,7 @@ Item {
             checkable: false
             texts: "删除"
             textsBold: true
-            iconUnchecked: "qrc:/pic/delKey.png"
+            iconUnchecked: "qrc:/pic/delKey2.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -126,7 +126,7 @@ Item {
         visible: false
         anchors.fill: manaToolRect
         color: manaToolRect.color
-        TextInputEx{
+        TextFieldEx{
             id: findKeyKeywordInput
             height: findKeyRect.height*0.65
             anchors.verticalCenter: parent.verticalCenter
@@ -185,12 +185,14 @@ Item {
         trigger: closeFindBtnex
         width: 150
         optsCount: 5
+        color: "#222222"
         MenuItemEx{
             id: i1
             texts: "计数"
             anchors.top: parent.top
             textsLeftMargin: 5
             iconUnchecked: "qrc:/pic/count2.png"
+            enablePressWave: false
             onClicked: {
             }
         }
@@ -198,12 +200,13 @@ Item {
         SwitchEx{
             id: i2
             texts: "全词匹配"
-            height: 60
-            bgColor: i1.bgColor
+            height: 40
+            backgroundColor: i1.bgColor
             anchors.top: i1.bottom
-            indiBgColor: "#f0ffff"
-            indiCheckedColor: "#4b6876"
-            indiUncheckedColor: "#404040"
+            anchors.topMargin: 10
+            indicatorBackgroundColor: "#f0ffff"
+            indicatorCheckedColor: "#4b6876"
+            indicatorUncheckedColor: "#404040"
             borderBottom: true
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
@@ -214,12 +217,13 @@ Item {
         SwitchEx{
             id: i3
             texts: "区分大小写"
-            height: 60
-            bgColor: i1.bgColor
+            height: 40
+            backgroundColor: i1.bgColor
             anchors.top: i2.bottom
-            indiBgColor: "#f0ffff"
-            indiCheckedColor: "#4b6876"
-            indiUncheckedColor: "#404040"
+            anchors.topMargin: 10
+            indicatorBackgroundColor: "#f0ffff"
+            indicatorCheckedColor: "#4b6876"
+            indicatorUncheckedColor: "#404040"
             borderBottom: true
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
@@ -230,12 +234,13 @@ Item {
         SwitchEx{
             id: i4
             texts: "正则表达式"
-            height: 60
-            bgColor: i1.bgColor
+            height: 40
+            backgroundColor: i1.bgColor
             anchors.top: i3.bottom
-            indiBgColor: "#f0ffff"
-            indiCheckedColor: "#4b6876"
-            indiUncheckedColor: "#404040"
+            anchors.topMargin: 10
+            indicatorBackgroundColor: "#f0ffff"
+            indicatorCheckedColor: "#4b6876"
+            indicatorUncheckedColor: "#404040"
             borderBottom: true
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
@@ -252,11 +257,13 @@ Item {
         }
         MenuItemEx{
             id: i5
+            height: 30
             texts: "退出搜索"
             textsLeftMargin: 10
             iconUnchecked: "qrc:/pic/close.png"
             borderBottom: false
             anchors.top: i4.bottom
+            enablePressWave: false
             onClicked: {
                 findKeyRect.visible=false;
                 showAccountAllBtnEx.visible = true;
@@ -273,7 +280,7 @@ Item {
         height: manaToolRect.width
         anchors.top: manaToolRect.bottom
         anchors.bottom: parent.bottom
-        color: "#282828"
+        color: "#272727"
 
         ListView {
             id: keysView

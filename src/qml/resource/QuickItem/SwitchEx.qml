@@ -1,49 +1,58 @@
-import QtQuick 2.0
+﻿import QtQuick 2.0
 import QtQuick.Controls 2.5
 
-Switch {
+Rectangle {
     id: switchItem
     property string texts
-    property color bgColor: "transparent"
-    property color indiBgColor: "#4b6876"
-    property color indiCheckedColor: "#375564"
-    property color indiUncheckedColor: "transparent"
+    property color backgroundColor: "transparent"
+    property color indicatorBackgroundColor: "#f0ffff"
+    property color indicatorCheckedColor: "#336666"
+    property color indicatorUncheckedColor: "transparent"
+    property color borderColor: indicatorBackgroundColor
+    property int indicatorWidth: 60
+    property int indicatorHeight: 25
     property bool borderBottom: false
-    property color borderBottomColor: "#4b6876"
+    property color borderBottomColor: "#f0ffff"
     property int switchHeadPosAniDuration: 100
-
+    property bool checked: false
+    property bool checkable: true
     width: parent.width
     height: 50
-    background: Rectangle{
-        color: bgColor
-    }
-    indicator: Rectangle{
+    color: backgroundColor
+
+    Rectangle{
         id: indiRect
-        implicitWidth: 40
-        implicitHeight: width/2
-        anchors.verticalCenter: parent.verticalCenter
+        width: indicatorWidth
+        height: indicatorHeight
+        anchors.right: parent.right
         radius: 10
-        x: switchItem.leftPadding
+        x: 0
         y: indiRect.height / 2 - height / 2
-        color: switchItem.checked ? indiCheckedColor : indiUncheckedColor
-        border.color: indiBgColor
+        color: switchItem.checked ? indicatorCheckedColor : indicatorUncheckedColor
+        border.color: borderColor
         Rectangle {
             id: switchHead
             width: indiRect.height
             height: width
             radius: width/2
-            color: checkable ? indiBgColor : "#c1c7d0";
+            color: checkable ? indicatorBackgroundColor : "#c1c7d0";
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                switchItem.checked = !switchItem.checked
+            }
         }
     }
-    contentItem: Text{
+    Text{
         text: texts
-        anchors.left: indiRect.right
+        anchors.left: parent.left
         anchors.leftMargin: 7
         anchors.verticalCenter: indiRect.verticalCenter
-        verticalAlignment: Qt.AlignVCenter
+        verticalAlignment: Qt.AlignRight
         font.pixelSize: 15
         font.bold: true
-        color: indiBgColor
+        color: indicatorBackgroundColor
     }
 
     SeparatorEx{
