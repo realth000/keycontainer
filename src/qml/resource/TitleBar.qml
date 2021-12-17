@@ -47,7 +47,7 @@ Item {
         id: iconImage
         width: titleBar.height - 2*iconMargin
         height: titleBar.height - 2*iconMargin
-        source: "qrc:/androidsrc/config.png"
+        source: "qrc:/pic/config2.png"
         sourceSize.width: 30
         sourceSize.height: 30
     }

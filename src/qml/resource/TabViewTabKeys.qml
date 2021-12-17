@@ -41,8 +41,8 @@ Item {
             checkable: true
             texts: showAccountAllBtnEx.checked ? "隐藏" : "显示"
             textsBold: true
-            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
-            iconUnchecked: "qrc:/androidsrc/hideAccount.png"
+            iconChecked: "qrc:/pic/showAccount_reverse.png"
+            iconUnchecked: "qrc:/pic/hideAccount.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -65,7 +65,7 @@ Item {
             checkable: false
             texts: "保存"
             textsBold: true
-            iconUnchecked: "qrc:/androidsrc/saveFile.png"
+            iconUnchecked: "qrc:/pic/saveFile.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -83,7 +83,7 @@ Item {
             checkable: false
             texts: "删除"
             textsBold: true
-            iconUnchecked: "qrc:/androidsrc/delKey.png"
+            iconUnchecked: "qrc:/pic/delKey.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -92,10 +92,10 @@ Item {
                     var obj =keysView.model.get(i)
                     if(obj.keyChecked === true){
                         keysView.model.remove(i);
-                        root.importer.deleteKey(i);
+                        mainQmlImporter.deleteKey(i);
                     }
                 }
-                root.importer.syncKeyIndex();
+                mainQmlImporter.syncKeyIndex();
             }
         }
         ButtonEx{
@@ -108,7 +108,7 @@ Item {
             checkable: false
             texts: "搜索"
             textsBold: true
-            iconUnchecked: "qrc:/androidsrc/findKey.png"
+            iconUnchecked: "qrc:/pic/findKey.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -133,7 +133,7 @@ Item {
             anchors.left: parent.left
             anchors.right: findBackwardBtnex.left
             onTextChanged: {
-                root.importer.changeFindText(text);
+                mainQmlImporter.changeFindText(text);
             }
         }
 
@@ -145,10 +145,10 @@ Item {
             anchors.right: findForwardBtnex.left
             useTexts: false
             checkable: false
-            iconUnchecked: "qrc:/androidsrc/arrow_left_30.png"
+            iconUnchecked: "qrc:/pic/arrow_left_30.png"
             onClicked: {
                 mainTabKeys.freezeFindSig();
-                root.importer.findPreviousKey();
+                mainQmlImporter.findPreviousKey();
             }
         }
         ButtonEx{
@@ -159,10 +159,10 @@ Item {
             anchors.right: closeFindBtnex.left
             useTexts: false
             checkable: false
-            iconUnchecked: "qrc:/androidsrc/arrow_right_30.png"
+            iconUnchecked: "qrc:/pic/arrow_right_30.png"
             onClicked: {
                 mainTabKeys.freezeFindSig();
-                root.importer.findNextKey();
+                mainQmlImporter.findNextKey();
             }
         }
         ButtonEx{
@@ -173,7 +173,7 @@ Item {
             anchors.right: parent.right
             useTexts: false
             checkable: false
-            iconUnchecked: "qrc:/androidsrc/config3.png"
+            iconUnchecked: "qrc:/pic/config3.png"
             onClicked: {
                 findKeyMenu.visible = true;
             }
@@ -190,7 +190,7 @@ Item {
             texts: "计数"
             anchors.top: parent.top
             textsLeftMargin: 5
-            iconUnchecked: "qrc:/androidsrc/count2.png"
+            iconUnchecked: "qrc:/pic/count2.png"
             onClicked: {
             }
         }
@@ -207,7 +207,7 @@ Item {
             borderBottom: true
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
-                root.importer.setFindAllWord(checked);
+                mainQmlImporter.setFindAllWord(checked);
                 checked || i3.checked ? i4.checkable=false : i4.checkable=true;
             }
         }
@@ -223,7 +223,7 @@ Item {
             borderBottom: true
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
-                root.importer.setFindCaseSen(checked);
+                mainQmlImporter.setFindCaseSen(checked);
                 checked || i2.checked ? i4.checkable=false : i4.checkable=true;
             }
         }
@@ -239,7 +239,7 @@ Item {
             borderBottom: true
             borderBottomColor: "#f0ffff"
             onCheckedChanged: {
-                root.importer.setFindUseReg(checked);
+                mainQmlImporter.setFindUseReg(checked);
                 if(checked){
                     i2.checkable=false;
                     i3.checkable=false;
@@ -254,7 +254,7 @@ Item {
             id: i5
             texts: "退出搜索"
             textsLeftMargin: 10
-            iconUnchecked: "qrc:/androidsrc/close.png"
+            iconUnchecked: "qrc:/pic/close.png"
             borderBottom: false
             anchors.top: i4.bottom
             onClicked: {
@@ -315,7 +315,7 @@ Item {
                             bgColor: "transparent"
                             bgSelectedColor: "transparent"
                             iconChecked: "qrc:/androidsrc/key.png"
-                            iconUnchecked: "qrc:/androidsrc/key_checked.png"
+                            iconUnchecked: "qrc:/pic/key_checked.png"
                             iconWidth: keyItem.height*0.5
                             iconHeight: keyItem.height*0.5
                             checked: keyChecked
@@ -371,8 +371,8 @@ Item {
                             useTexts: false
                             bgColor: "transparent"
                             bgSelectedColor: "transparent"
-                            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
-                            iconUnchecked: "qrc:/androidsrc/hideAccount.png"
+                            iconChecked: "qrc:/pic/showAccount_reverse.png"
+                            iconUnchecked: "qrc:/pic/hideAccount.png"
                             iconWidth: keyItem.height*0.5
                             iconHeight: keyItem.height*0.5
                             checked: showAccount
@@ -392,8 +392,8 @@ Item {
                             useTexts: false
                             bgColor: "transparent"
                             bgSelectedColor: "transparent"
-                            iconChecked: "qrc:/androidsrc/unlocked_reverse.png"
-                            iconUnchecked: "qrc:/androidsrc//lock.png"
+                            iconChecked: "qrc:/pic/lock_reverse.png"
+                            iconUnchecked: "qrc:/pic/lock.png"
                             iconWidth: keyItem.height*0.5
                             iconHeight: keyItem.height*0.5
                             checked: showPassword
@@ -425,7 +425,7 @@ Item {
                 }
             }
             onCurrentIndexChanged: {
-                root.importer.updateFindPos(currentIndex);
+                mainQmlImporter.updateFindPos(currentIndex);
             }
          }
     }
@@ -457,19 +457,19 @@ Item {
 
     Connections{
         target: mainTabKeys
-        onSaveKeys:{
-            root.importer.saveKeys();
+        function onSaveKeys() {
+            mainQmlImporter.saveKeys();
         }
-        onFreezeFindSig:{
+        function onFreezeFindSig() {
             mainTabKeys.freezeFind();
         }
     }
     Connections{
-        target: root.importer
-        onFindKeyAt:{
+        target: mainQmlImporter
+        function onFindKeyAt() {
             keysView.currentIndex = pos;
         }
-        onUnfreezeFind:{
+        function onUnfreezeFind() {
             findBackwardBtnex.enabled = true;
             findForwardBtnex.enabled = true;
             closeFindBtnex.enabled = true;

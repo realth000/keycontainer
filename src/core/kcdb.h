@@ -1,13 +1,16 @@
 ﻿#ifndef KCDB_H
 #define KCDB_H
-#include <QWidget>
+
 #include <QFile>
 #include <QDataStream>
 #include <QByteArray>
 #include <QMap>
 #include "encryption/encrypted.h"
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+#else
+#include <QWidget>
 #include "widget/messageboxexx.h"
-
+#endif
 #define KCDB_ENGINE_VERSION 0x00000010
 #define KCDB_WRITE_KEY_CONTINUE 0x00000100
 #define KCDB_FILE_END 0x10000000

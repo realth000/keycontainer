@@ -1,5 +1,4 @@
-﻿#include "gui/mainui.h"
-#include <QDebug>
+﻿#include <QDebug>
 #include "commoninclude.h"
 #include <QFont>
 #include "debugshowoptions.h"
@@ -13,6 +12,7 @@
 #endif
 
 #if defined(Q_OS_WINDOWS) && !defined(DEBUG_QML_ON_WINDOWS)
+#include "gui/mainui.h"
 #include <QApplication>
 #include <QObject>
 #include <windows.h>
@@ -28,7 +28,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
-#include "cml/qmlimporter.h"
+#include "core/qmlimporter.h"
 #include <QQmlContext>
 #endif
 
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
     qmlRegisterType<QmlImporter>("TH.QmlImporter", 1, 0, "QmlImporter");
     QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/qml/MainQML.qml"));
+    const QUrl url(QStringLiteral("qrc:/resource/MainQML.qml"));
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreated,
                      &app, [url](QObject *obj, const QUrl &objUrl) {
         if (!obj && url == objUrl)

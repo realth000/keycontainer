@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file>resource/KeyModel.qml</file>
+        <file>resource/Login.qml</file>
+        <file>resource/MainDrawerPageAbout.qml</file>
+        <file>resource/MainDrawerPageMain.qml</file>
+        <file>resource/MainDrawerPageSettings.qml</file>
+        <file>resource/MainQML.qml</file>
+        <file>resource/TabViewTab3.qml</file>
+        <file>resource/TabViewTabAddKey.qml</file>
+        <file>resource/TabViewTabKeys.qml</file>
+        <file>resource/TitleBar.qml</file>
+        <file>resource/QuickItem/ButtonEx.qml</file>
+        <file>resource/QuickItem/FileDialogEx.qml</file>
+        <file>resource/QuickItem/FolderEx.qml</file>
+        <file>resource/QuickItem/GroupBoxEx.qml</file>
+        <file>resource/QuickItem/MainTopRect.qml</file>
+        <file>resource/QuickItem/MenuEx.qml</file>
+        <file>resource/QuickItem/MenuItemEx.qml</file>
+        <file>resource/QuickItem/SeparatorEx.qml</file>
+        <file>resource/QuickItem/SwitchEx.qml</file>
+        <file>resource/QuickItem/TabButtonEx.qml</file>
+        <file>resource/QuickItem/TextInputEx.qml</file>
+    </qresource>
+</RCC>

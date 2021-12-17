@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQuick.Layouts 1.12
 import QtQuick.Dialogs 1.3
@@ -34,7 +34,7 @@ Item {
         GroupBoxEx{
             id: saveGB
             height: 100
-            iconPath: "qrc:/androidsrc/saveKey.png"
+            iconPath: "qrc:/pic/saveKey2.png"
             labelText:"保存"
             Rectangle{
                 id: saveBox
@@ -57,7 +57,7 @@ Item {
                     checkable: false
                     height: 50
                     width: parent.width
-                    iconUnchecked: "qrc:/androidsrc/saveFileConfig.png"
+                    iconUnchecked: "qrc:/pic/saveFileConfig.png"
                     leftMargin: 15
                     onClicked: {
                         fileDialog.open()
@@ -69,7 +69,7 @@ Item {
         GroupBoxEx{
             id: defaultGB
             height: 100
-            iconPath: "qrc:/androidsrc/manage.png"
+            iconPath: "qrc:/pic/manage2.png"
             labelText:"安全"
             anchors.top: saveGB.bottom
             anchors.topMargin: 30
@@ -94,7 +94,7 @@ Item {
                     checkable: false
                     height: 50
                     width: defaultBox.width
-                    iconUnchecked: "qrc:/androidsrc/key_checked.png"
+                    iconUnchecked: "qrc:/pic/key_checked.png"
                     posToLeft: true
                     leftMargin: 15
                     anchors.top: defaultBox.top
@@ -107,12 +107,12 @@ Item {
                         }
                     }
                     Connections{
-                        target: root.importer
-                        onChangeInitKey_wrong_oldPw:{
+                        target: mainQmlImporter
+                        function onChangeInitKey_wrong_oldPw() {
                             changeInitKeyBtn.dtests = "旧密码错误";
                             changeInitKeyBtn.dtextsUncheckedColor = changeInitKeyHintColor;
                         }
-                        onChangeInitKey_success:{
+                        function onChangeInitKey_success() {
                             changeInitKeyBtn.dtests = "已设置";
                             changeInitKeyBtn.dtextsUncheckedColor = changeInitKeyBtn.textsUncheckedColor;
                             oldPwInput.clear();
@@ -120,7 +120,7 @@ Item {
                             pwConfirmInput.clear();
                             changeInitKeyBtn.clicked();
                         }
-                        onChangeInitKey_failed:{
+                        function onChangeInitKey_failed() {
                             changeInitKeyBtn.dtests = msg;
                             changeInitKeyBtn.dtextsUncheckedColor = changeInitKeyHintColor;
                         }
@@ -263,7 +263,7 @@ Item {
                                     return;
                                 }
                                 self.freezeSettingSig();
-                                root.importer.checkInputInitKey(oldPwInput.text, pwConfirmInput.text);
+                                mainQmlImporter.checkInputInitKey(oldPwInput.text, pwConfirmInput.text);
                             }
                         }
 
@@ -281,14 +281,14 @@ Item {
                     checkable: false
                     height: 50
                     width: defaultBox.width
-                    iconUnchecked: "qrc:/androidsrc/changeAESKey.png"
+                    iconUnchecked: "qrc:/pic/changeAESKey2.png"
                     posToLeft: true
                     leftMargin: 15
                     anchors.top: initPwFolder.bottom
                     onClicked: {
                         aesKeyState = "设置中……";
                         self.freezeSettingSig();
-                        root.importer.changeAESKey();
+                        mainQmlImporter.changeAESKey();
                     }
                 }
                 SwitchEx{
@@ -300,29 +300,29 @@ Item {
                     onCheckedChanged: {
                         autoChangeAES=checked
                         self.freezeSettingSig();
-                        root.importer.setAutoChangeAES(autoChangeAES)
+                        mainQmlImporter.setAutoChangeAES(autoChangeAES)
                     }
                 }
             }
         }
     }
     Component.onCompleted: {
-        workPath = root.importer.getWorkPath();
-        autoChangeAES = root.importer.getAutoChangeAES();
-        savePath = root.importer.getSavePath();
-        backupPath = root.importer.getBackupPath();
+        workPath = mainQmlImporter.getWorkPath();
+        autoChangeAES = mainQmlImporter.getAutoChangeAES();
+        savePath = mainQmlImporter.getSavePath();
+        backupPath = mainQmlImporter.getBackupPath();
     }
     FileDialogEx {
          id: fileDialog
          onChangeSelectedDir: {
              self.savePath = newDir;
-             root.importer.setSavePath(newDir);
+             mainQmlImporter.setSavePath(newDir);
              console.log("change selectr dir: ", newDir);
          }
      }
     Connections{
         target: root
-        onMsgUpdate:{
+        function onMsgUpdate() {
             if(msg.indexOf("SETTINGS") !== 0){
                 return;
             }
@@ -331,19 +331,16 @@ Item {
             }
         }
     }
-    Connections{
-        target: self
-        onFreezeSettingSig:{
-            savePathBtnex.enabled=false;
-            changeInitKeyBtn.enabled=false;
-            initPwFolder.enabled=false;
-            changeAESKeyBtn.enabled=false;
-            autoChangeAESChB.checkable=false;
-        }
+    onFreezeSettingSig:{
+        savePathBtnex.enabled=false;
+        changeInitKeyBtn.enabled=false;
+        initPwFolder.enabled=false;
+        changeAESKeyBtn.enabled=false;
+        autoChangeAESChB.checkable=false;
     }
     Connections{
-        target: root.importer
-        onUnfreezeSetting:{
+        target: mainQmlImporter
+        function onUnfreezeSetting() {
             savePathBtnex.enabled=true;
             changeInitKeyBtn.enabled=true;
             initPwFolder.enabled=true;
