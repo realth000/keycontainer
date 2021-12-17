@@ -1,9 +1,7 @@
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
-
-CONFIG += c++17 no_batch
-# 防止linux下程序名中空格造成的问题，分开处理
 VERSION = 3.1.9
 RC_ICONS = "KeyContainer.ico"
+
+CONFIG += c++17 no_batch
 
 INCLUDEPATH += src src/core src/utils
 
@@ -12,6 +10,7 @@ INCLUDEPATH += src src/core src/utils
 # COMPILE_VID
 
 #DEFINES += COMPILE_VID
+DEFINES += COMPILE_QML
 ##########################
 
 # common config
@@ -71,12 +70,12 @@ if(contains(DEFINES, COMPILE_QML)) {
     QT += quick qml
     SOURCES += src/core/qmlimporter.cpp
     HEADERS += src/core/qmlimporter.h
-    RESOURCES += qmlresource.qrc
+    RESOURCES += src/qml/qml.qrc
     DEFINES += ENABLE_QML
 }
 else {
     # Wigets config
-    QT += gui
+    QT += gui widgets
     SOURCES += \
         src/utils/animationrefresh.cpp \
         src/gui/findkeyui.cpp \

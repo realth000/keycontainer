@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import QtQuick.Layouts 1.12
 import QtQml 2.12
 
@@ -19,7 +19,7 @@ Rectangle{
         useTexts: false
         bgColor: "#141414"
         borderColor: "#141414"
-        iconUnchecked: "qrc:/androidsrc/menu.png"
+        iconUnchecked: "qrc:/pic/menu.png"
         onClicked: {
             mainDrawer.open()
         }
@@ -36,7 +36,7 @@ Rectangle{
         useTexts: false
         bgColor: "#141414"
         borderColor: "#141414"
-        iconUnchecked: "qrc:/androidsrc/lock.png"
+        iconUnchecked: "qrc:/pic/lock.png"
         onClicked: {
             Qt.quit()
         }
@@ -53,7 +53,7 @@ Rectangle{
         useTexts: false
         bgColor: "#141414"
         borderColor: "#141414"
-        iconUnchecked: "qrc:/androidsrc/opts.png"
+        iconUnchecked: "qrc:/pic/opts.png"
         onClicked: {
 //            root.importer.callJava_fileRW("CONFIG");
         }

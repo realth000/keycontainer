@@ -184,7 +184,7 @@ void QmlImporter::initConfig()
 #endif
     savePath = QDir::toNativeSeparators(workPath + savePath);
     backupPath = QDir::toNativeSeparators(workPath + backupPath);
-    kcdb = new Kcdb(workPath);
+    kcdb = new Kcdb(savePath, backupPath);
 #if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
     connect(kcdb, &Kcdb::qml_msg_info, this, &QmlImporter::qml_msg_info);
 #endif
@@ -376,7 +376,7 @@ void QmlImporter::refreshAESKey()
         int len = qrand()%tmp.length();
         str[i] =tmp.at(len);
     }
-    kcdb->setKey_in(str);
+    kcdb->setKey_in(Estring(str));
 
 #ifdef Q_OS_ANDROID
 //    QString aesKeyFilePath = QDir::toNativeSeparators(QString("/data/user/0/%1/files/password/default/dat.ec").arg(ANDROID_PACKAGE_NAME));

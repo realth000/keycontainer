@@ -7,7 +7,7 @@ project(KeyContainer
 	LANGUAGES CXX)
 
 # Set compile options
-set(COMPILE_QML OFF CACHE BOOL "Compile Qml version" FORCE)
+set(COMPILE_QML ON CACHE BOOL "Compile Qml version" FORCE)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
@@ -28,7 +28,7 @@ if(COMPILE_QML)
 		Core
 		Gui
 		Qml
-                Quick)
+        Quick)
 	add_definitions(-DENABLE_QML)
 else()
 	message(STATUS "COMPILE_QML is NOT enabled")

@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import QtQuick.Controls 2.5
 import "QuickItem"
 
@@ -47,7 +47,7 @@ ScrollView {
             x: appNameLabel.contentWidth
             anchors.verticalCenter: parent.verticalCenter
             horizontalAlignment: Qt.AlignRight
-            text: mainWindow.importer.getPlatform()
+            text: mainQmlImporter.getPlatform()
             color: "#f0ffff"
             font.pixelSize: 16
             font.bold: true
@@ -67,7 +67,7 @@ ScrollView {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             horizontalAlignment: Qt.AlignLeft
-            text: "软件版本: " + mainWindow.importer.getAppVersion()
+            text: "软件版本: " + mainQmlImporter.getAppVersion()
             color: "#f0ffff"
             font.pixelSize: 16
             font.bold: true
@@ -86,7 +86,7 @@ ScrollView {
             anchors.left: parent.left
             anchors.verticalCenter: parent.verticalCenter
             horizontalAlignment: Qt.AlignLeft
-            text: "构建时间: " + mainWindow.importer.getBuildTime()
+            text: "构建时间: " + mainQmlImporter.getBuildTime()
             color: "#f0ffff"
             font.pixelSize: 16
             font.bold: true
@@ -117,9 +117,9 @@ ScrollView {
             anchors.top: parent.top
             anchors.right: parent.right
             horizontalAlignment: Qt.AlignLeft
-            text: "C++ " + mainWindow.importer.getCPPVersion() + "\n"
-                    + mainWindow.importer.getQtVerionString() + "\n"
-                    + mainWindow.importer.getCompilerInfo() + "\n"
+            text: "C++ " + mainQmlImporter.getCPPVersion() + "\n"
+                    + mainQmlImporter.getQtVerionString() + "\n"
+                    + mainQmlImporter.getCompilerInfo() + "\n"
                     + "Qt-AES bricke@github"
             color: "#f0ffff"
             font.pixelSize: 16

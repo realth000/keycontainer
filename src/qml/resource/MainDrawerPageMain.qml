@@ -56,16 +56,16 @@ Item {
                 width: mainTabBar.width/3
                 height: mainTabBar.height
                 texts: "查看"
-                iconChecked: "qrc:/androidsrc/viewKey_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/viewKey.png"
+                iconChecked: "qrc:/pic/viewKey_reverse.png"
+                iconUnchecked: "qrc:/pic/viewKey.png"
             }
             TabButtonEx {
                 id: tabButton2
                 width: mainTabBar.width/3
                 height: mainTabBar.height
                 texts: "添加"
-                iconChecked: "qrc:/androidsrc/addKey_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/addKey.png"
+                iconChecked: "qrc:/pic/addKey_reverse.png"
+                iconUnchecked: "qrc:/pic/addKey2.png"
             }
 
             TabButtonEx {
@@ -73,8 +73,8 @@ Item {
                 width: mainTabBar.width/3
                 height: mainTabBar.height
                 texts: "备用"
-                iconChecked: "qrc:/androidsrc/about_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/about.png"
+                iconChecked: "qrc:/pic/about_reverse.png"
+                iconUnchecked: "qrc:/pic/about2.png"
             }
         }
 

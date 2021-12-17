@@ -37,8 +37,8 @@ Item {
             checkable: true
             texts: showAccountAllBtnEx.checked ? "隐藏" : "显示"
             textsBold: true
-            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
-            iconUnchecked: "qrc:/androidsrc/hideAccount.png"
+            iconChecked: "qrc:/pic/showAccount_reverse.png"
+            iconUnchecked: "qrc:/pic/hideAccount.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -56,8 +56,8 @@ Item {
             checkable: true
             texts: self.checked ? "123" : "456"
             textsBold: true
-            iconChecked: "qrc:/androidsrc/showAccount_reverse.png"
-            iconUnchecked: "qrc:/androidsrc/hideAccount.png"
+            iconChecked: "qrc:/pic/showAccount_reverse.png"
+            iconUnchecked: "qrc:/pic/hideAccount.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -74,7 +74,7 @@ Item {
             checkable: false
             texts: "保存"
             textsBold: true
-            iconUnchecked: "qrc:/androidsrc/addKey2.png"
+            iconUnchecked: "qrc:/pic/addKey3.png"
             iconPos: 1
             iconWidth: 30
             iconHeight: 30
@@ -260,9 +260,9 @@ Item {
 
     Connections{
         target: addTabItem
-        onCheckInputExistence:{
+        function onCheckInputExistence() {
             var result= -1
-            result = root.importer.checkExistence(disc, account, password);
+            result = mainQmlImporter.checkExistence(disc, account, password);
             if(result <0){
                 hintLabel.visible=true
                 hintLabel.textsE="与第"+ (-result)+"个重复"
@@ -294,7 +294,7 @@ Item {
 
     Connections{
         target: addTabItem
-        onAddNewKeyToView:{
+        function onAddNewKeyToView() {
             // 添加时加到最后了
             root.viewer.model.append(
                 JSON.parse(

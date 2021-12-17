@@ -9,7 +9,6 @@ import TH.QmlImporter 1.0
 import QtQml 2.12
 
 ApplicationWindow  {
-    property alias importer: mainQmlImporter
     property alias viewer: p1.viewer
     id: mainWindow
     visible: true
@@ -76,7 +75,7 @@ ApplicationWindow  {
         // 在Event机制中，似乎是drawer优先捕获事件，导致其他控件无法接受事件，无论这个事件是否是拖拽打开drawer
         // 目前bug尚未修复
         // 详情：https://bugreports.qt.io/browse/QTBUG-59141
-//        dragMargin: mainWindow.width
+        interactive: false
 
         property int currentIndex: 0
 
@@ -97,8 +96,8 @@ ApplicationWindow  {
                 textsUncheckedColor: "#f0ffff"
                 textsBold: true
                 bgColor: "#2a2b2c"
-                iconChecked: "qrc:/androidsrc/safe_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/safe_reverse.png"
+                iconChecked: "qrc:/pic/safe_reverse.png"
+                iconUnchecked: "qrc:/pic/safe_reverse.png"
                 iconWidth: 60
                 iconHeight: 60
                 iconAntialiasing: true
@@ -113,8 +112,8 @@ ApplicationWindow  {
                 bgColor: "#2d2f32"
                 iconPos: 1
                 texts: "   主页      "
-                iconChecked: "qrc:/androidsrc/home_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/home.png"
+                iconChecked: "qrc:/pic/home_reverse.png"
+                iconUnchecked: "qrc:/pic/home_reverse.png"
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: 50
                 checked: true
@@ -156,8 +155,8 @@ ApplicationWindow  {
                 bgColor: "#2d2f32"
                 iconPos: 1
                 texts: "   设置      "
-                iconChecked: "qrc:/androidsrc/config_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/config.png"
+                iconChecked: "qrc:/pic/config_reverse.png"
+                iconUnchecked: "qrc:/pic/config2.png"
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: 50
                 onClicked: {
@@ -170,8 +169,8 @@ ApplicationWindow  {
                 bgColor: "#2d2f32"
                 iconPos: 1
                 texts: "   关于      "
-                iconChecked: "qrc:/androidsrc/about_reverse.png"
-                iconUnchecked: "qrc:/androidsrc/about.png"
+                iconChecked: "qrc:/pic/about_reverse.png"
+                iconUnchecked: "qrc:/pic/about2.png"
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: 50
                 onClicked: {
@@ -213,8 +212,8 @@ ApplicationWindow  {
     }
     Connections{
         target: mainQmlImporter
-        onLoginCorrect:{
-            if(correct === true){
+        onLoginCorrect: {
+            if(correct){
                 mainDrawer.currentIndex=1;
             }
             else{

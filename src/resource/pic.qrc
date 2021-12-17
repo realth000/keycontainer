@@ -36,5 +36,31 @@
         <file>pic/backupKey.png</file>
         <file>pic/exportKey.png</file>
         <file>pic/importKeys.png</file>
+        <file>pic/about2.png</file>
+        <file>pic/config2.png</file>
+        <file>pic/home_reverse.png</file>
+        <file>pic/safe_reverse.png</file>
+        <file>pic/opts.png</file>
+        <file>pic/lock.png</file>
+        <file>pic/menu.png</file>
+        <file>pic/arrow_up_30.png</file>
+        <file>pic/changeAESKey2.png</file>
+        <file>pic/key_checked.png</file>
+        <file>pic/manage2.png</file>
+        <file>pic/saveFileConfig.png</file>
+        <file>pic/saveKey2.png</file>
+        <file>pic/addKey2.png</file>
+        <file>pic/viewKey_reverse.png</file>
+        <file>pic/addKey_reverse.png</file>
+        <file>pic/viewKey.png</file>
+        <file>pic/addKey3.png</file>
+        <file>pic/hideAccount.png</file>
+        <file>pic/config3.png</file>
+        <file>pic/count2.png</file>
+        <file>pic/findKey.png</file>
+        <file>pic/hideAccount_reverse.png</file>
+        <file>pic/saveFile.png</file>
+        <file>pic/showAccount.png</file>
+        <file>pic/showAccount_reverse.png</file>
     </qresource>
 </RCC>

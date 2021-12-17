@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import Qt.labs.folderlistmodel 2.12
 import QtQml 2.12
 
@@ -80,7 +80,7 @@ Rectangle {
             useTexts: false
             posToLeft: true
             leftMargin: 0
-            iconUnchecked: "qrc:/androidsrc/arrow_up_30.png"
+            iconUnchecked: "qrc:/pic/arrow_up_30.png"
             onClicked: {
                 if(model.parentFolder === "file:///"){
                     return;

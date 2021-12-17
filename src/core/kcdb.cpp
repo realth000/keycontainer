@@ -109,7 +109,11 @@ QList<QList<QStringList> > Kcdb_io::inKcdb(QDataStream &inStream, AesClass *AESM
         kcdb_pos =KCDB_WRITE_KEY_CONTINUE;
     }
     else{
+#if defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
+        emit qml_msg_info("数据版本错误,密码数据记录格式版本不正确，无法读取");
+#else
         MessageBoxExY::information("数据版本错误", "密码数据记录格式版本不正确，无法读取");
+#endif
     }
     QList<QStringList> readGroupKeyList;
     while (kcdb_pos != KCDB_FILE_END){

@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import QtQuick.Controls 2.5
 import "QuickItem"
 import QtQml 2.12
@@ -66,7 +66,7 @@ Rectangle {
     }
 
     function checkPassword(){
-        root.importer.checkPwd(passwordInput.text);
+        mainQmlImporter.checkPwd(passwordInput.text);
     }
     function showHint(){
         hint=true;
@@ -74,7 +74,7 @@ Rectangle {
     }
     Connections{
         target: root
-        onLoginShowHint:{
+        function onLoginShowHint() {
             loginRect.showHint();
         }
     }
@@ -82,9 +82,6 @@ Rectangle {
         if((event.modifiers === Qt.NoModifier) && (event.key === Qt.Key_Enter || event.key === Qt.Key_Return )){
             loginBtnex.clicked();
         }
-    }
-    onVisibleChanged: {
-        visible ? mainDrawer.interactive=false : mainDrawer.interactive=true;
     }
 
 }
