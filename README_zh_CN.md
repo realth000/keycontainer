@@ -18,6 +18,7 @@
 2. 选择一个kit。
 3. 编译（构建）。
 4. 复制登录所需的密码文件``login.ec``到编译输出目录。
+5. 默认密码:``1``
 ### 使用CMake编译
 1. 进入源码目录。
 2. 创建build文件夹并进入``mkdir build && cd build``。
@@ -25,6 +26,7 @@
 4. ``cmake ../``
 5. ``make``
 6. 复制登录所需的密码文件``login.ec``到编译输出目录。
+7. 默认密码:``1``
 ## License
 KeyContainer使用了以下第三方库：
 ### [Qt-AES](https://github.com/bricke/Qt-AES/)

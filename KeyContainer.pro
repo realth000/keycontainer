@@ -40,6 +40,7 @@ RESOURCES += \
 
 DISTFILES += \
     README.md \
+    README_zh_CN.md \
     log \
     src/android/AndroidManifest.xml \
     src/android/build.gradle \
