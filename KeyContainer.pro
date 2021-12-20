@@ -10,7 +10,7 @@ INCLUDEPATH += src src/core src/utils
 # COMPILE_VID
 
 #DEFINES += COMPILE_VID
-DEFINES += COMPILE_QML
+#DEFINES += COMPILE_QML
 ##########################
 
 # common config
@@ -130,6 +130,20 @@ win32-msvc* {
 # use -j N in project settings when using jom instead
 #  QMAKE_CXXFLAGS += /MP
 }
+
+win32{
+    CONFIG(debug,debug|release){
+        instll_login_ec.path = $$OUT_PWD/debug
+    }
+    else{
+        instll_login_ec.path = $$OUT_PWD/release
+    }
+}
+unix:!android{
+    instll_login_ec.path = $$OUT_PWD
+}
+instll_login_ec.files += $$PWD/src/resource/config/login.ec
+INSTALLS += instll_login_ec
 
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
