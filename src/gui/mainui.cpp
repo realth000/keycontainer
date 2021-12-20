@@ -1759,9 +1759,9 @@ void MainUi::on_backupDataKeyBtn_clicked()
         return;
     }
     QFile newDatFile(QDir::toNativeSeparators(newPath + KEYDB_PASSWD_FILE_NAME));
-    QFile oldDatFile(QDir::toNativeSeparators(savePath + KEYDB_PASSWD_FILE_NAME));
+    QFile oldDatFile(QDir::toNativeSeparators(QFileInfo(savePath).absolutePath() + "/" + KEYDB_PASSWD_FILE_NAME));
     QFile newLoginFIle(QDir::toNativeSeparators(newPath + LOGIN_PASSWD_FILE_NAME));
-    QFile oldLoginFile(QDir::toNativeSeparators(savePath + LOGIN_PASSWD_FILE_NAME));
+    QFile oldLoginFile(QDir::toNativeSeparators(QFileInfo(savePath).absolutePath() + "/" + LOGIN_PASSWD_FILE_NAME));
     if(newDatFile.exists()){
         if(!newDatFile.remove()){
             log("文件已存在且无法删除: " + (QFileInfo(newDatFile)).filePath());
