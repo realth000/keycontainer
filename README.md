@@ -16,6 +16,7 @@ Suppot build KeyContainer using both QMake and CMake.
 2. Select a kit.
 3. Build.
 5. Copy the login file ``login.ec`` to the output directory.
+6. Default password:``1``
 ### Build via CMake
 1. Cd the source code directory.
 2. ``mkdir build && cd build``.
@@ -23,6 +24,7 @@ Suppot build KeyContainer using both QMake and CMake.
 4. ``cmake ../``
 5. ``make``
 6. Copy the login file ``login.ec`` to the output directory.
+7. Default password:``1``
 ## License
 KeyContainer use the following third-party repos:
 ### [Qt-AES](https://github.com/bricke/Qt-AES/)

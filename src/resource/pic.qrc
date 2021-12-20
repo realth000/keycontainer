@@ -62,5 +62,11 @@
         <file>pic/saveFile.png</file>
         <file>pic/showAccount.png</file>
         <file>pic/showAccount_reverse.png</file>
+        <file>pic/file.png</file>
+        <file>pic/folder.png</file>
+        <file>pic/no.png</file>
+        <file>pic/yes.png</file>
+        <file>pic/home.png</file>
+        <file>pic/delKey2.png</file>
     </qresource>
 </RCC>

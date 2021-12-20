@@ -20,6 +20,6 @@
         <file>resource/QuickItem/SeparatorEx.qml</file>
         <file>resource/QuickItem/SwitchEx.qml</file>
         <file>resource/QuickItem/TabButtonEx.qml</file>
-        <file>resource/QuickItem/TextInputEx.qml</file>
+        <file>resource/QuickItem/TextFieldEx.qml</file>
     </qresource>
 </RCC>
