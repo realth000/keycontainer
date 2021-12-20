@@ -1,11 +1,12 @@
-﻿import QtQuick 2.12
-import QtQml 2.12
+﻿import QtQuick 2.10
+import QtQuick.Controls 2.10
+import QtQml 2.10
 
-TextInput {
+TextField {
     id: textInputEx
-    property color bgColor: "transparent"
+    property color bgColor: "#2d2e30"
     property int borderWidth: 1
-    property color borderColor: "#4b6876"
+    property color borderColor: "#336666"
     property int borderColorAniDuration: 330
     property string passwordCharacterEx: "******"
     property color textsColor: "#f0ffff"
@@ -15,6 +16,9 @@ TextInput {
     property int textsLeftPadding: 2
     property color cursorColor: textsColor
     property int cursorWidth: 2
+    property bool enableNativeBorder: false
+    property int textLeftPadding: 10
+
     passwordCharacter: passwordCharacterEx
     color: textsColor
     font.bold: textsBold
@@ -22,17 +26,19 @@ TextInput {
     verticalAlignment: Qt.AlignVCenter
     cursorDelegate: cursorEx
     clip: textsClip
-    leftPadding: 2
+    leftPadding: textLeftPadding
     selectionColor: borderColor
+    selectedTextColor: textsColor
     selectByMouse: true
-    Rectangle{
+    background:  Rectangle {
         id: tiexInputArea
         anchors.fill: parent
-        color: "#2d2e30"
-        border.width: 0
-        z: -1
+        color: bgColor
+        border.width: enableNativeBorder ? borderWidth : 0
+        border.color: borderColor
     }
-    SeparatorEx{
+    SeparatorEx {
+        visible: !enableNativeBorder
         id: tiexInputBaseline
         height: 1
         anchors.bottom: tiexInputArea.bottom
@@ -41,14 +47,16 @@ TextInput {
         rightMargin: 0
     }
 
-    Component{
+    // cursor settings
+    Component {
         id:cursorEx
-        Rectangle{
+        Rectangle {
             width: cursorWidth
             color: textInputEx.activeFocus ? cursorColor : "transparent"
         }
     }
-    PropertyAnimation{
+
+    PropertyAnimation {
         id: borderColorAni
         target: tiexInputBaseline
         property: "width"
@@ -57,6 +65,8 @@ TextInput {
         duration: borderColorAniDuration
     }
     onFocusChanged: {
-        borderColorAni.start();
+        if(textInputEx.activeFocus){
+            borderColorAni.start();
+        }
     }
 }

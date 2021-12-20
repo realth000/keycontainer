@@ -5,7 +5,7 @@ import QtQml 2.12
 Rectangle{
     property QtObject root
     height: 60
-    color:"#141414"
+    color:"#202020"
 
     ButtonEx{
         id: tabButton23
@@ -17,9 +17,10 @@ Rectangle{
         anchors.verticalCenter: parent.verticalCenter
         checkable: false
         useTexts: false
-        bgColor: "#141414"
-        borderColor: "#141414"
+        bgColor: color
+        borderColor: color
         iconUnchecked: "qrc:/pic/menu.png"
+        enablePressWave: false
         onClicked: {
             mainDrawer.open()
         }
@@ -34,9 +35,10 @@ Rectangle{
         anchors.verticalCenter: parent.verticalCenter
         checkable: false
         useTexts: false
-        bgColor: "#141414"
-        borderColor: "#141414"
+        bgColor: color
+        borderColor: color
         iconUnchecked: "qrc:/pic/lock.png"
+        enablePressWave: false
         onClicked: {
             Qt.quit()
         }
@@ -51,9 +53,10 @@ Rectangle{
         anchors.verticalCenter: parent.verticalCenter
         checkable: false
         useTexts: false
-        bgColor: "#141414"
-        borderColor: "#141414"
+        bgColor: color
+        borderColor: color
         iconUnchecked: "qrc:/pic/opts.png"
+        enablePressWave: false
         onClicked: {
 //            root.importer.callJava_fileRW("CONFIG");
         }

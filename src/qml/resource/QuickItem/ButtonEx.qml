@@ -5,16 +5,16 @@ import QtGraphicalEffects 1.12
 
 Button{
     id: self
-    QtObject{
-        enum IconPos{
-            IconAbove = 0x00000000,
-            IconLeft = 0x00000001
-        }
+    enum IconPos{
+        IconAbove = 0,
+        IconLeft = 1
     }
     property bool borderBottom: false
     property color borderBottomColor: "#4b6876"
+    property int borderBottomMargin: 15
     property bool thisIsButtonEx: true
-    property color bgSelectedColor: "#40403d"
+//    property color bgSelectedColor: "#40403d"
+    property color bgSelectedColor: "#353535"
     property color bgColor: "#232323"
     property int borderWidth: 0
     property color borderColor: "#375564"
@@ -28,7 +28,7 @@ Button{
     property string texts
     property bool useTexts: true
     property bool useIcon: true
-    property int iconPos: 0
+    property int iconPos: ButtonEx.IconPos.IconAbove
     property int textsSize: 16
     property int textsLeftMargin: 0
     property bool iconAntialiasing: true
@@ -46,11 +46,12 @@ Button{
     property int leftMargin: 0
     property int bottomMargin: 0
 
-
+    property bool enablePressWave: true
     property double pressWaveLeftArea: 0.0
     property real pressWaveRightArea: 0
     property int pressWaveDuration: 300
     property int pressWaveStartPosX: 0
+    property bool pressWaveFinish: false
 
     checkable: true
     clip: true
@@ -193,6 +194,7 @@ Button{
         visible: borderBottom
         width: parent.width
         color: borderBottomColor
+        margin: borderBottomMargin
         height: 1
     }
 
@@ -205,44 +207,65 @@ Button{
         border.width: borderWidth
         border.color: borderColor
     }
+
     RadialGradient{
-        id: pressWaveGraLeft
-        anchors.horizontalCenter: self.left
+        id: pressWaveGradient
+        z: -1
+//        anchors.horizontalCenter: self.left
         anchors.horizontalCenterOffset: pressWaveStartPosX
         anchors.verticalCenter: self.verticalCenter
-        width: self.width*pressWaveLeftArea*2
+        anchors.leftMargin: pressWaveStartPosX * (1-pressWaveLeftArea)
+        anchors.rightMargin: (self.width - pressWaveStartPosX)*(1-pressWaveLeftArea)
+        anchors.right: self.right
+        anchors.left: self.left
+//        width: self.width*pressWaveLeftArea*2
         height: self.height
-        horizontalRadius: self.height
-        verticalRadius: self.height
+        horizontalRadius: 100
+        verticalRadius: 100
+        clip: true
         gradient: Gradient{
-            GradientStop{position:0.1; color: self.checked ? bgSelectedColor + "40" : bgSelectedColor + "40"}
-            GradientStop{position:0.9; color: self.checked ? bgSelectedColor + "40" : bgSelectedColor + "40"}
+            GradientStop{position:0.1; color: self.checked ? bgSelectedColor : bgSelectedColor}
+            GradientStop{position:0.9; color: self.checked ? bgSelectedColor : bgSelectedColor}
         }
     }
 
     PropertyAnimation{
-        id: pressWaveAniLeft
+        id: pressWaveAnimation
         target: self
         property: "pressWaveLeftArea"
         from: 0.0
-        to: 1.0
+        to: 1
         duration: self.pressWaveDuration
         running: false
+        onStopped: {
+            pressWaveFinish = true
+        }
+    }
+
+    onPressWaveFinishChanged: {
+        if(pressed){
+            return
+        }
+        self.pressWaveLeftArea=0
+        pressWaveGradient.visible=false
+        pressWaveFinish = false
+    }
+
+    onReleased: {
+        if(!pressWaveFinish){
+           return
+        }
+        self.pressWaveLeftArea=0
+        pressWaveGradient.visible=false
+        pressWaveFinish = false
     }
 
     onPressed: {
+        if(!enablePressWave){
+            return
+        }
         pressWaveStartPosX = pressX;
-        pressWaveGraLeft.visible=true;
-        pressWaveAniLeft.start();
-    }
-    onPressedChanged: {
-        pressWaveAniLeft.stop();
-        self.pressWaveLeftArea=0;
-        pressWaveGraLeft.visible=false;
-    }
-    onReleased: {
-        pressWaveAniLeft.stop();
-        self.pressWaveLeftArea=0;
-        pressWaveGraLeft.visible=false;
+        pressWaveGradient.visible=true;
+        pressWaveAnimation.start();
     }
 }

@@ -220,9 +220,9 @@ void QmlImporter::initConfig()
     kcdb->setBackupPath(backupPath);
     autoChangeAES = ini->value("/Security/AutoChangeAESKey").toBool();
     delete ini;
-#ifdef Q_OS_ANDROID
-    kcdb->setAESKeyPath(Estring(QFileInfo(savePath).path() + "/dat.ec"));
-#endif
+//#ifdef Q_OS_ANDROID
+//    kcdb->setAESKeyPath(Estring(QFileInfo(savePath).path() + "/dat.ec"));
+//#endif
 }
 
 void QmlImporter::initKey()
@@ -242,14 +242,16 @@ void QmlImporter::initKey()
     QFileInfo fileInfo(pwPath.getVal());
     if(!fileInfo.exists()){
         emit qml_msg_info("无法启动,密码文件丢失，无法启动。退出: " + pwPath.getVal());
-        emit qml_quit();
+        // TODO: message on quit
+//        emit qml_quit();
     }
     QFile hashFile(pwPath.getVal());
     if(!hashFile.open(QIODevice::ReadOnly)){
         bool existance = (QFileInfo(hashFile)).exists();
         bool readable = hashFile.isReadable();
         emit qml_msg_info("无法读取启动密码,密码文件可能被其他程序占用。" + QString::number(existance) + QString::number(readable) + " 退出 ");
-        emit qml_quit();
+        // TODO: message on quit
+//        emit qml_quit();
     }
     QDataStream hashData(&hashFile);
     QByteArray hashString;
@@ -257,7 +259,8 @@ void QmlImporter::initKey()
     hashFile.close();
     if(hashString == ""){
         emit qml_msg_info("密码错误,检测到密码为空,退出 ");
-        emit qml_quit();
+        // TODO: message on quit
+//        emit qml_quit();
     }
     truePwdHash = Estring(hashString);
     emit qml_msg_info("read password succeed");

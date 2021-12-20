@@ -1750,7 +1750,8 @@ void MainUi::on_backupDataKeyBtn_clicked()
         log("密码为空");
         return;
     }
-    QString newPath = QFileDialog::getExistingDirectory(this, "导出文件", savePath);
+    QString oldDirPath = QFileInfo(savePath).absolutePath();
+    QString newPath = QFileDialog::getExistingDirectory(this, "导出文件", oldDirPath);
     if(newPath.isEmpty()){
         return;
     }
@@ -1759,9 +1760,14 @@ void MainUi::on_backupDataKeyBtn_clicked()
         return;
     }
     QFile newDatFile(QDir::toNativeSeparators(newPath + KEYDB_PASSWD_FILE_NAME));
-    QFile oldDatFile(QDir::toNativeSeparators(savePath + KEYDB_PASSWD_FILE_NAME));
+    QFile oldDatFile(QDir::toNativeSeparators(oldDirPath+ "/" + KEYDB_PASSWD_FILE_NAME));
     QFile newLoginFIle(QDir::toNativeSeparators(newPath + LOGIN_PASSWD_FILE_NAME));
-    QFile oldLoginFile(QDir::toNativeSeparators(savePath + LOGIN_PASSWD_FILE_NAME));
+    QFile oldLoginFile(QDir::toNativeSeparators(oldDirPath + "/" + LOGIN_PASSWD_FILE_NAME));
+    if(QFileInfo(oldDatFile).absoluteFilePath() == QFileInfo(newDatFile).absoluteFilePath()
+        || QFileInfo(oldLoginFile).absoluteFilePath() == QFileInfo(newLoginFIle).absoluteFilePath()) {
+        log("无法原地复制");
+        return;
+    }
     if(newDatFile.exists()){
         if(!newDatFile.remove()){
             log("文件已存在且无法删除: " + (QFileInfo(newDatFile)).filePath());

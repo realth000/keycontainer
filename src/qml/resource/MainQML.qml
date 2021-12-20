@@ -68,14 +68,14 @@ ApplicationWindow  {
     Drawer{
         parent: p1.mainColLayout
         id: mainDrawer
-        width: 0.66 * mainWindow.width
+        width: 300
         height: mainWindow.height
         edge: Qt.LeftEdge
         // FIXME: 设置dragMargin将导致margin宽度的区域内drawer下层其他控件（一般视drawer在最顶层，因此指区域内所有其他控件）无法响应MouseEvent
         // 在Event机制中，似乎是drawer优先捕获事件，导致其他控件无法接受事件，无论这个事件是否是拖拽打开drawer
         // 目前bug尚未修复
         // 详情：https://bugreports.qt.io/browse/QTBUG-59141
-        interactive: false
+        interactive: !loginPage.visible
 
         property int currentIndex: 0
 
@@ -88,24 +88,10 @@ ApplicationWindow  {
             width: mainDrawer.width
             spacing: 0
 
-            ButtonEx{
-                id: mainDrawerLogoRect
-                checkable: false
-                texts: "KeyContainer"
-                textsSize: 18
-                textsUncheckedColor: "#f0ffff"
-                textsBold: true
-                bgColor: "#2a2b2c"
-                iconChecked: "qrc:/pic/safe_reverse.png"
-                iconUnchecked: "qrc:/pic/safe_reverse.png"
-                iconWidth: 60
-                iconHeight: 60
-                iconAntialiasing: true
-                // NOTE: 在layout中要用Layout.preferredWidth和Height
-                Layout.preferredWidth: parent.width
-                Layout.preferredHeight: parent.width*0.75
-                Layout.alignment: Qt.AlignCenter
-
+            Image {
+                width: 300
+                height: 150
+                source: "qrc:/pic/IconWide.png"
             }
             ButtonEx{
                 id: mainDrawerBE1
@@ -113,7 +99,7 @@ ApplicationWindow  {
                 iconPos: 1
                 texts: "   主页      "
                 iconChecked: "qrc:/pic/home_reverse.png"
-                iconUnchecked: "qrc:/pic/home_reverse.png"
+                iconUnchecked: "qrc:/pic/home.png"
                 Layout.preferredWidth: parent.width
                 Layout.preferredHeight: 50
                 checked: true

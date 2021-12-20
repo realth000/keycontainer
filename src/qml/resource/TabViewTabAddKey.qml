@@ -109,9 +109,10 @@ Item {
                height: 30
                anchors.left: parent.left
                anchors.verticalCenter: parent.verticalCenter
+               enablePressWave: false
            }
 
-           TextInputEx{
+           TextFieldEx{
                id: discInput
                height: 30
                anchors.left: b1.right
@@ -138,9 +139,10 @@ Item {
                height: 30
                anchors.left: parent.left
                anchors.verticalCenter: parent.verticalCenter
+               enablePressWave: false
            }
 
-           TextInputEx{
+           TextFieldEx{
                id: accountInput
                height: 30
                anchors.left: b2.right
@@ -167,9 +169,10 @@ Item {
                height: 30
                anchors.left: parent.left
                anchors.verticalCenter: parent.verticalCenter
+               enablePressWave: false
            }
 
-           TextInputEx{
+           TextFieldEx{
                id: passwordInput
                height: 30
                anchors.left: b3.right
@@ -198,9 +201,10 @@ Item {
                anchors.right: passwordConfirmInput.left
                anchors.verticalCenter: parent.verticalCenter
                horizontalOffset:-15
+               enablePressWave: false
            }
 
-           TextInputEx{
+           TextFieldEx{
                id: passwordConfirmInput
                height: 30
                anchors.left: b4.right

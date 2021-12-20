@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQml 2.12
 
@@ -14,8 +14,8 @@ Rectangle {
     property QtObject fullScreen
     property int pos: MenuEx.MenuPos.DownLeft
     property int optsCount: 4
-    width: 100
-    height: 60*optsCount
+    width: 130
+    height: 50*optsCount
     z: 1
     visible: false;
     onVisibleChanged: {
