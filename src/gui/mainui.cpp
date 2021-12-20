@@ -1762,6 +1762,11 @@ void MainUi::on_backupDataKeyBtn_clicked()
     QFile oldDatFile(QDir::toNativeSeparators(QFileInfo(savePath).absolutePath() + "/" + KEYDB_PASSWD_FILE_NAME));
     QFile newLoginFIle(QDir::toNativeSeparators(newPath + LOGIN_PASSWD_FILE_NAME));
     QFile oldLoginFile(QDir::toNativeSeparators(QFileInfo(savePath).absolutePath() + "/" + LOGIN_PASSWD_FILE_NAME));
+    if(QFileInfo(oldDatFile).absoluteFilePath() == QFileInfo(newDatFile).absoluteFilePath()
+        || QFileInfo(oldLoginFile).absoluteFilePath() == QFileInfo(newLoginFIle).absoluteFilePath()) {
+        log("无法原地复制");
+        return;
+    }
     if(newDatFile.exists()){
         if(!newDatFile.remove()){
             log("文件已存在且无法删除: " + (QFileInfo(newDatFile)).filePath());
