@@ -24,6 +24,8 @@
 #include <QObject>
 #include <QProcess>
 #include <QString>
+#include "gui/mainui.h"
+#include "widget/messageboxexx.h"
 #elif  defined(Q_OS_ANDROID) || defined(DEBUG_QML_ON_WINDOWS)
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
