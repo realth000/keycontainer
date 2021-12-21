@@ -11,7 +11,11 @@ MessageBoxExX::MessageBoxExX(QWidget *parent) :
     ui(new Ui::MessageBoxExX)
 {
     ui->setupUi(this);
+#ifdef Q_OS_WINDOWS
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
+#else
     this->setWindowFlags(Qt::FramelessWindowHint);
+#endif
     this->setFixedSize(this->width(), this->height());
 
     // 标题栏样式
