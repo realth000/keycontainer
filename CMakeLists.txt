@@ -1,13 +1,13 @@
 ﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 3.1.10)
+set(APP_VERSION 3.2.0)
 
 project(KeyContainer
 	VERSION ${APP_VERSION}
 	LANGUAGES CXX)
 
 # Set compile options
-set(COMPILE_QML ON CACHE BOOL "Compile Qml version" FORCE)
+set(COMPILE_QML OFF CACHE BOOL "Compile Qml version" FORCE)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)

@@ -64,12 +64,13 @@ int main(int argc, char *argv[])
     sharedMem.create(1);
 #endif
     MessageBoxExX w;
-    MainUi MU;
+    MainUi MU(nullptr, &sharedMem);
     if(!MU.loginCorrent){
         return 0;
     }
     MU.show();
     return a.exec();
+
 #endif
 #endif
 

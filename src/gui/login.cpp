@@ -107,7 +107,11 @@ void LogIn::keyReleaseEvent(QKeyEvent *e)
 
 void LogIn::initUi()
 {
-    this->setWindowFlag(Qt::FramelessWindowHint);
+#ifdef Q_OS_WINDOWS
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
+#else
+    this->setWindowFlags(Qt::FramelessWindowHint);
+#endif
     this->setFixedSize(this->width(), this->height());
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet_login.css").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
