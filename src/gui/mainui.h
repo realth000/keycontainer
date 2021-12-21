@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QClipboard>
 #include <QtWidgets/QSystemTrayIcon>
+#include <QtCore/QSharedMemory>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
@@ -26,7 +27,7 @@ class MainUi : public QWidget
     Q_OBJECT
 
 public:
-    MainUi(QWidget *parent = nullptr);
+    MainUi(QWidget *parent = nullptr, QSharedMemory *singleAppCheckMemory = nullptr);
     ~MainUi();
     bool loginCorrent = false;
 
@@ -188,6 +189,7 @@ private:
     QPixmap* about_logo_pix;
     QSystemTrayIcon *m_systemTrayIcon;
     QMenu *m_systemTrayIconMenu;
+    QSharedMemory *m_singleAppCheckMemory;
 
     // config
     int selectMode = -1;
