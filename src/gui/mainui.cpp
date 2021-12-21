@@ -33,7 +33,9 @@
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent),
       ui(new Ui::MainUi),
-      generateLength(DEFAULT_STR_GEN_LENGTH)
+      generateLength(DEFAULT_STR_GEN_LENGTH),
+      m_systemTrayIcon(new QSystemTrayIcon(this)),
+      m_systemTrayIconMenu(new QMenu(this))
 {
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
@@ -64,6 +66,7 @@ MainUi::MainUi(QWidget *parent)
 #   endif
     ui->setupUi(this);
     initUi();
+    initConnection();
     setupConfigToUi();
     initKeyData();
     QApplication::instance()->installEventFilter(this);
@@ -712,6 +715,19 @@ void MainUi::initUi()
     ui->gLengthCB->setView(new QListView());
     ui->gLengthCB->view()->verticalScrollBar()->setStyle(vScrollBarStyle);
     cboard = QApplication::clipboard();
+
+    // Init system tray icon menu
+    initSystemTrayIconMenu();
+    // System tray icon
+    m_systemTrayIcon->setIcon(QIcon(":/pic/KeyContainer.ico"));
+    m_systemTrayIcon->show();
+    m_systemTrayIcon->setContextMenu(m_systemTrayIconMenu);
+
+}
+
+void MainUi::initConnection()
+{
+
 }
 
 Estring MainUi::initConfig()
@@ -1321,6 +1337,51 @@ void MainUi::loginReset()
         logIn->show();
         loginLockLoop.exec();
     }
+}
+
+void MainUi::initSystemTrayIconMenu()
+{
+    QAction *openMainWindowAction = new QAction("打开/隐藏窗口", m_systemTrayIconMenu);
+    QAction *lockAppAction = new QAction("锁定程序", m_systemTrayIconMenu);
+    QAction *quitAcion = new QAction("退出", m_systemTrayIconMenu);
+    QAction *rebootAction = new QAction("重启", m_systemTrayIconMenu);
+
+    m_systemTrayIconMenu->addAction(openMainWindowAction);
+    m_systemTrayIconMenu->addSeparator();
+    m_systemTrayIconMenu->addAction(lockAppAction);
+    m_systemTrayIconMenu->addSeparator();
+    m_systemTrayIconMenu->addAction(quitAcion);
+    m_systemTrayIconMenu->addAction(rebootAction);
+    connect(openMainWindowAction, &QAction::triggered, this,
+            [this](){
+                if(loginCorrent){
+                    this->windowState() != Qt::WindowMinimized ? this->showMinimized() : this->showNormal();
+                }
+                else{
+                    logIn->windowState() != Qt::WindowMinimized ? logIn->showMinimized() : logIn->showNormal();
+                }
+
+            });
+    connect(lockAppAction, &QAction::triggered, this,
+            [this](){
+                if(loginCorrent){
+                    lockApp();
+                }
+            });
+    connect(quitAcion, &QAction::triggered, this, [](){qApp->quit();});
+    connect(rebootAction, &QAction::triggered, this, &MainUi::on_restartProgBtn_clicked);
+
+    connect(m_systemTrayIconMenu, &QMenu::aboutToShow, this,
+            [this, lockAppAction](){
+                if(loginCorrent){
+                    lockAppAction->setText("锁定程序");
+                    lockAppAction->setEnabled(true);
+                }
+                else{
+                    lockAppAction->setText("已锁定");
+                    lockAppAction->setEnabled(false);
+                }
+            });
 }
 
 void MainUi::showKeyTableMenu(QPoint pos)
@@ -2120,4 +2181,3 @@ void MainUi::on_gCopyResultBtn_clicked()
     cboard->setText(ui->gResultLE->text());
     log("已复制到剪切板");
 }
-
