@@ -31,7 +31,9 @@
 //#include <QWaylandObject>
 
 MainUi::MainUi(QWidget *parent)
-    : QWidget(parent), ui(new Ui::MainUi)
+    : QWidget(parent),
+      ui(new Ui::MainUi),
+      generateLength(DEFAULT_STR_GEN_LENGTH)
 {
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
@@ -721,7 +723,6 @@ Estring MainUi::initConfig()
     autoChangeAES = false;
     autoBackupPath = true;
     timeLockerTiming = timeLockerTimingMap[DEFAULT_LOCK_APP_TIME];
-    generateLength = DEFAULT_STR_GEN_LENGTH;
 
     if(!QFileInfo(QDir::toNativeSeparators(appPath + "/config.ini")).exists()){
         MessageBoxExY::information("未找到配置文件", "未找到配置文件，加载默认配置");
@@ -751,8 +752,7 @@ Estring MainUi::initConfig()
     if(timeLockerTimingMap.contains(lockAppTimingTmp)){
         timeLockerTiming = timeLockerTimingMap[lockAppTimingTmp];
     }
-    generateLength = qMax(ini->value("/Tool/GeneratorGenerateLength").toInt(), GENERATOR_MIN_LENGTH);
-
+    generateLengthImport = qMax(ini->value("/Tool/GeneratorGenerateLength").toInt(), GENERATOR_MIN_LENGTH);
     delete ini;
     return ret;
 }
@@ -783,7 +783,7 @@ void MainUi::setupConfigToUi()
     ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
     ui->autoBackupPathChB->setChecked(autoBackupPath);
     ui->lockAppTimingSB->setCurrentText(timeLockerTimingMap.key(timeLockerTiming));
-    ui->gLengthCB->setCurrentText(QString::number(generateLength));
+    ui->gLengthCB->setCurrentText(QString::number(generateLengthImport));
     log("读取配置");
 }
 
