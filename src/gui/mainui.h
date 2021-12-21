@@ -13,6 +13,8 @@
 //#include <QCloseEvent>
 #include <QTimer>
 #include <QClipboard>
+#include <QtWidgets/QSystemTrayIcon>
+#include <QtCore/QSharedMemory>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
@@ -25,7 +27,7 @@ class MainUi : public QWidget
     Q_OBJECT
 
 public:
-    MainUi(QWidget *parent = nullptr);
+    MainUi(QWidget *parent = nullptr, QSharedMemory *singleAppCheckMemory = nullptr);
     ~MainUi();
     bool loginCorrent = false;
 
@@ -100,6 +102,7 @@ private slots:
 private:
     void initKeyData();
     void initUi();
+    void initConnection();
     Estring initConfig();
     void setupConfigToUi();
     QWidget* addCheckBox(int height);
@@ -121,6 +124,7 @@ private:
     bool setKcdbKey(QString keyPath = "");
     Estring randomGenerator();
     void loginReset();
+    void initSystemTrayIconMenu();
 
     Kcdb *kcdb = nullptr;
     LogIn *logIn = nullptr;
@@ -166,6 +170,7 @@ private:
     QMap<QString, int> timeLockerTimingMap;
     int timeLockerTiming=300000;
     int generateLength=6;
+    int generateLengthImport;
     bool useNumbers=true;
     bool useAlphas=false;
     bool useSymbols=false;
@@ -182,6 +187,9 @@ private:
     TabBarStyle *tBStyle;
     TabWidgetStyle *tWStyle;
     QPixmap* about_logo_pix;
+    QSystemTrayIcon *m_systemTrayIcon;
+    QMenu *m_systemTrayIconMenu;
+    QSharedMemory *m_singleAppCheckMemory;
 
     // config
     int selectMode = -1;

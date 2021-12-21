@@ -28,10 +28,14 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
 #include <QRandomGenerator>
 #endif
-//#include <QWaylandObject>
 
-MainUi::MainUi(QWidget *parent)
-    : QWidget(parent), ui(new Ui::MainUi)
+MainUi::MainUi(QWidget *parent, QSharedMemory *singleAppCheckMemory)
+    : QWidget(parent),
+      ui(new Ui::MainUi),
+      generateLength(DEFAULT_STR_GEN_LENGTH),
+      m_systemTrayIcon(new QSystemTrayIcon(this)),
+      m_systemTrayIconMenu(new QMenu(this)),
+      m_singleAppCheckMemory(singleAppCheckMemory)
 {
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
@@ -62,6 +66,7 @@ MainUi::MainUi(QWidget *parent)
 #   endif
     ui->setupUi(this);
     initUi();
+    initConnection();
     setupConfigToUi();
     initKeyData();
     QApplication::instance()->installEventFilter(this);
@@ -309,7 +314,11 @@ void MainUi::initUi()
     tBStyle = new TabBarStyle;
     tWStyle = new TabWidgetStyle;
 
+#ifdef Q_OS_WINDOWS
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
+#else
     this->setWindowFlags(Qt::FramelessWindowHint);
+#endif
     this->setFixedSize(this->width(), this->height());
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet.css").arg(this->objectName()).arg("rgb(55,85,100)")
                             .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
@@ -706,6 +715,19 @@ void MainUi::initUi()
     ui->gLengthCB->setView(new QListView());
     ui->gLengthCB->view()->verticalScrollBar()->setStyle(vScrollBarStyle);
     cboard = QApplication::clipboard();
+
+    // Init system tray icon menu
+    initSystemTrayIconMenu();
+    // System tray icon
+    m_systemTrayIcon->setIcon(QIcon(":/pic/KeyContainer.ico"));
+    m_systemTrayIcon->show();
+    m_systemTrayIcon->setContextMenu(m_systemTrayIconMenu);
+
+}
+
+void MainUi::initConnection()
+{
+
 }
 
 Estring MainUi::initConfig()
@@ -717,7 +739,6 @@ Estring MainUi::initConfig()
     autoChangeAES = false;
     autoBackupPath = true;
     timeLockerTiming = timeLockerTimingMap[DEFAULT_LOCK_APP_TIME];
-    generateLength = DEFAULT_STR_GEN_LENGTH;
 
     if(!QFileInfo(QDir::toNativeSeparators(appPath + "/config.ini")).exists()){
         MessageBoxExY::information("未找到配置文件", "未找到配置文件，加载默认配置");
@@ -747,8 +768,7 @@ Estring MainUi::initConfig()
     if(timeLockerTimingMap.contains(lockAppTimingTmp)){
         timeLockerTiming = timeLockerTimingMap[lockAppTimingTmp];
     }
-    generateLength = qMax(ini->value("/Tool/GeneratorGenerateLength").toInt(), GENERATOR_MIN_LENGTH);
-
+    generateLengthImport = qMax(ini->value("/Tool/GeneratorGenerateLength").toInt(), GENERATOR_MIN_LENGTH);
     delete ini;
     return ret;
 }
@@ -779,7 +799,7 @@ void MainUi::setupConfigToUi()
     ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
     ui->autoBackupPathChB->setChecked(autoBackupPath);
     ui->lockAppTimingSB->setCurrentText(timeLockerTimingMap.key(timeLockerTiming));
-    ui->gLengthCB->setCurrentText(QString::number(generateLength));
+    ui->gLengthCB->setCurrentText(QString::number(generateLengthImport));
     log("读取配置");
 }
 
@@ -1319,6 +1339,51 @@ void MainUi::loginReset()
     }
 }
 
+void MainUi::initSystemTrayIconMenu()
+{
+    QAction *openMainWindowAction = new QAction("打开/隐藏窗口", m_systemTrayIconMenu);
+    QAction *lockAppAction = new QAction("锁定程序", m_systemTrayIconMenu);
+    QAction *quitAcion = new QAction("退出", m_systemTrayIconMenu);
+    QAction *rebootAction = new QAction("重启", m_systemTrayIconMenu);
+
+    m_systemTrayIconMenu->addAction(openMainWindowAction);
+    m_systemTrayIconMenu->addSeparator();
+    m_systemTrayIconMenu->addAction(lockAppAction);
+    m_systemTrayIconMenu->addSeparator();
+    m_systemTrayIconMenu->addAction(quitAcion);
+    m_systemTrayIconMenu->addAction(rebootAction);
+    connect(openMainWindowAction, &QAction::triggered, this,
+            [this](){
+                if(loginCorrent){
+                    this->windowState() != Qt::WindowMinimized ? this->showMinimized() : this->showNormal();
+                }
+                else{
+                    logIn->windowState() != Qt::WindowMinimized ? logIn->showMinimized() : logIn->showNormal();
+                }
+
+            });
+    connect(lockAppAction, &QAction::triggered, this,
+            [this](){
+                if(loginCorrent){
+                    lockApp();
+                }
+            });
+    connect(quitAcion, &QAction::triggered, this, [](){qApp->quit();});
+    connect(rebootAction, &QAction::triggered, this, &MainUi::on_restartProgBtn_clicked);
+
+    connect(m_systemTrayIconMenu, &QMenu::aboutToShow, this,
+            [this, lockAppAction](){
+                if(loginCorrent){
+                    lockAppAction->setText("锁定程序");
+                    lockAppAction->setEnabled(true);
+                }
+                else{
+                    lockAppAction->setText("已锁定");
+                    lockAppAction->setEnabled(false);
+                }
+            });
+}
+
 void MainUi::showKeyTableMenu(QPoint pos)
 {
     if(ui->keyTW->itemAt(pos) == nullptr){
@@ -1495,9 +1560,10 @@ void MainUi::on_autoChangeAESKeyChB_stateChanged(int arg1)
 
 void MainUi::on_restartProgBtn_clicked()
 {
-
     restart=true;
-//    this->close();
+    if(m_singleAppCheckMemory != nullptr && m_singleAppCheckMemory->isAttached()){
+        m_singleAppCheckMemory->detach();
+    }
     QApplication::closeAllWindows();
     QProcess::startDetached(qApp->applicationFilePath(), QStringList());
 }
@@ -2116,4 +2182,3 @@ void MainUi::on_gCopyResultBtn_clicked()
     cboard->setText(ui->gResultLE->text());
     log("已复制到剪切板");
 }
-
