@@ -166,6 +166,7 @@ private:
     QMap<QString, int> timeLockerTimingMap;
     int timeLockerTiming=300000;
     int generateLength=6;
+    int generateLengthImport;
     bool useNumbers=true;
     bool useAlphas=false;
     bool useSymbols=false;
