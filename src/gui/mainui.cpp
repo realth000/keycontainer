@@ -28,14 +28,14 @@
 #if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
 #include <QRandomGenerator>
 #endif
-//#include <QWaylandObject>
 
-MainUi::MainUi(QWidget *parent)
+MainUi::MainUi(QWidget *parent, QSharedMemory *singleAppCheckMemory)
     : QWidget(parent),
       ui(new Ui::MainUi),
       generateLength(DEFAULT_STR_GEN_LENGTH),
       m_systemTrayIcon(new QSystemTrayIcon(this)),
-      m_systemTrayIconMenu(new QMenu(this))
+      m_systemTrayIconMenu(new QMenu(this)),
+      m_singleAppCheckMemory(singleAppCheckMemory)
 {
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
@@ -1560,9 +1560,10 @@ void MainUi::on_autoChangeAESKeyChB_stateChanged(int arg1)
 
 void MainUi::on_restartProgBtn_clicked()
 {
-
     restart=true;
-//    this->close();
+    if(m_singleAppCheckMemory != nullptr && m_singleAppCheckMemory->isAttached()){
+        m_singleAppCheckMemory->detach();
+    }
     QApplication::closeAllWindows();
     QProcess::startDetached(qApp->applicationFilePath(), QStringList());
 }
