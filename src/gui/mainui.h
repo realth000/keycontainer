@@ -13,6 +13,7 @@
 //#include <QCloseEvent>
 #include <QTimer>
 #include <QClipboard>
+#include <QtWidgets/QSystemTrayIcon>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {class MainUi;}
@@ -100,6 +101,7 @@ private slots:
 private:
     void initKeyData();
     void initUi();
+    void initConnection();
     Estring initConfig();
     void setupConfigToUi();
     QWidget* addCheckBox(int height);
@@ -121,6 +123,7 @@ private:
     bool setKcdbKey(QString keyPath = "");
     Estring randomGenerator();
     void loginReset();
+    void initSystemTrayIconMenu();
 
     Kcdb *kcdb = nullptr;
     LogIn *logIn = nullptr;
@@ -183,6 +186,8 @@ private:
     TabBarStyle *tBStyle;
     TabWidgetStyle *tWStyle;
     QPixmap* about_logo_pix;
+    QSystemTrayIcon *m_systemTrayIcon;
+    QMenu *m_systemTrayIconMenu;
 
     // config
     int selectMode = -1;
