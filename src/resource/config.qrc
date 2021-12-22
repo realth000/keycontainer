@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>config/login.ec</file>
+        <file>config/DejaVuSansMono-1.ttf</file>
     </qresource>
 </RCC>

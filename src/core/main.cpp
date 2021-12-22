@@ -19,6 +19,7 @@
 #include <QRegularExpression>
 #include <QProcess>
 #include <QString>
+#include <QtGui/QFontDatabase>
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 #include <QApplication>
 #include <QObject>
@@ -39,21 +40,22 @@ int main(int argc, char *argv[])
     // 勿删
     DebugShowOptions dso;
 
-    QFont af;
-#if defined(Q_OS_WINDOWS)
-    af.setFamily("Microsoft YaHei");
-#elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
-    af.setFamily("DejaVu Sans Mono");
-#endif
-    af.setStyleStrategy(QFont::PreferAntialias);
-
     QCoreApplication::setApplicationName(TITLEBAR_TITLETEXT);
     QCoreApplication::setApplicationVersion(ABOUT_VERSION);
 #ifndef DEBUG_QML_ON_WINDOWS
     // Windows and Linux
 #if defined(Q_OS_WINDOWS) || (defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID))
     QApplication a(argc, argv);
-    a.setFont(af);
+    QFontDatabase fontDatabase;
+    fontDatabase.addApplicationFont(":/config/DejaVuSansMono-1.ttf");
+    QFont appFont;
+#ifdef Q_OS_WINDOWS
+    appFont.setFamily("DejaVu Sans Mono,Microsoft Yahei");
+#else
+   appFont.setFamily("DejaVu Sans Mono");
+#endif
+    appFont.setStyleStrategy(static_cast<QFont::StyleStrategy>(QFont::PreferAntialias | QFont::PreferQuality));
+    a.setFont(appFont);
 #ifndef DEBUG_DISABLE_SINGLE_DETECTION
     QSharedMemory sharedMem("key_container_shared_memory");
     if(sharedMem.attach()){
