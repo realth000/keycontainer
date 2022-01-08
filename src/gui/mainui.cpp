@@ -46,12 +46,8 @@ MainUi::MainUi(QWidget *parent, QSharedMemory *singleAppCheckMemory)
     if(!loginCorrent){
         delete logIn;
         logIn = nullptr;
-        delete kcdb;
-        kcdb = nullptr;
         return;
     }
-    delete logIn;
-    logIn = nullptr;
     if(truePwdHash.getVal() == LOGIN_PASSWD_HASH_DEF){
         MessageBoxExY::warning("需要修改密码", "检测到当前密码为默认密码，建议尽快在设置内修改", " 确定 ", "");
     }
@@ -1313,25 +1309,27 @@ Estring MainUi::randomGenerator()
 
 void MainUi::loginReset()
 {
-    connect(logIn, &LogIn::setKcdbKey, this, [=](Estring k){
-        if(kcdb != nullptr){
-            delete kcdb;
-            kcdb = nullptr;
-        }
-        kcdb = new Kcdb(appPath + saveName, appPath + backupName);
-        kcdb->setSavePath(savePath);
-        kcdb->setBackupPath(backupPath);
-        kcdb->setKey(k);
-    });
-    connect(logIn, &LogIn::finish, this, [=](bool result, Estring pwdHash){
-        if(result){
-            tmpPwdHash = pwdHash;
-            truePwdHash = pwdHash;
-            loginCorrent = true;
-        }
-        emit open2();
-    });
-    connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit);
+    connect(logIn, &LogIn::setKcdbKey, this,
+        [=](Estring k){
+            if(kcdb != nullptr){
+                delete kcdb;
+                kcdb = nullptr;
+            }
+            kcdb = new Kcdb(appPath + saveName, appPath + backupName);
+            kcdb->setSavePath(savePath);
+            kcdb->setBackupPath(backupPath);
+            kcdb->setKey(k);
+        }, Qt::UniqueConnection);
+    connect(logIn, &LogIn::finish, this,
+        [=](bool result, Estring pwdHash){
+            if(result){
+                tmpPwdHash = pwdHash;
+                truePwdHash = pwdHash;
+                loginCorrent = true;
+            }
+            emit open2();
+        }, Qt::UniqueConnection);
+    connect(this, &MainUi::open2, &loginLockLoop, &QEventLoop::quit, Qt::UniqueConnection);
     if(logIn->getContinueStart()){
         logIn->setContinueStart(false);
         this->setVisible(false);
@@ -2116,10 +2114,7 @@ void MainUi::on_autoBackupPathChB_stateChanged(int arg1)
 void MainUi::lockApp()
 {
     loginCorrent=false;
-    if(logIn != nullptr){
-        delete logIn;
-    }
-    logIn = new LogIn(nullptr, loginPath);
+    logIn->setPwdHash(truePwdHash);
     loginReset();
     loginCorrent ? this->setVisible(true) : exit(0);
 }

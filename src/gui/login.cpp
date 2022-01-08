@@ -57,6 +57,11 @@ void LogIn::setContinueStart(bool yon)
     this->continueStart = yon;
 }
 
+void LogIn::setPwdHash(Estring password)
+{
+    truePwdHash = password;
+}
+
 void LogIn::closeEvent(QCloseEvent *e)
 {
     Q_UNUSED(e);
@@ -194,7 +199,6 @@ bool LogIn::checkPwd()
     QByteArray resultHash;
     QCryptographicHash hash1(QCryptographicHash::Keccak_512);
     if(ui->lineEdit->text() == ""){
-        ui->lineEdit->clear();
         ui->lineEdit->setFocus();
         return false;
     }
@@ -223,6 +227,8 @@ void LogIn::on_logInB_clicked()
 //        emit finish(true, truePwdHash);
         continueStart = true;
         emit setKcdbKey(Estring(ui->lineEdit->text()));
+        ui->lineEdit->clear();
+        ui->lineEdit->setFocus();
         this->close();
     }
     else{
