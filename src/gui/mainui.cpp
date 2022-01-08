@@ -39,7 +39,8 @@ MainUi::MainUi(QWidget *parent, QSharedMemory *singleAppCheckMemory)
 {
     appPath = QDir::toNativeSeparators(QCoreApplication::applicationDirPath());
 #   ifndef DEBUG_SKIP_LOGIN
-    logIn = new LogIn(nullptr, initConfig());
+    loginPath = initConfig();
+    logIn = new LogIn(nullptr, loginPath);
     loginReset();
 
     if(!loginCorrent){
@@ -2044,7 +2045,7 @@ void MainUi::on_importKeysBtn_clicked()
         return;
     }
     QFileInfo dataFileInfo(importPath);
-    QString loginPath = QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + LOGIN_PASSWD_FILE_NAME);
+    loginPath.setVal(QDir::toNativeSeparators(dataFileInfo.path().replace("\\", "/") + LOGIN_PASSWD_FILE_NAME));
     if(dataFileInfo.suffix() == "kcdb"){
         if(!QFileInfo::exists(importPath+".chf")){
             log("检验文件丢失，无法读取");
@@ -2055,7 +2056,7 @@ void MainUi::on_importKeysBtn_clicked()
             delete logIn;
             logIn = nullptr;
         }
-        logIn = new LogIn(nullptr, Estring(loginPath));
+        logIn = new LogIn(nullptr, loginPath);
         loginReset();
         this->setVisible(true);
         // FIXME: 不安全，需要绑定login.ec与dat.ec
@@ -2118,7 +2119,7 @@ void MainUi::lockApp()
     if(logIn != nullptr){
         delete logIn;
     }
-    logIn = new LogIn();
+    logIn = new LogIn(nullptr, loginPath);
     loginReset();
     loginCorrent ? this->setVisible(true) : exit(0);
 }
