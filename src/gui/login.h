@@ -21,6 +21,7 @@ public:
     ~LogIn();
     bool getContinueStart() const;
     void setContinueStart(bool yon);
+    void setPwdHash(Estring password);
 
 signals:
     void finish(bool r, Estring truePwdHash);

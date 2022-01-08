@@ -141,6 +141,7 @@ private:
     const QString pwdCharacterString = "❄❄❄❄❄❄❄";
     bool autoChangeAES = false;
     Estring truePwdHash = Estring();
+    Estring loginPath;
     QString savePath = "/pw.kcdb";
     QString backupPath = "/pwbp.kcdb";
     QString saveName = "/pw.kcdb";
