@@ -724,7 +724,7 @@ void MainUi::initUi()
 
 void MainUi::initConnection()
 {
-
+    connect(m_systemTrayIcon, &QSystemTrayIcon::activated, this, &MainUi::onTrayIconActivated);
 }
 
 Estring MainUi::initConfig()
@@ -1338,6 +1338,31 @@ void MainUi::loginReset()
     }
 }
 
+bool MainUi::getWindowState() const
+{
+    return loginCorrent ? this->windowState() != Qt::WindowMinimized : logIn->windowState() != Qt::WindowMinimized;
+}
+
+void MainUi::updateWindowState()
+{
+    if(loginCorrent){
+        if(this->windowState() != Qt::WindowMinimized) {
+            this->showMinimized();
+        }
+        else{
+            this->showNormal();
+        }
+    }
+    else{
+        if(logIn->windowState() != Qt::WindowMinimized) {
+            logIn->showMinimized();
+        }
+        else{
+            logIn->showNormal();
+        }
+    }
+}
+
 void MainUi::initSystemTrayIconMenu()
 {
     QAction *openMainWindowAction = new QAction("打开/隐藏窗口", m_systemTrayIconMenu);
@@ -1351,16 +1376,7 @@ void MainUi::initSystemTrayIconMenu()
     m_systemTrayIconMenu->addSeparator();
     m_systemTrayIconMenu->addAction(quitAcion);
     m_systemTrayIconMenu->addAction(rebootAction);
-    connect(openMainWindowAction, &QAction::triggered, this,
-            [this](){
-                if(loginCorrent){
-                    this->windowState() != Qt::WindowMinimized ? this->showMinimized() : this->showNormal();
-                }
-                else{
-                    logIn->windowState() != Qt::WindowMinimized ? logIn->showMinimized() : logIn->showNormal();
-                }
-
-            });
+    connect(openMainWindowAction, &QAction::triggered, this, &MainUi::updateWindowState);
     connect(lockAppAction, &QAction::triggered, this,
             [this](){
                 if(loginCorrent){
@@ -1371,7 +1387,13 @@ void MainUi::initSystemTrayIconMenu()
     connect(rebootAction, &QAction::triggered, this, &MainUi::on_restartProgBtn_clicked);
 
     connect(m_systemTrayIconMenu, &QMenu::aboutToShow, this,
-            [this, lockAppAction](){
+            [this, openMainWindowAction, lockAppAction](){
+                if(getWindowState()) {
+                    openMainWindowAction->setText("隐藏窗口");
+                }
+                else {
+                    openMainWindowAction->setText("打开窗口");
+                }
                 if(loginCorrent){
                     lockAppAction->setText("锁定程序");
                     lockAppAction->setEnabled(true);
@@ -2177,4 +2199,15 @@ void MainUi::on_gCopyResultBtn_clicked()
 {
     cboard->setText(ui->gResultLE->text());
     log("已复制到剪切板");
+}
+
+void MainUi::onTrayIconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+        updateWindowState();
+        break;
+    default:
+        break;
+    }
 }

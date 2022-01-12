@@ -98,6 +98,7 @@ private slots:
     void on_gLengthCB_currentTextChanged(const QString &arg1);
     void on_useCustomCharChB_stateChanged(int arg1);
     void on_gCopyResultBtn_clicked();
+    void onTrayIconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     void initKeyData();
@@ -124,6 +125,8 @@ private:
     bool setKcdbKey(QString keyPath = "");
     Estring randomGenerator();
     void loginReset();
+    bool getWindowState() const;
+    void updateWindowState();
     void initSystemTrayIconMenu();
 
     Kcdb *kcdb = nullptr;
