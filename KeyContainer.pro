@@ -1,4 +1,4 @@
-VERSION = 3.2.1
+VERSION = 3.2.2
 RC_ICONS = "src/resource/pic/KeyContainer.ico"
 
 CONFIG += c++17 no_batch
