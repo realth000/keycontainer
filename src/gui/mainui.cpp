@@ -1351,6 +1351,7 @@ void MainUi::updateWindowState()
         }
         else{
             this->showNormal();
+            this->raise();
         }
     }
     else{
@@ -1359,6 +1360,7 @@ void MainUi::updateWindowState()
         }
         else{
             logIn->showNormal();
+            this->raise();
         }
     }
 }
