@@ -11,7 +11,7 @@
 #define TITLEBAR_TITLETEXT "Key Container"
 #define TITLEBAR_TITLEICON ":/pic/Key Container.ico"
 #define ABOUT_VERSION APP_VERSION
-#define ABOUT_TIME  "2022.1.9"
+#define ABOUT_TIME  "2022.1.13"
 #define ABOUT_BASE_QT "Qt " QT_VERSION_STR
 #define ABOUT_BASE_CPP __cplusplus
 
