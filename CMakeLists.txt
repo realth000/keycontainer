@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 3.2.2)
+set(APP_VERSION 3.2.3)
 
 project(KeyContainer
 	VERSION ${APP_VERSION}

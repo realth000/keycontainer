@@ -1,6 +1,7 @@
 ﻿#include <QDebug>
 #include "commoninclude.h"
 #include <QFont>
+#include <QtGui/QFontDatabase>
 #include "debugshowoptions.h"
 
 #ifdef DEBUG_USE_VID
@@ -19,7 +20,6 @@
 #include <QRegularExpression>
 #include <QProcess>
 #include <QString>
-#include <QtGui/QFontDatabase>
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
 #include <QApplication>
 #include <QObject>
