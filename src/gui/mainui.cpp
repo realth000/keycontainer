@@ -2140,7 +2140,10 @@ void MainUi::lockApp()
     loginCorrent=false;
     logIn->setPwdHash(truePwdHash);
     loginReset();
-    loginCorrent ? this->setVisible(true) : exit(0);
+    if(!loginCorrent) {
+        return;
+    }
+    this->setVisible(true);
 }
 
 void MainUi::on_lockAppBtn_clicked()
@@ -2150,7 +2153,7 @@ void MainUi::on_lockAppBtn_clicked()
 
 void MainUi::appStateChanged(Qt::ApplicationState state)
 {
-    state==Qt::ApplicationActive ?  timeLocker.stop() : timeLocker.start(timeLockerTiming);
+    loginCorrent && state!=Qt::ApplicationActive ?  timeLocker.start(timeLockerTiming) : timeLocker.stop();
 }
 
 void MainUi::on_lockAppTimingSB_currentTextChanged(const QString &arg1)
