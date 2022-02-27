@@ -596,6 +596,7 @@ void MainUi::initUi()
     ui->keyTW->setAlternatingRowColors(true);
     ui->keyTW->setFocusPolicy(Qt::NoFocus);
     ui->keyTW->setFocus();
+    ui->keyTW->setShowGrid(false);
     // TODO: keyTW右键菜单
     connect(ui->keyTW, &QTableWidget::customContextMenuRequested, this, &MainUi::showKeyTableMenu, Qt::UniqueConnection);
 
