@@ -682,17 +682,10 @@ void MainUi::initUi()
     // 设置锁屏
     timeLocker.setSingleShot(true);
     connect(&timeLocker, &QTimer::timeout, this, &MainUi::lockApp);
-    QStringList lockAppTimingSBItems{"1分钟", DEFAULT_LOCK_APP_TIME, "10分钟", "30分钟", "1小时", "3小时", "5小时"};
-    timeLockerTimingMap["1分钟"]=60000;
-    timeLockerTimingMap[DEFAULT_LOCK_APP_TIME]=300000;
-    timeLockerTimingMap["10分钟"]=600000;
-    timeLockerTimingMap["30分钟"]=1800000;
-    timeLockerTimingMap["1小时"]=3600000;
-    timeLockerTimingMap["3小时"]=10800000;
-    timeLockerTimingMap["5小时"]=18000000;
+    QStringList lockAppTimingSBItems{"1分钟", "5分钟", "10分钟", "30分钟", "1小时", "3小时", "5小时"};
     ui->lockAppTimingSB->addItems(lockAppTimingSBItems);
     ui->lockAppTimingSB->setView(new QListView());
-    ui->lockAppTimingSB->setCurrentText(DEFAULT_LOCK_APP_TIME);
+//    ui->lockAppTimingSB->setCurrentText(timeLockerTimingMap.value(timeLockerTiming));
     ui->lockAppTimingSB->view()->verticalScrollBar()->setStyle(vScrollBarStyle);
 //    ui->lockAppTimingSB->view()->setWindowOpacity(1);
 //    ui->lockAppTimingSB->view()->parentWidget()->setAttribute(Qt::WA_TranslucentBackground, false);
@@ -725,6 +718,7 @@ void MainUi::initUi()
 void MainUi::initConnection()
 {
     connect(m_systemTrayIcon, &QSystemTrayIcon::activated, this, &MainUi::onTrayIconActivated);
+    connect(ui->lockAppTimingSB, &QComboBox::currentTextChanged, this, &MainUi::onLockAppTimingChanged);
 }
 
 Estring MainUi::initConfig()
@@ -735,7 +729,14 @@ Estring MainUi::initConfig()
     backupPath = QDir::toNativeSeparators(appPath + backupName);
     autoChangeAES = false;
     autoBackupPath = true;
-    timeLockerTiming = timeLockerTimingMap[DEFAULT_LOCK_APP_TIME];
+    timeLockerTimingMap[60000]    = "1分钟";
+    timeLockerTimingMap[300000]   = "5分钟";
+    timeLockerTimingMap[600000]   = "10分钟";
+    timeLockerTimingMap[1800000]  = "30分钟";
+    timeLockerTimingMap[3600000]  = "1小时";
+    timeLockerTimingMap[10800000] = "3小时";
+    timeLockerTimingMap[18000000] = "5小时";
+    timeLockerTiming = 600000;
 
     if(!QFileInfo(QDir::toNativeSeparators(appPath + "/config.ini")).exists()){
         MessageBoxExY::information("未找到配置文件", "未找到配置文件，加载默认配置");
@@ -761,9 +762,9 @@ Estring MainUi::initConfig()
     selectMode = ini->value("/Common/DefaultSelectMode").toUInt();
     autoChangeAES = ini->value("/Security/AutoChangeAESKey").toBool();
     autoBackupPath = ini->value("/Common/AutoBackupPath").toBool();
-    QString lockAppTimingTmp = ini->value("/Security/LockAppTiming").toString().replace("m", "分钟").replace("h", "小时");
+    int lockAppTimingTmp = ini->value("/Security/LockAppTiming").toInt();
     if(timeLockerTimingMap.contains(lockAppTimingTmp)){
-        timeLockerTiming = timeLockerTimingMap[lockAppTimingTmp];
+        timeLockerTiming = lockAppTimingTmp;
     }
     generateLengthImport = qMax(ini->value("/Tool/GeneratorGenerateLength").toInt(), GENERATOR_MIN_LENGTH);
     delete ini;
@@ -795,7 +796,7 @@ void MainUi::setupConfigToUi()
     }
     ui->autoChangeAESKeyChB->setChecked(autoChangeAES);
     ui->autoBackupPathChB->setChecked(autoBackupPath);
-    ui->lockAppTimingSB->setCurrentText(timeLockerTimingMap.key(timeLockerTiming));
+    ui->lockAppTimingSB->setCurrentText(timeLockerTimingMap.value(timeLockerTiming));
     ui->gLengthCB->setCurrentText(QString::number(generateLengthImport));
     log("读取配置");
 }
@@ -1570,7 +1571,7 @@ void MainUi::on_saveConfigBtn_clicked()
     }
     ini->setValue("/Security/AutoChangeAESKey", autoChangeAES);
     ini->setValue("/Common/AutoBackupPath", ui->autoBackupPathChB->isChecked());
-    ini->setValue("/Security/LockAppTiming", ui->lockAppTimingSB->currentText().replace("分钟", "m").replace("小时", "h"));
+    ini->setValue("/Security/LockAppTiming", timeLockerTiming);
     ini->setValue("/Tool/GeneratorGenerateLength", generateLength);
     delete ini;
     log("已保存设置");
@@ -2156,10 +2157,10 @@ void MainUi::appStateChanged(Qt::ApplicationState state)
     loginCorrent && state!=Qt::ApplicationActive ?  timeLocker.start(timeLockerTiming) : timeLocker.stop();
 }
 
-void MainUi::on_lockAppTimingSB_currentTextChanged(const QString &arg1)
+void MainUi::onLockAppTimingChanged(const QString &arg1)
 {
-    if(timeLockerTimingMap.contains(arg1)){
-        timeLockerTiming = timeLockerTimingMap[arg1];
+    if(timeLockerTimingMap.key(arg1) != 0){
+        timeLockerTiming = timeLockerTimingMap.key(arg1);
     }
     else{
         timeLockerTiming = 300000;

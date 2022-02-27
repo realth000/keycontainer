@@ -90,7 +90,8 @@ private slots:
     void lockApp();
     void on_lockAppBtn_clicked();
     void appStateChanged(Qt::ApplicationState state);
-    void on_lockAppTimingSB_currentTextChanged(const QString &arg1);
+    //on_lockAppTimingSB_currentTextChanged
+    void onLockAppTimingChanged(const QString &arg1);
     void on_useNumberChB_stateChanged(int arg1);
     void on_useAlphaChB_stateChanged(int arg1);
     void on_useSymbolChB_stateChanged(int arg1);
@@ -171,7 +172,7 @@ private:
     bool onBackupKCDB=false;
     Estring tmpPwdHash;
     QTimer timeLocker;
-    QMap<QString, int> timeLockerTimingMap;
+    QMap<int, QString> timeLockerTimingMap;
     int timeLockerTiming=300000;
     int generateLength=6;
     int generateLengthImport;
