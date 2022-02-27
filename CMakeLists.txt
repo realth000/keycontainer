@@ -6,9 +6,12 @@ project(KeyContainer
 	VERSION ${APP_VERSION}
 	LANGUAGES CXX)
 
+message(STATUS "CMake version: " ${CMAKE_VERSION})
+add_definitions(-DUSE_CMAKE -DCMAKE_VERSION="${CMAKE_VERSION}")
 # Set compile options
 set(COMPILE_QML OFF CACHE BOOL "Compile Qml version" FORCE)
 
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -80,4 +83,41 @@ endif()
 
 if(UNIX)
     target_link_libraries(${PROJECT_NAME} optimized X11)
+endif()
+
+# Get git info
+find_package(Git QUIET)
+if(GIT_FOUND)
+    set(GIT_COMMIT_TIME "")
+    set(GIT_COMMIT "")
+    set(GIT_COMMIT_LONG "")
+
+    # GIT_BRANCH   = $$system(git rev-parse --abbrev-ref HEAD)
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} show --oneline --format=\"%cd\" --date=short -s HEAD
+        OUTPUT_VARIABLE GIT_COMMIT_TIME
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} show --oneline --format=\"%h\" -s HEAD
+        OUTPUT_VARIABLE GIT_COMMIT
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+    execute_process(
+        COMMAND ${GIT_EXECUTABLE} show --oneline --format=\"%H\" -s HEAD
+        OUTPUT_VARIABLE GIT_COMMIT_LONG
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        ERROR_QUIET
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    )
+    add_definitions(-DAPP_COMMIT_TIME=${GIT_COMMIT_TIME})
+    add_definitions(-DAPP_COMMIT=${GIT_COMMIT})
+    add_definitions(-DAPP_COMMIT_LONG=${GIT_COMMIT_LONG})
+    message(STATUS "Git commit time:"      ${GIT_COMMIT_TIME})
+    message(STATUS "Git commit:"           ${GIT_COMMIT})
+    message(STATUS "Git commit full name:" ${GIT_COMMIT_LONG})
 endif()

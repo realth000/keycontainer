@@ -229,6 +229,7 @@ void LogIn::on_logInB_clicked()
         emit setKcdbKey(Estring(ui->lineEdit->text()));
         ui->lineEdit->clear();
         ui->lineEdit->setFocus();
+        ui->warnL->setVisible(false);
         this->close();
     }
     else{

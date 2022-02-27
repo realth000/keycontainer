@@ -596,6 +596,7 @@ void MainUi::initUi()
     ui->keyTW->setAlternatingRowColors(true);
     ui->keyTW->setFocusPolicy(Qt::NoFocus);
     ui->keyTW->setFocus();
+    ui->keyTW->setShowGrid(false);
     // TODO: keyTW右键菜单
     connect(ui->keyTW, &QTableWidget::customContextMenuRequested, this, &MainUi::showKeyTableMenu, Qt::UniqueConnection);
 
@@ -627,22 +628,40 @@ void MainUi::initUi()
     ui->about_titleL->setAlignment(Qt::AlignCenter);
     ui->about_plantformL->setText(ABOUT_PLANTFORM);
     ui->about_plantformL->setAlignment(Qt::AlignRight |Qt::AlignVCenter);
-    ui->about_versionL->setText(ABOUT_VERSION);
-    ui->about_timeL->setText(ABOUT_TIME);
     ui->about_baseTB->clear();
     QString aboutText="";
-    aboutText.append( "<p>" + QString("C++ ")+ " " + QString::number(ABOUT_BASE_CPP) + "</p>"
-                      + "<p>" + ABOUT_BASE_QT+ " "  + "</p>");
+#ifdef APP_COMMIT
+    const QString gitCommitUrl = QString("<a href=\"https://github.com/realth000/keycontainer/commit/%1\">"
+                                         "<font color=#6666FF>%2</font>"
+                                         "</a>")
+                                     .arg(APP_COMMIT_LONG, APP_COMMIT);
+    aboutText.append(QString("<p>%1 <b>%2</b></p>"
+                             "<p>%3 %4 %5</p>")
+                         .arg("软件版本", ABOUT_VERSION)
+                         .arg("构建版本", APP_COMMIT_TIME, gitCommitUrl));
+#else
+    aboutText.append(QString("<p>%1 <b>%2</b></p>")
+                         .arg("软件版本", ABOUT_VERSION));
+#endif
+    aboutText.append(QString("<p>%1:</p>"
+                             "<blockquote>%2 %3</blockquote>"
+                             "<blockquote>%4</blockquote>")
+                         .arg("构建信息")
+                         .arg("C++", QString::number(ABOUT_BASE_CPP))
+                         .arg(ABOUT_BASE_QT));
+#ifdef USE_CMAKE
+    aboutText.append(QString("<blockquote>%1 %2</blockquote>").arg("CMake", CMAKE_VERSION));
+#endif
     QString ABOUT_BASE_COMPILER_type = typeid (ABOUT_BASE_COMPILER).name();
 #ifdef ABOUT_BASE_COMPILER_STRING
     aboutText.append("<p>" + QString(ABOUT_BASE_COMPILER_TYPE)+ " "  + QString(ABOUT_BASE_COMPILER) + "</p>");
 #else
-    aboutText.append("<p>" + QString(ABOUT_BASE_COMPILER_TYPE)+ " "  + QString::number(ABOUT_BASE_COMPILER) + "</p>");
+    aboutText.append("<blockquote>" + QString(ABOUT_BASE_COMPILER_TYPE)+ " "  + QString::number(ABOUT_BASE_COMPILER) + "</blockquote>");
 #endif
-    aboutText.append("<p>CapsLockCheck "
-                     "<a href=\"http://github.com/savolai/Qt-Widgets-password-dialog-with-Caps-Lock-check/\"><font color=#6666FF>savolai@github</font></a></p>");
-    aboutText.append("<p>Qt-AES "
-                     "<a href=\"https://github.com/bricke/Qt-AES/\"><font color=#6666FF>bricke@github</font></a></p>");
+    aboutText.append("<blockquote>CapsLockCheck "
+                     "<a href=\"http://github.com/savolai/Qt-Widgets-password-dialog-with-Caps-Lock-check/\"><font color=#6666FF>savolai@github</font></a></blockquote>");
+    aboutText.append("<blockquote>Qt-AES "
+                     "<a href=\"https://github.com/bricke/Qt-AES/\"><font color=#6666FF>bricke@github</font></a></blockquote>");
 
     ui->about_baseTB->setReadOnly(true);
     ui->about_baseTB->setContextMenuPolicy(Qt::NoContextMenu);
