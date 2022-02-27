@@ -182,3 +182,11 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 ANDROID_PACKAGE_SOURCE_DIR = $$PWD/src/android
 
+exists (./.git) {
+    # GIT_BRANCH   = $$system(git rev-parse --abbrev-ref HEAD)
+    GIT_COMMIT_TIME     = $$system(git show --oneline --format=\"%cd\" --date=short -s HEAD)
+    GIT_COMMIT   = $$system(git show --oneline --format=\"%h\" -s HEAD)
+    GIT_COMMIT_LONG   = $$system(git show --oneline --format=\"%H\" -s HEAD)
+
+    DEFINES += APP_COMMIT_TIME=\\\"$$GIT_COMMIT_TIME\\\" APP_COMMIT=\\\"$$GIT_COMMIT\\\" APP_COMMIT_LONG=\\\"$$GIT_COMMIT_LONG\\\"
+}

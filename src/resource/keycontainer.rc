@@ -33,7 +33,7 @@ BEGIN
             VALUE "FileDescription",  "KeyContainer"
             VALUE "FileVersion",      VER_FILEVERSION_STR
             VALUE "InternalName",     "KeyContainer"
-            VALUE "LegalCopyright",   "realth000<a598919335@163.com>"
+            VALUE "LegalCopyright",   "realth000<a598919335@gmail.com>"
             VALUE "OriginalFilename", "KeyContainer.exe"
             VALUE "ProductName",      "KeyContainer"
             VALUE "ProductVersion",   VER_PRODUCTVERSION_STR
