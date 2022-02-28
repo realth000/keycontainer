@@ -31,7 +31,8 @@ if(COMPILE_QML)
 		Core
 		Gui
 		Qml
-        Quick)
+        Quick
+        Test)
 	add_definitions(-DENABLE_QML)
 else()
 	message(STATUS "COMPILE_QML is NOT enabled")
@@ -41,7 +42,8 @@ else()
 		REQUIRED
 		Core
 		Gui
-		Widgets)
+        Widgets
+        Test)
 endif()
 
 if(WIN32)
@@ -73,7 +75,10 @@ else()
     add_executable(KeyContainer)
 endif()
 
+add_executable(KeyContainerTest)
+
 add_subdirectory(src)
+add_subdirectory(test)
 
 if(COMPILE_QML)
     target_link_libraries(${PROJECT_NAME} optimized Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
