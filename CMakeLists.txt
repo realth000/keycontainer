@@ -83,11 +83,12 @@ add_subdirectory(test)
 if(COMPILE_QML)
     target_link_libraries(${PROJECT_NAME} optimized Qt5::Core Qt5::Gui Qt5::Qml Qt5::Quick)
 else()
-    target_link_libraries(${PROJECT_NAME} optimized Qt5::Core Qt5::Gui Qt5::Widgets)
-endif()
+    if(UNIX)
+        target_link_libraries(${PROJECT_NAME} optimized Qt5::Core Qt5::Gui Qt5::Widgets X11)
+    else()
+        target_link_libraries(${PROJECT_NAME} optimized Qt5::Core Qt5::Gui Qt5::Widgets)
+    endif()
 
-if(UNIX)
-    target_link_libraries(${PROJECT_NAME} optimized X11)
 endif()
 
 # Get git info
